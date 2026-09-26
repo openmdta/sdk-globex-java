@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.keyfigures_protocol" id="10" version="0" byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32" maxValue="2147483647"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite>
+  </types>
+  <!-- Only authenticated gateway sessions may supply grants. Contract-specific
+       parameters and projected universe values remain JSON inside the SBE frame. -->
+  <message name="KeyfiguresRequest" id="1" blockLength="0">
+    <data name="requestJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="KeyfiguresResult" id="2" blockLength="0">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+</messageSchema>

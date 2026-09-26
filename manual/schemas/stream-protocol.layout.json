@@ -1,0 +1,4472 @@
+{
+  "id": 1,
+  "version": 17,
+  "package": "openmdta.stream",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.stream\" id=\"1\" version=\"17\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"largeGroupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint32\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <type name=\"licenseIds\" primitiveType=\"uint16\" length=\"4\"/>\n  </types>\n\n  <message name=\"InstrumentUpdate\" id=\"1\" blockLength=\"24\">\n    <field name=\"messageId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"eventTimeMicros\" id=\"3\" type=\"uint64\" offset=\"16\" sinceVersion=\"3\"/>\n    <group name=\"blockUpdates\" id=\"4\" dimensionType=\"groupSizeEncoding\" blockLength=\"18\">\n      <field name=\"blockId\" id=\"5\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"eventTimeMicros\" id=\"9\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"licenseIds\" id=\"10\" type=\"licenseIds\" offset=\"10\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"7\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"8\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"SnapshotManifest\" id=\"2\" blockLength=\"69\">\n    <field name=\"originId\" id=\"20\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"observedHead\" id=\"21\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"instrumentCapacity\" id=\"22\" type=\"uint32\" offset=\"16\"/>\n    <field name=\"shardCount\" id=\"23\" type=\"uint32\" offset=\"20\"/>\n    <field name=\"slotStride\" id=\"24\" type=\"uint32\" offset=\"24\"/>\n    <field name=\"rawLength\" id=\"25\" type=\"uint64\" offset=\"28\"/>\n    <field name=\"layoutFingerprint\" id=\"26\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"capacityExhausted\" id=\"41\" type=\"uint8\" offset=\"44\"/>\n    <field name=\"capacityExhaustedSinceMicros\" id=\"42\" type=\"uint64\" offset=\"45\"/>\n    <field name=\"capacityGapAfterId\" id=\"43\" type=\"uint64\" offset=\"53\"/>\n    <field name=\"sourcePolicyFingerprint\" id=\"46\" type=\"uint64\" offset=\"61\" sinceVersion=\"4\"/>\n    <group name=\"coverageEntries\" id=\"27\" dimensionType=\"groupSizeEncoding\" blockLength=\"62\">\n      <field name=\"kind\" id=\"28\" type=\"uint8\" offset=\"0\"/>\n      <field name=\"afterId\" id=\"29\" type=\"uint64\" offset=\"1\"/>\n      <field name=\"throughId\" id=\"30\" type=\"uint64\" offset=\"9\"/>\n      <field name=\"firstSeenMicros\" id=\"31\" type=\"uint64\" offset=\"17\"/>\n      <field name=\"lastSeenMicros\" id=\"32\" type=\"uint64\" offset=\"25\"/>\n      <field name=\"attempts\" id=\"33\" type=\"uint32\" offset=\"33\"/>\n      <field name=\"nextRetryMicros\" id=\"34\" type=\"uint64\" offset=\"37\"/>\n      <field name=\"status\" id=\"35\" type=\"uint8\" offset=\"45\"/>\n      <field name=\"beforeEventTimeMicros\" id=\"44\" type=\"uint64\" offset=\"46\" sinceVersion=\"3\"/>\n      <field name=\"afterEventTimeMicros\" id=\"45\" type=\"uint64\" offset=\"54\" sinceVersion=\"3\"/>\n    </group>\n    <group name=\"blockLayouts\" id=\"36\" dimensionType=\"groupSizeEncoding\" blockLength=\"10\">\n      <field name=\"blockId\" id=\"37\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"offset\" id=\"39\" type=\"uint32\" offset=\"2\"/>\n      <field name=\"length\" id=\"40\" type=\"uint32\" offset=\"6\"/>\n    </group>\n  </message>\n\n  <message name=\"InstrumentDirectory\" id=\"3\" blockLength=\"4\">\n    <field name=\"instrumentCount\" id=\"50\" type=\"uint32\" offset=\"0\"/>\n    <group name=\"instruments\" id=\"51\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"4\">\n      <field name=\"arenaPosition\" id=\"52\" type=\"uint32\" offset=\"0\"/>\n      <data name=\"instrumentIdentifier\" id=\"53\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n\n  <message name=\"StreamCoverage\" id=\"6\" blockLength=\"33\">\n    <field name=\"afterId\" id=\"80\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"81\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"kind\" id=\"82\" type=\"uint8\" offset=\"16\"/>\n    <field name=\"beforeEventTimeMicros\" id=\"84\" type=\"uint64\" offset=\"17\" sinceVersion=\"3\"/>\n    <field name=\"afterEventTimeMicros\" id=\"85\" type=\"uint64\" offset=\"25\" sinceVersion=\"3\"/>\n  </message>\n\n  <message name=\"StreamSubscribe\" id=\"7\" blockLength=\"0\">\n    <data name=\"datasetIdentifier\" id=\"83\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"111\" type=\"varDataEncoding\" sinceVersion=\"6\"/>\n  </message>\n\n  <message name=\"LatestSnapshot\" id=\"8\" blockLength=\"0\">\n    <group name=\"blockValues\" id=\"91\" dimensionType=\"groupSizeEncoding\" blockLength=\"26\">\n      <field name=\"blockId\" id=\"92\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"messageId\" id=\"94\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"eventTimeMicros\" id=\"95\" type=\"uint64\" offset=\"10\"/>\n      <field name=\"licenseIds\" id=\"99\" type=\"licenseIds\" offset=\"18\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"96\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"97\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"LatestSubscribe\" id=\"9\" blockLength=\"0\">\n    <data name=\"instrumentIdentifier\" id=\"98\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ImportBoundary\" id=\"10\" blockLength=\"57\">\n    <field name=\"messageId\" id=\"100\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"101\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"beginMessageId\" id=\"102\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"recordCount\" id=\"103\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"effectiveTimeMicros\" id=\"104\" type=\"uint64\" offset=\"32\"/>\n    <field name=\"kind\" id=\"105\" type=\"uint8\" offset=\"40\"/>\n    <field name=\"incarnation\" id=\"106\" type=\"uint64\" offset=\"41\"/>\n    <field name=\"eventTimeMicros\" id=\"109\" type=\"uint64\" offset=\"49\" sinceVersion=\"3\"/>\n    <data name=\"runId\" id=\"108\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"CatalogRecord\" id=\"11\" blockLength=\"50\">\n    <field name=\"messageId\" id=\"120\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"121\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"effectiveTimeMicros\" id=\"122\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"eventTimeMicros\" id=\"123\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"listed\" id=\"124\" type=\"uint8\" offset=\"32\"/>\n    <field name=\"activity\" id=\"125\" type=\"uint8\" offset=\"33\"/>\n    <field name=\"licenseIds\" id=\"126\" type=\"licenseIds\" offset=\"34\"/>\n    <field name=\"incarnation\" id=\"131\" type=\"uint64\" offset=\"42\"/>\n    <data name=\"dataset\" id=\"127\" type=\"varDataEncoding\"/>\n    <data name=\"datasetRecordKey\" id=\"128\" type=\"varDataEncoding\"/>\n    <data name=\"metadata\" id=\"129\" type=\"varDataEncoding\"/>\n    <data name=\"payload\" id=\"130\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Opt-in dataset-wide live subscription. Older StreamSubscribe clients retain their wire contract. -->\n  <message name=\"FeedSubscribe\" id=\"12\" blockLength=\"0\" sinceVersion=\"17\">\n    <data name=\"datasetIdentifier\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Sent first, after the receiver is registered and before any live records. -->\n  <message name=\"FeedFence\" id=\"13\" blockLength=\"8\" sinceVersion=\"17\">\n    <field name=\"throughId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n  </message>\n  <message name=\"FeedRecoveryRequest\" id=\"14\" blockLength=\"16\" sinceVersion=\"17\">\n    <field name=\"afterId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n  </message>\n  <message name=\"FeedSnapshotRequest\" id=\"15\" blockLength=\"0\" sinceVersion=\"17\"/>\n</messageSchema>\n",
+  "messages": [
+    {
+      "name": "InstrumentUpdate",
+      "id": 1,
+      "blockLength": 24,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "1",
+            "name": "messageId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "2",
+            "name": "previousMessageId",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "3",
+            "name": "eventTimeMicros",
+            "offset": "16",
+            "sinceVersion": "3",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "18",
+            "dimensionType": "groupSizeEncoding",
+            "id": "4",
+            "name": "blockUpdates"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "5",
+                "name": "blockId",
+                "offset": "0",
+                "type": "uint16"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "9",
+                "name": "eventTimeMicros",
+                "offset": "2",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "10",
+                "name": "licenseIds",
+                "offset": "10",
+                "sinceVersion": "5",
+                "type": "licenseIds"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "data",
+              "attributes": {
+                "id": "7",
+                "name": "blockBytes",
+                "type": "varDataEncoding"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "8",
+            "name": "instrumentIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "SnapshotManifest",
+      "id": 2,
+      "blockLength": 69,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "20",
+            "name": "originId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "21",
+            "name": "observedHead",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "22",
+            "name": "instrumentCapacity",
+            "offset": "16",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "23",
+            "name": "shardCount",
+            "offset": "20",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "24",
+            "name": "slotStride",
+            "offset": "24",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "25",
+            "name": "rawLength",
+            "offset": "28",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "26",
+            "name": "layoutFingerprint",
+            "offset": "36",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "41",
+            "name": "capacityExhausted",
+            "offset": "44",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "42",
+            "name": "capacityExhaustedSinceMicros",
+            "offset": "45",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "43",
+            "name": "capacityGapAfterId",
+            "offset": "53",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "46",
+            "name": "sourcePolicyFingerprint",
+            "offset": "61",
+            "sinceVersion": "4",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "62",
+            "dimensionType": "groupSizeEncoding",
+            "id": "27",
+            "name": "coverageEntries"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "28",
+                "name": "kind",
+                "offset": "0",
+                "type": "uint8"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "29",
+                "name": "afterId",
+                "offset": "1",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "30",
+                "name": "throughId",
+                "offset": "9",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "31",
+                "name": "firstSeenMicros",
+                "offset": "17",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "32",
+                "name": "lastSeenMicros",
+                "offset": "25",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "33",
+                "name": "attempts",
+                "offset": "33",
+                "type": "uint32"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "34",
+                "name": "nextRetryMicros",
+                "offset": "37",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "35",
+                "name": "status",
+                "offset": "45",
+                "type": "uint8"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "44",
+                "name": "beforeEventTimeMicros",
+                "offset": "46",
+                "sinceVersion": "3",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "45",
+                "name": "afterEventTimeMicros",
+                "offset": "54",
+                "sinceVersion": "3",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "10",
+            "dimensionType": "groupSizeEncoding",
+            "id": "36",
+            "name": "blockLayouts"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "37",
+                "name": "blockId",
+                "offset": "0",
+                "type": "uint16"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "39",
+                "name": "offset",
+                "offset": "2",
+                "type": "uint32"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "40",
+                "name": "length",
+                "offset": "6",
+                "type": "uint32"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "InstrumentDirectory",
+      "id": 3,
+      "blockLength": 4,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "50",
+            "name": "instrumentCount",
+            "offset": "0",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "4",
+            "dimensionType": "largeGroupSizeEncoding",
+            "id": "51",
+            "name": "instruments"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "52",
+                "name": "arenaPosition",
+                "offset": "0",
+                "type": "uint32"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "data",
+              "attributes": {
+                "id": "53",
+                "name": "instrumentIdentifier",
+                "type": "varDataEncoding"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "StreamCoverage",
+      "id": 6,
+      "blockLength": 33,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "80",
+            "name": "afterId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "81",
+            "name": "throughId",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "82",
+            "name": "kind",
+            "offset": "16",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "84",
+            "name": "beforeEventTimeMicros",
+            "offset": "17",
+            "sinceVersion": "3",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "85",
+            "name": "afterEventTimeMicros",
+            "offset": "25",
+            "sinceVersion": "3",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "StreamSubscribe",
+      "id": 7,
+      "blockLength": 0,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "83",
+            "name": "datasetIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "111",
+            "name": "consumerName",
+            "sinceVersion": "6",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "LatestSnapshot",
+      "id": 8,
+      "blockLength": 0,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "26",
+            "dimensionType": "groupSizeEncoding",
+            "id": "91",
+            "name": "blockValues"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "92",
+                "name": "blockId",
+                "offset": "0",
+                "type": "uint16"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "94",
+                "name": "messageId",
+                "offset": "2",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "95",
+                "name": "eventTimeMicros",
+                "offset": "10",
+                "type": "uint64"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "field",
+              "attributes": {
+                "id": "99",
+                "name": "licenseIds",
+                "offset": "18",
+                "sinceVersion": "5",
+                "type": "licenseIds"
+              },
+              "value": null,
+              "children": []
+            },
+            {
+              "kind": "data",
+              "attributes": {
+                "id": "96",
+                "name": "blockBytes",
+                "type": "varDataEncoding"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "97",
+            "name": "instrumentIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "LatestSubscribe",
+      "id": 9,
+      "blockLength": 0,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "98",
+            "name": "instrumentIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "ImportBoundary",
+      "id": 10,
+      "blockLength": 57,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "100",
+            "name": "messageId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "101",
+            "name": "previousMessageId",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "102",
+            "name": "beginMessageId",
+            "offset": "16",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "103",
+            "name": "recordCount",
+            "offset": "24",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "104",
+            "name": "effectiveTimeMicros",
+            "offset": "32",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "105",
+            "name": "kind",
+            "offset": "40",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "106",
+            "name": "incarnation",
+            "offset": "41",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "109",
+            "name": "eventTimeMicros",
+            "offset": "49",
+            "sinceVersion": "3",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "108",
+            "name": "runId",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "CatalogRecord",
+      "id": 11,
+      "blockLength": 50,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "120",
+            "name": "messageId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "121",
+            "name": "previousMessageId",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "122",
+            "name": "effectiveTimeMicros",
+            "offset": "16",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "123",
+            "name": "eventTimeMicros",
+            "offset": "24",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "124",
+            "name": "listed",
+            "offset": "32",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "125",
+            "name": "activity",
+            "offset": "33",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "126",
+            "name": "licenseIds",
+            "offset": "34",
+            "type": "licenseIds"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "131",
+            "name": "incarnation",
+            "offset": "42",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "127",
+            "name": "dataset",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "128",
+            "name": "datasetRecordKey",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "129",
+            "name": "metadata",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "130",
+            "name": "payload",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "FeedSubscribe",
+      "id": 12,
+      "blockLength": 0,
+      "sinceVersion": 17,
+      "fields": [
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "1",
+            "name": "datasetIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "2",
+            "name": "consumerName",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "FeedFence",
+      "id": 13,
+      "blockLength": 8,
+      "sinceVersion": 17,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "1",
+            "name": "throughId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "FeedRecoveryRequest",
+      "id": 14,
+      "blockLength": 16,
+      "sinceVersion": 17,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "1",
+            "name": "afterId",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "2",
+            "name": "throughId",
+            "offset": "8",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "FeedSnapshotRequest",
+      "id": 15,
+      "blockLength": 0,
+      "sinceVersion": 17,
+      "fields": []
+    }
+  ],
+  "types": [
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "messageHeader"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "templateId",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "schemaId",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "version",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "groupSizeEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "numInGroup",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "largeGroupSizeEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "numInGroup",
+            "primitiveType": "uint32"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "varDataEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "length",
+            "primitiveType": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "length": "0",
+            "name": "varData",
+            "primitiveType": "uint8"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "type",
+      "attributes": {
+        "length": "4",
+        "name": "licenseIds",
+        "primitiveType": "uint16"
+      },
+      "value": null,
+      "children": []
+    }
+  ],
+  "layout": [
+    {
+      "name": "messageHeader",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 8,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "templateId",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "templateId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "schemaId",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "schemaId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "version",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 6,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "version",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageHeader",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 6,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "InstrumentUpdate",
+      "id": 1,
+      "signal": "BeginMessage",
+      "offset": 24,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": 2,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": 3,
+      "signal": "BeginField",
+      "offset": 16,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockUpdates",
+      "id": 4,
+      "signal": "BeginGroup",
+      "offset": 18,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": 5,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": 9,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "licenseIds",
+      "id": 10,
+      "signal": "BeginField",
+      "offset": 10,
+      "primitive": "UInt16",
+      "length": 4,
+      "presence": "Required",
+      "sinceVersion": 5
+    },
+    {
+      "name": "licenseIds",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockBytes",
+      "id": 7,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockBytes",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockUpdates",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": 8,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "InstrumentUpdate",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "SnapshotManifest",
+      "id": 2,
+      "signal": "BeginMessage",
+      "offset": 69,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "originId",
+      "id": 20,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "originId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "observedHead",
+      "id": 21,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "observedHead",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentCapacity",
+      "id": 22,
+      "signal": "BeginField",
+      "offset": 16,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentCapacity",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "shardCount",
+      "id": 23,
+      "signal": "BeginField",
+      "offset": 20,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "shardCount",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "slotStride",
+      "id": 24,
+      "signal": "BeginField",
+      "offset": 24,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "slotStride",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rawLength",
+      "id": 25,
+      "signal": "BeginField",
+      "offset": 28,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rawLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "layoutFingerprint",
+      "id": 26,
+      "signal": "BeginField",
+      "offset": 36,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "layoutFingerprint",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityExhausted",
+      "id": 41,
+      "signal": "BeginField",
+      "offset": 44,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityExhausted",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityExhaustedSinceMicros",
+      "id": 42,
+      "signal": "BeginField",
+      "offset": 45,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityExhaustedSinceMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityGapAfterId",
+      "id": 43,
+      "signal": "BeginField",
+      "offset": 53,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "capacityGapAfterId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "sourcePolicyFingerprint",
+      "id": 46,
+      "signal": "BeginField",
+      "offset": 61,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 4
+    },
+    {
+      "name": "sourcePolicyFingerprint",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "coverageEntries",
+      "id": 27,
+      "signal": "BeginGroup",
+      "offset": 62,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": 28,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterId",
+      "id": 29,
+      "signal": "BeginField",
+      "offset": 1,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": 30,
+      "signal": "BeginField",
+      "offset": 9,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "firstSeenMicros",
+      "id": 31,
+      "signal": "BeginField",
+      "offset": 17,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "firstSeenMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "lastSeenMicros",
+      "id": 32,
+      "signal": "BeginField",
+      "offset": 25,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "lastSeenMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "attempts",
+      "id": 33,
+      "signal": "BeginField",
+      "offset": 33,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "attempts",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "nextRetryMicros",
+      "id": 34,
+      "signal": "BeginField",
+      "offset": 37,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "nextRetryMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "status",
+      "id": 35,
+      "signal": "BeginField",
+      "offset": 45,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "status",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "beforeEventTimeMicros",
+      "id": 44,
+      "signal": "BeginField",
+      "offset": 46,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "beforeEventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterEventTimeMicros",
+      "id": 45,
+      "signal": "BeginField",
+      "offset": 54,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "afterEventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "coverageEntries",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLayouts",
+      "id": 36,
+      "signal": "BeginGroup",
+      "offset": 10,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": 37,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "offset",
+      "id": 39,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "offset",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": 40,
+      "signal": "BeginField",
+      "offset": 6,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLayouts",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "SnapshotManifest",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "InstrumentDirectory",
+      "id": 3,
+      "signal": "BeginMessage",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentCount",
+      "id": 50,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentCount",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instruments",
+      "id": 51,
+      "signal": "BeginGroup",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 6,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "arenaPosition",
+      "id": 52,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "arenaPosition",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": 53,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instruments",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "InstrumentDirectory",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "StreamCoverage",
+      "id": 6,
+      "signal": "BeginMessage",
+      "offset": 33,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterId",
+      "id": 80,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": 81,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": 82,
+      "signal": "BeginField",
+      "offset": 16,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "beforeEventTimeMicros",
+      "id": 84,
+      "signal": "BeginField",
+      "offset": 17,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "beforeEventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterEventTimeMicros",
+      "id": 85,
+      "signal": "BeginField",
+      "offset": 25,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "afterEventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "StreamCoverage",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "StreamSubscribe",
+      "id": 7,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "datasetIdentifier",
+      "id": 83,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "datasetIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "consumerName",
+      "id": 111,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 6
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "consumerName",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "StreamSubscribe",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "LatestSnapshot",
+      "id": 8,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockValues",
+      "id": 91,
+      "signal": "BeginGroup",
+      "offset": 26,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": 92,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": 94,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": 95,
+      "signal": "BeginField",
+      "offset": 10,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "licenseIds",
+      "id": 99,
+      "signal": "BeginField",
+      "offset": 18,
+      "primitive": "UInt16",
+      "length": 4,
+      "presence": "Required",
+      "sinceVersion": 5
+    },
+    {
+      "name": "licenseIds",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockBytes",
+      "id": 96,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockBytes",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockValues",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": 97,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "LatestSnapshot",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "LatestSubscribe",
+      "id": 9,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": 98,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "LatestSubscribe",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "ImportBoundary",
+      "id": 10,
+      "signal": "BeginMessage",
+      "offset": 57,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": 100,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": 101,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "beginMessageId",
+      "id": 102,
+      "signal": "BeginField",
+      "offset": 16,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "beginMessageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "recordCount",
+      "id": 103,
+      "signal": "BeginField",
+      "offset": 24,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "recordCount",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "effectiveTimeMicros",
+      "id": 104,
+      "signal": "BeginField",
+      "offset": 32,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "effectiveTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": 105,
+      "signal": "BeginField",
+      "offset": 40,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "kind",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "incarnation",
+      "id": 106,
+      "signal": "BeginField",
+      "offset": 41,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "incarnation",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": 109,
+      "signal": "BeginField",
+      "offset": 49,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 3
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "runId",
+      "id": 108,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "runId",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "ImportBoundary",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "CatalogRecord",
+      "id": 11,
+      "signal": "BeginMessage",
+      "offset": 50,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": 120,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": 121,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "previousMessageId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "effectiveTimeMicros",
+      "id": 122,
+      "signal": "BeginField",
+      "offset": 16,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "effectiveTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": 123,
+      "signal": "BeginField",
+      "offset": 24,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "eventTimeMicros",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "listed",
+      "id": 124,
+      "signal": "BeginField",
+      "offset": 32,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "listed",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "activity",
+      "id": 125,
+      "signal": "BeginField",
+      "offset": 33,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "activity",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "licenseIds",
+      "id": 126,
+      "signal": "BeginField",
+      "offset": 34,
+      "primitive": "UInt16",
+      "length": 4,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "licenseIds",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "incarnation",
+      "id": 131,
+      "signal": "BeginField",
+      "offset": 42,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "incarnation",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "dataset",
+      "id": 127,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "dataset",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "datasetRecordKey",
+      "id": 128,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "datasetRecordKey",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "metadata",
+      "id": 129,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "metadata",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "payload",
+      "id": 130,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "payload",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "CatalogRecord",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedSubscribe",
+      "id": 12,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 17
+    },
+    {
+      "name": "datasetIdentifier",
+      "id": 1,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "datasetIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "consumerName",
+      "id": 2,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "consumerName",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedSubscribe",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedFence",
+      "id": 13,
+      "signal": "BeginMessage",
+      "offset": 8,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 17
+    },
+    {
+      "name": "throughId",
+      "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedFence",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedRecoveryRequest",
+      "id": 14,
+      "signal": "BeginMessage",
+      "offset": 16,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 17
+    },
+    {
+      "name": "afterId",
+      "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "afterId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": 2,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "throughId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedRecoveryRequest",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "FeedSnapshotRequest",
+      "id": 15,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 17
+    },
+    {
+      "name": "FeedSnapshotRequest",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    }
+  ]
+}

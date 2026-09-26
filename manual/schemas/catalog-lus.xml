@@ -1,0 +1,13 @@
+<messageSchema package="lus.default" id="65001" version="0" byteOrder="littleEndian"><types><composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite><composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite></types><message name="LusDomainObject" id="65011" blockLength="0">
+    <data name="name" id="1" type="varDataEncoding"/>
+  </message><message name="LusNameHash" id="65012" blockLength="0">
+    <data name="value" id="1" type="varDataEncoding"/>
+  </message></messageSchema>

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blocks": {
+      "items": {
+        "format": "uint16",
+        "maximum": 65535,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "dataset": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string"
+    },
+    "quality": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "dataset",
+    "quality",
+    "key",
+    "blocks"
+  ],
+  "title": "ListingRequest",
+  "type": "object"
+}

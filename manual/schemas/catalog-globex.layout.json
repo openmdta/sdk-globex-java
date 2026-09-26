@@ -1,0 +1,363 @@
+{
+  "id": 900,
+  "version": 0,
+  "package": "globex.model",
+  "xml": "<messageSchema package=\"globex.model\" id=\"900\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite><composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite></types><message name=\"DisplayName\" id=\"1\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT\">\n    <data name=\"value\" id=\"1\" type=\"varDataEncoding\"/>\n  </message></messageSchema>",
+  "messages": [
+    {
+      "name": "DisplayName",
+      "id": 1,
+      "blockLength": 0,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "1",
+            "name": "value",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "messageHeader"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "templateId",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "schemaId",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "version",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "varDataEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "length",
+            "primitiveType": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "length": "0",
+            "name": "varData",
+            "primitiveType": "uint8"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    }
+  ],
+  "layout": [
+    {
+      "name": "messageHeader",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 8,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "templateId",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "templateId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "schemaId",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "schemaId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "version",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 6,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "version",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "messageHeader",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "DisplayName",
+      "id": 1,
+      "signal": "BeginMessage",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "value",
+      "id": 1,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "value",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "DisplayName",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    }
+  ]
+}

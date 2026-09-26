@@ -1,0 +1,75 @@
+{
+  "$defs": {
+    "AdjustmentMode": {
+      "description": "Selects whether gateway responses preserve source prices or restate them\nonto the latest confirmed split basis covered by the request.",
+      "enum": [
+        "raw",
+        "split"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "adjustment": {
+      "$ref": "#/$defs/AdjustmentMode",
+      "default": "raw"
+    },
+    "blockMask": {
+      "type": "string"
+    },
+    "boundary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dataset": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "guard": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "limit": {
+      "format": "uint32",
+      "minimum": 0,
+      "type": "integer"
+    },
+    "order": {
+      "type": "string"
+    },
+    "quality": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "resolutionMicros": {
+      "type": "string"
+    },
+    "selector": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "selector",
+    "blockMask",
+    "resolutionMicros",
+    "order",
+    "limit"
+  ],
+  "title": "TimeseriesPageParameters",
+  "type": "object"
+}

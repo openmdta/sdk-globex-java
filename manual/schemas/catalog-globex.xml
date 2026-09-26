@@ -1,0 +1,11 @@
+<messageSchema package="globex.model" id="900" version="0" byteOrder="littleEndian"><types><composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite><composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite></types><message name="DisplayName" id="1" blockLength="0" description="openmdta:entity:INSTRUMENT">
+    <data name="value" id="1" type="varDataEncoding"/>
+  </message></messageSchema>

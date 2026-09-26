@@ -1,0 +1,45 @@
+{
+  "kind": "observation",
+  "apiVersion": 1,
+  "schemas": "stream/crates/observation-service/contract/schema.json",
+  "commands": {
+    "getWatcher": {
+      "input": "GetWatcherRequest",
+      "output": "Watcher",
+      "positional": [
+        "watcherId"
+      ],
+      "objectParameter": null,
+      "effect": "read",
+      "replay": null,
+      "errors": {
+        "not_found": "WatcherNotFound"
+      }
+    },
+    "getWatchers": {
+      "input": "GetWatchersRequest",
+      "output": "WatcherList",
+      "positional": [
+        "accountId"
+      ],
+      "objectParameter": null,
+      "effect": "read",
+      "replay": null,
+      "errors": {}
+    },
+    "setWatcher": {
+      "input": "SetWatcherRequest",
+      "output": "Watcher",
+      "positional": [
+        "watcherId"
+      ],
+      "objectParameter": "update",
+      "effect": "mutation",
+      "replay": "state",
+      "errors": {
+        "conflict": "RevisionConflict",
+        "not_found": "WatcherNotFound"
+      }
+    }
+  }
+}

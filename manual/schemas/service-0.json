@@ -1,0 +1,232 @@
+{
+  "$defs": {
+    "AlertType": {
+      "enum": [
+        "ALERT_ON_OVER",
+        "ALERT_ON_UNDER"
+      ],
+      "type": "string"
+    },
+    "GetWatcherRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "watcherId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "watcherId"
+      ],
+      "type": "object"
+    },
+    "GetWatchersRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "accountId"
+      ],
+      "type": "object"
+    },
+    "NotificationPolicy": {
+      "properties": {
+        "gapRecovery": {
+          "default": true,
+          "type": "boolean"
+        },
+        "liveOff": {
+          "default": true,
+          "type": "boolean"
+        },
+        "liveOn": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ObservationStatus": {
+      "enum": [
+        "TRIGGERED",
+        "FLAPPING",
+        "NOT_TRIGGERED"
+      ],
+      "type": "string"
+    },
+    "RevisionConflict": {
+      "additionalProperties": false,
+      "properties": {
+        "actualRevision": {
+          "format": "uint64",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "type": "string"
+        },
+        "expectedRevision": {
+          "format": "uint64",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expectedRevision",
+        "actualRevision"
+      ],
+      "type": "object"
+    },
+    "SetWatcherRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "update": {
+          "$ref": "#/$defs/WatcherUpdate"
+        },
+        "watcherId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "watcherId",
+        "update"
+      ],
+      "type": "object"
+    },
+    "Watcher": {
+      "additionalProperties": false,
+      "properties": {
+        "accountId": {
+          "type": "string"
+        },
+        "activeFrom": {
+          "type": "string"
+        },
+        "activeUntil": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "alertType": {
+          "$ref": "#/$defs/AlertType"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "listingExpression": {
+          "type": "string"
+        },
+        "notifications": {
+          "$ref": "#/$defs/NotificationPolicy"
+        },
+        "revision": {
+          "format": "uint64",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/$defs/WatcherRule"
+        },
+        "status": {
+          "$ref": "#/$defs/ObservationStatus"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "watcherId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "watcherId",
+        "accountId",
+        "revision",
+        "listingExpression",
+        "alertType",
+        "rule",
+        "activeFrom",
+        "notifications",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ],
+      "type": "object"
+    },
+    "WatcherList": {
+      "items": {
+        "$ref": "#/$defs/Watcher"
+      },
+      "type": "array"
+    },
+    "WatcherNotFound": {
+      "additionalProperties": false,
+      "properties": {
+        "watcherId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "watcherId"
+      ],
+      "type": "object"
+    },
+    "WatcherRule": {
+      "additionalProperties": false,
+      "properties": {
+        "blockId": {
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "field": {
+          "type": "string"
+        },
+        "threshold": {
+          "format": "double",
+          "type": "number"
+        }
+      },
+      "required": [
+        "field",
+        "blockId",
+        "threshold"
+      ],
+      "type": "object"
+    },
+    "WatcherUpdate": {
+      "additionalProperties": false,
+      "properties": {
+        "expectedRevision": {
+          "format": "uint64",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notifications": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NotificationPolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rule": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WatcherRule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    }
+  }
+}

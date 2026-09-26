@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messageSchema package="openmdta.catalog.service" id="7" version="3" byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="largeGroupSizeEncoding">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint32"/>
+    </composite>
+    <composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite>
+    <enum name="CatalogPhase" encodingType="uint8">
+      <validValue name="SNAPSHOT">1</validValue>
+      <validValue name="UPDATE">2</validValue>
+    </enum>
+  </types>
+
+  <message name="CatalogQuery" id="1" blockLength="1">
+    <field name="follow" id="1" type="uint8" offset="0"/>
+    <group name="identifiers" id="2" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="identifier" id="3" type="varDataEncoding"/>
+    </group>
+    <group name="fields" id="4" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="label" id="5" type="varDataEncoding"/>
+    </group>
+    <data name="catalog" id="6" type="varDataEncoding"/>
+    <data name="expectedIncarnation" id="7" type="varDataEncoding"/>
+  </message>
+
+  <message name="CatalogRecord" id="2" blockLength="46">
+    <field name="phase" id="1" type="CatalogPhase" offset="0"/>
+    <field name="exists" id="2" type="uint8" offset="1"/>
+    <field name="lifecyclePresent" id="3" type="uint8" offset="2"/>
+    <field name="listing" id="4" type="uint8" offset="3"/>
+    <field name="activity" id="5" type="uint8" offset="4"/>
+    <field name="visible" id="6" type="uint8" offset="5"/>
+    <field name="effectiveTimeMicros" id="7" type="uint64" offset="6"/>
+    <field name="hideAtMicros" id="8" type="uint64" offset="14" presence="optional" nullValue="18446744073709551615"/>
+    <field name="hiddenAtUnixSeconds" id="9" type="uint64" offset="22" presence="optional" nullValue="18446744073709551615"/>
+    <field name="sourceIncarnation" id="10" type="uint64" offset="30"/>
+    <field name="sourceMessageId" id="11" type="uint64" offset="38"/>
+    <group name="fields" id="12" dimensionType="largeGroupSizeEncoding" blockLength="6">
+      <field name="wireId" id="13" type="uint16" offset="0"/>
+      <field name="fixedLength" id="15" type="uint32" offset="2" presence="optional" nullValue="4294967295"/>
+      <data name="label" id="16" type="varDataEncoding"/>
+      <data name="subfield" id="17" type="varDataEncoding"/>
+      <data name="licenseRequirements" id="18" type="varDataEncoding"/>
+      <data name="payload" id="19" type="varDataEncoding"/>
+    </group>
+    <data name="identifier" id="20" type="varDataEncoding"/>
+    <data name="lifecycleLicenseRequirements" id="21" type="varDataEncoding"/>
+    <data name="incarnation" id="30" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogBrowseQuery" id="3" blockLength="0">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogBrowsePage" id="4" blockLength="0">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogSearchQuery" id="5" blockLength="0">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogSearchPage" id="6" blockLength="0">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogFeedQuery" id="7" blockLength="0" sinceVersion="3">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogFeedControl" id="8" blockLength="0" sinceVersion="3">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+</messageSchema>

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="19" byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32" maxValue="2147483647"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite>
+    <composite name="largeGroupSizeEncoding">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint32" maxValue="2147483647"/>
+    </composite>
+    <enum name="Phase" encodingType="uint8">
+      <validValue name="SNAPSHOT">1</validValue>
+      <validValue name="UPDATE">2</validValue>
+    </enum>
+  </types>
+
+  <message name="SnapshotRequest" id="1" blockLength="8">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <data name="expression" id="2" type="varDataEncoding"/>
+    <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="StreamRequest" id="2" blockLength="8">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <data name="expression" id="2" type="varDataEncoding"/>
+    <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="FeedLiveRequest" id="15" blockLength="8" sinceVersion="18">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <data name="dataset" id="2" type="varDataEncoding"/>
+    <data name="quality" id="3" type="varDataEncoding"/>
+  </message>
+  <message name="FeedRecoveryRequest" id="16" blockLength="24" sinceVersion="18">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <field name="afterMessageId" id="2" type="uint64" offset="8"/>
+    <field name="throughMessageId" id="3" type="uint64" offset="16"/>
+    <data name="dataset" id="4" type="varDataEncoding"/>
+    <data name="quality" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="FeedSnapshotRequest" id="17" blockLength="8" sinceVersion="18">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <data name="dataset" id="2" type="varDataEncoding"/>
+    <data name="quality" id="3" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogFeedRequest" id="18" blockLength="0" sinceVersion="19">
+    <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="label" id="2" type="varDataEncoding"/>
+    </group>
+    <data name="catalog" id="3" type="varDataEncoding"/>
+    <data name="cursor" id="4" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogFeedControl" id="113" blockLength="0" sinceVersion="19">
+    <data name="json" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="FeedSnapshotHeader" id="112" blockLength="8" sinceVersion="18">
+    <field name="throughMessageId" id="1" type="uint64" offset="0"/>
+    <group name="gaps" id="2" dimensionType="largeGroupSizeEncoding" blockLength="16">
+      <field name="afterMessageId" id="3" type="uint64" offset="0"/>
+      <field name="throughMessageId" id="4" type="uint64" offset="8"/>
+    </group>
+    <data name="dataset" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="FeedControl" id="111" blockLength="17" sinceVersion="18">
+    <!-- 1 subscription fence, 2 opened gap, 3 complete coverage watermark -->
+    <field name="kind" id="1" type="uint8" offset="0"/>
+    <field name="afterMessageId" id="2" type="uint64" offset="1"/>
+    <field name="throughMessageId" id="3" type="uint64" offset="9"/>
+    <data name="dataset" id="4" type="varDataEncoding"/>
+  </message>
+  <message name="TsRawRequest" id="3" blockLength="28">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <field name="from" id="2" type="uint64" offset="8"/>
+    <field name="through" id="3" type="uint64" offset="16"/>
+    <field name="maxRows" id="4" type="uint32" offset="24"/>
+    <data name="expression" id="5" type="varDataEncoding"/>
+    <data name="quality" id="6" type="varDataEncoding" sinceVersion="5"/>
+    <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="TsCandleRequest" id="4" blockLength="32">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <field name="from" id="2" type="uint64" offset="8"/>
+    <field name="through" id="3" type="uint64" offset="16"/>
+    <field name="cadenceMicros" id="4" type="uint64" offset="24"/>
+    <data name="expression" id="5" type="varDataEncoding"/>
+    <data name="quality" id="6" type="varDataEncoding" sinceVersion="3"/>
+    <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="CatalogRequest" id="5" blockLength="0" sinceVersion="2">
+    <group name="identifiers" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="identifier" id="2" type="varDataEncoding"/>
+    </group>
+    <group name="fields" id="3" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="label" id="4" type="varDataEncoding"/>
+    </group>
+    <data name="catalog" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="TsRawStreamRequest" id="6" blockLength="28" sinceVersion="5">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <field name="from" id="2" type="uint64" offset="8"/>
+    <field name="through" id="3" type="uint64" offset="16"/>
+    <field name="maxRows" id="4" type="uint32" offset="24"/>
+    <data name="expression" id="5" type="varDataEncoding"/>
+    <data name="quality" id="6" type="varDataEncoding"/>
+    <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="TsCandleStreamRequest" id="7" blockLength="36" sinceVersion="5">
+    <field name="blockMask" id="1" type="uint64" offset="0"/>
+    <field name="from" id="2" type="uint64" offset="8"/>
+    <field name="through" id="3" type="uint64" offset="16"/>
+    <field name="cadenceMicros" id="4" type="uint64" offset="24"/>
+    <field name="updateIntervalMillis" id="5" type="uint32" offset="32"/>
+    <data name="expression" id="6" type="varDataEncoding"/>
+    <data name="quality" id="7" type="varDataEncoding"/>
+    <data name="adjustment" id="8" type="varDataEncoding" sinceVersion="11"/>
+    <data name="dataset" id="9" type="varDataEncoding" sinceVersion="14"/>
+  </message>
+  <message name="CatalogKeyfiguresRequest" id="8" blockLength="8" sinceVersion="6">
+    <field name="priceCutoffMs" id="1" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
+    <data name="catalog" id="2" type="varDataEncoding"/>
+    <data name="action" id="3" type="varDataEncoding"/>
+    <data name="parameters" id="4" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogKeyfiguresResult" id="103" blockLength="0" sinceVersion="6">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="MarketDataMessageBatch" id="108" blockLength="1" sinceVersion="11">
+    <field name="phase" id="1" type="Phase" offset="0"/>
+    <group name="messages" id="2" dimensionType="largeGroupSizeEncoding" blockLength="14">
+      <field name="messageId" id="3" type="uint64" offset="0"/>
+      <field name="firstField" id="4" type="uint32" offset="8"/>
+      <field name="fieldCount" id="5" type="uint16" offset="12"/>
+    </group>
+    <group name="fields" id="6" dimensionType="largeGroupSizeEncoding" blockLength="25">
+      <field name="schemaId" id="7" type="uint16" offset="0"/>
+      <field name="templateId" id="8" type="uint16" offset="2"/>
+      <field name="version" id="9" type="uint16" offset="4"/>
+      <field name="blockLength" id="10" type="uint16" offset="6"/>
+      <field name="eventTimeMicros" id="11" type="uint64" offset="8"/>
+      <field name="clear" id="12" type="uint8" offset="16"/>
+      <field name="payloadOffset" id="13" type="uint32" offset="17"/>
+      <field name="payloadLength" id="14" type="uint32" offset="21"/>
+    </group>
+    <group name="gaps" id="15" dimensionType="largeGroupSizeEncoding" blockLength="16">
+      <field name="fromEventTimeMicros" id="16" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
+      <field name="throughEventTimeMicros" id="17" type="uint64" offset="8" presence="optional" nullValue="18446744073709551615"/>
+    </group>
+    <data name="datasetRecordKey" id="18" type="varDataEncoding"/>
+    <data name="dataset" id="19" type="varDataEncoding"/>
+    <data name="payload" id="20" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogRecord" id="102" blockLength="30" sinceVersion="2">
+    <field name="phase" id="1" type="Phase" offset="0"/>
+    <field name="exists" id="2" type="uint8" offset="1"/>
+    <field name="lifecyclePresent" id="3" type="uint8" offset="2"/>
+    <field name="listing" id="4" type="uint8" offset="3"/>
+    <field name="activity" id="5" type="uint8" offset="4"/>
+    <field name="visible" id="6" type="uint8" offset="5"/>
+    <field name="effectiveTimeMicros" id="7" type="uint64" offset="6"/>
+    <field name="hideAtMicros" id="8" type="uint64" offset="14" presence="optional" nullValue="18446744073709551615"/>
+    <field name="hiddenAtUnixSeconds" id="9" type="uint64" offset="22" presence="optional" nullValue="18446744073709551615"/>
+    <!-- The native payload contains its own blockLength/version prefix.
+         Field ID 12 is retired; deployed codecs use this six-byte descriptor. -->
+    <group name="fields" id="10" dimensionType="largeGroupSizeEncoding" blockLength="6">
+      <field name="wireId" id="11" type="uint16" offset="0"/>
+      <field name="fixedLength" id="13" type="uint32" offset="2" presence="optional" nullValue="4294967295"/>
+      <data name="label" id="14" type="varDataEncoding"/>
+      <data name="subfield" id="15" type="varDataEncoding"/>
+      <data name="payload" id="16" type="varDataEncoding"/>
+    </group>
+    <data name="catalog" id="17" type="varDataEncoding"/>
+    <data name="identifier" id="18" type="varDataEncoding"/>
+    <data name="recordIdentifier" id="19" type="varDataEncoding"/>
+  </message>
+  <!-- Headerless coverage rows carried by Batch, independent of plugin exports. -->
+  <message name="Gap" id="20" blockLength="16">
+    <field name="fromEventTimeMicros" id="1" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
+    <field name="throughEventTimeMicros" id="2" type="uint64" offset="8" presence="optional" nullValue="18446744073709551615"/>
+  </message>
+  <!-- Bounded JSON of core::activity::StreamMetadata, maximum 128 KiB. -->
+  <message name="StreamMetadataQuery" id="9" blockLength="0" sinceVersion="13">
+    <data name="dataset" id="1" type="varDataEncoding"/>
+    <data name="quality" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="StreamMetadataResponse" id="104" blockLength="0" sinceVersion="13">
+    <data name="metadataJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogSearchQuery" id="10" blockLength="0" sinceVersion="8">
+    <data name="catalog" id="1" type="varDataEncoding"/>
+    <data name="parametersJson" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogSearchResponse" id="105" blockLength="0" sinceVersion="8">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogLookupQuery" id="11" blockLength="0" sinceVersion="9">
+    <data name="catalog" id="1" type="varDataEncoding"/>
+    <data name="parametersJson" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogLookupResponse" id="106" blockLength="0" sinceVersion="9">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="ListingLatestRequest" id="12" blockLength="0" sinceVersion="15">
+    <data name="parameters" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="ListingLatestEvent" id="107" blockLength="0" sinceVersion="15">
+    <data name="event" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="ServiceCallRequest" id="13" blockLength="8" sinceVersion="16">
+    <field name="deadlineUnixMillis" id="1" type="uint64" offset="0"/>
+    <data name="serviceId" id="2" type="varDataEncoding"/>
+    <data name="command" id="3" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="4" type="varDataEncoding"/>
+    <data name="mutationId" id="5" type="varDataEncoding"/>
+    <data name="inputJson" id="6" type="varDataEncoding"/>
+  </message>
+  <message name="ServiceCallResult" id="109" blockLength="0" sinceVersion="16">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="TimeseriesPageRequest" id="14" blockLength="0" sinceVersion="17">
+    <data name="parametersJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="TimeseriesPageResult" id="110" blockLength="0" sinceVersion="17">
+    <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+</messageSchema>

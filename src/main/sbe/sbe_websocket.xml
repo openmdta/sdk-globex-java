@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.sbe_websocket" id="5" version="1" byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32" maxValue="2147483647"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite>
+    <composite name="batchGroupSizeEncoding">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint32" maxValue="2147483647"/>
+    </composite>
+    <composite name="sbeFormat">
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+      <type name="blockLength" primitiveType="uint16"/>
+    </composite>
+    <type name="traceId" primitiveType="uint8" length="16"/>
+    <type name="spanId" primitiveType="uint8" length="8"/>
+    <enum name="Status" encodingType="uint8">
+      <validValue name="CONTINUE">1</validValue>
+      <validValue name="DONE">2</validValue>
+      <validValue name="ERROR">3</validValue>
+    </enum>
+  </types>
+
+  <message name="AuthRequest" id="1" blockLength="8">
+    <field name="requestId" id="1" type="uint64" offset="0"/>
+    <data name="token" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="OpenRequest" id="2" blockLength="40">
+    <field name="requestId" id="1" type="uint64" offset="0"/>
+    <field name="traceId" id="2" type="traceId" offset="8"/>
+    <field name="parentSpanId" id="3" type="spanId" offset="24"/>
+    <field name="format" id="4" type="sbeFormat" offset="32"/>
+    <data name="body" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="CancelRequest" id="3" blockLength="16">
+    <field name="requestId" id="1" type="uint64" offset="0"/>
+    <field name="targetId" id="2" type="uint64" offset="8"/>
+  </message>
+  <message name="CreditRequest" id="4" blockLength="12">
+    <field name="targetId" id="1" type="uint64" offset="0"/>
+    <field name="credits" id="2" type="uint32" offset="8"/>
+  </message>
+  <!-- Available only after selecting openmdta.sbe-session.v2. Byte credit
+       charges each response application body plus 128 bytes of overhead. -->
+  <message name="ResponseWindow" id="5" blockLength="20" sinceVersion="1">
+    <field name="targetId" id="1" type="uint64" offset="0"/>
+    <field name="responses" id="2" type="uint32" offset="8"/>
+    <field name="bytes" id="3" type="uint32" offset="12"/>
+    <field name="maxBodyBytes" id="4" type="uint32" offset="16"/>
+  </message>
+  <message name="ReleaseResponses" id="6" blockLength="16" sinceVersion="1">
+    <field name="targetId" id="1" type="uint64" offset="0"/>
+    <field name="responses" id="2" type="uint32" offset="8"/>
+    <field name="bytes" id="3" type="uint32" offset="12"/>
+  </message>
+  <!-- Application envelope nested inside one continuing Response, never itself
+       nested inside another ResponseBatch. Preserve every inner format/body. -->
+  <message name="ResponseBatch" id="103" blockLength="0" sinceVersion="1">
+    <group name="messages" id="1" dimensionType="batchGroupSizeEncoding" blockLength="8">
+      <field name="format" id="2" type="sbeFormat" offset="0"/>
+      <data name="body" id="3" type="varDataEncoding"/>
+    </group>
+  </message>
+  <message name="Response" id="101" blockLength="17">
+    <field name="requestId" id="1" type="uint64" offset="0"/>
+    <field name="status" id="2" type="Status" offset="8"/>
+    <field name="format" id="3" type="sbeFormat" offset="9"/>
+    <data name="body" id="4" type="varDataEncoding"/>
+    <data name="error" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="CancelResponse" id="102" blockLength="17">
+    <field name="requestId" id="1" type="uint64" offset="0"/>
+    <field name="targetId" id="2" type="uint64" offset="8"/>
+    <field name="cancelled" id="3" type="uint8" offset="16"/>
+  </message>
+</messageSchema>

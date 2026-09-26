@@ -1,0 +1,55 @@
+{
+  "$defs": {
+    "Outcome": {
+      "enum": [
+        "not_applied",
+        "unknown"
+      ],
+      "type": "string"
+    },
+    "ServiceError": {
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "details": true,
+        "message": {
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/Outcome"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "outcome"
+      ],
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "error": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ServiceError"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "result": {
+      "default": null
+    }
+  },
+  "required": [
+    "ok"
+  ],
+  "title": "ResultEnvelope",
+  "type": "object"
+}

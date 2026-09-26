@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.openmdta.sdk.p_globex</groupId>
+  <artifactId>client</artifactId>
+  <version>0.0.0</version>
+  <name>OpenMDTA environment client</name>
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.outputTimestamp>2026-01-01T00:00:00Z</project.build.outputTimestamp>
+  </properties>
+  <dependencies>
+    <dependency><groupId>org.agrona</groupId><artifactId>agrona</artifactId><version>2.6.1</version></dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.21.4</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId><artifactId>exec-maven-plugin</artifactId><version>3.5.0</version>
+        <dependencies><dependency><groupId>uk.co.real-logic</groupId><artifactId>sbe-tool</artifactId><version>1.40.2</version></dependency></dependencies>
+        <executions><execution><id>sbe</id><phase>generate-sources</phase><goals><goal>java</goal></goals>
+          <configuration>
+            <mainClass>uk.co.real_logic.sbe.SbeTool</mainClass><includePluginDependencies>true</includePluginDependencies>
+            <systemProperties>
+              <systemProperty><key>sbe.output.dir</key><value>${project.build.directory}/generated-sources/sbe</value></systemProperty>
+              <systemProperty><key>sbe.target.language</key><value>Java</value></systemProperty>
+              <systemProperty><key>sbe.java.generate.interfaces</key><value>true</value></systemProperty>
+              <systemProperty><key>sbe.keyword.append.token</key><value>_</value></systemProperty>
+            </systemProperties>
+            <arguments><argument>${project.basedir}/src/main/sbe/catalog_0.xml</argument>
+<argument>${project.basedir}/src/main/sbe/catalog_1.xml</argument>
+<argument>${project.basedir}/src/main/sbe/catalog_2.xml</argument>
+<argument>${project.basedir}/src/main/sbe/catalog_3.xml</argument>
+<argument>${project.basedir}/src/main/sbe/catalog_protocol.xml</argument>
+<argument>${project.basedir}/src/main/sbe/gateway_protocol.xml</argument>
+<argument>${project.basedir}/src/main/sbe/keyfigures_protocol.xml</argument>
+<argument>${project.basedir}/src/main/sbe/mdtoken.xml</argument>
+<argument>${project.basedir}/src/main/sbe/sbe_websocket.xml</argument>
+<argument>${project.basedir}/src/main/sbe/service_protocol.xml</argument>
+<argument>${project.basedir}/src/main/sbe/stream_0.xml</argument>
+<argument>${project.basedir}/src/main/sbe/stream_protocol.xml</argument>
+<argument>${project.basedir}/src/main/sbe/timeseries_protocol.xml</argument>
+</arguments>
+          </configuration>
+        </execution></executions>
+      </plugin>
+      <plugin><groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId><version>3.6.1</version>
+        <executions><execution><id>sbe-sources</id><phase>generate-sources</phase><goals><goal>add-source</goal></goals><configuration><sources><source>${project.build.directory}/generated-sources/sbe</source></sources></configuration></execution></executions>
+      </plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.16.0</version><configuration><parameters>true</parameters></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><version>3.3.1</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.4</version></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.4.2</version><configuration><archive><manifestEntries><Automatic-Module-Name>com.openmdta.sdk.p_globex</Automatic-Module-Name></manifestEntries></archive></configuration></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.3.1</version><executions><execution><id>sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions></plugin>
+      <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-install-plugin</artifactId><version>3.1.4</version></plugin>
+    </plugins>
+  </build>
+</project>
