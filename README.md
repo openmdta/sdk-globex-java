@@ -71,28 +71,51 @@ history. The String overloads remain available for expressions outside the build
 
 ```java
 import com.openmdta.sdk.p_globex.*;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 try (var client = Client.connect(tokenBytes).join()) {
-    var dataset = client.dataset("YOUR_DATASET_ALIAS");
+    var dataset = client.datasetLus();
     var apple = MarketSelector.isin("US0378331005").venue("XNAS");
     try (var request = dataset.latest(apple, List.of(Blocks.BID_ASK), update -> {
-        if (update.cleared(Blocks.BID_ASK)) {
+        if (update.isBidAskCleared()) {
             // Delete the stored quote for update.recordKeyBytes().
             return;
         }
-        var quote = update.value(Blocks.BID_ASK); // inferred BidAskDecoder
-        if (quote != null) {
-            long price = quote.bid().price().mantissa();
-            byte exponent = quote.bid().price().exponent();
-            // Consume/store primitives before this callback returns.
-        }
+        update.bidAsk().ifPresent(quote -> quote.bid().ifPresent(bid -> {
+            BigDecimal price = bid.price();
+            long size = bid.size();
+            // quote, bid and price are immutable and safe to retain.
+        }));
     })) {
         request.completion().get(10, TimeUnit.SECONDS);
     }
 }
 ```
+
+Dataset methods are generated from this environment's aliases: `lus` becomes
+`client.datasetLus()`, and `us-quotes` becomes `client.datasetUsQuotes()`.
+The [codec index](codecs.md) lists the exact available methods. Generation rejects
+aliases that produce the same method name. `dataset(String)` remains available
+for dynamic selection. Generated methods select `RT` when configured, otherwise
+the first configured quality; use `.quality("DL")` to choose explicitly.
+
+`update.bidAsk()` returns an `Optional` containing an immutable record in the
+`model` package. Nested optional composites use `Optional`, optional numbers use
+`OptionalInt`, `OptionalLong` or `OptionalDouble`, and SBE decimals become exact
+`BigDecimal` values (`mantissa × 10^exponent`). Required members are direct values.
+Newer fixed fields absent in an older schema version return empty Optionals.
+Catalog values work the same way: `record.basicMasterdata().ifPresent(master ->
+use(master.name()))`. Repeated groups become immutable lists, strings become owned
+strings, and unsigned 64-bit values retain Java `long` bit patterns.
+
+These value accessors allocate on each call, materialize the selected value, and
+remain valid after the callback. `getBidAsk()` and `getBasicMasterdata()` retain
+their existing borrowed, allocation-free decoder API. For repeated Catalog fields,
+`forEachClassificationValue((key, value) -> ...)` supplies owned values; its key
+remains borrowed. Value names colliding with metadata methods gain a `Value`
+suffix, for example `listingValue()`; Java reserved member names gain `_`.
 
 `latestStream` uses the same typed callback for the initial state and subsequent
 updates. `timeseries(selector, from, through, blocks, listener)` uses `Instant`
@@ -100,21 +123,36 @@ bounds and the same typed values; a `MarketDataListener` can also implement
 `onGap(fromEventTimeMicros, throughEventTimeMicros)` for history coverage gaps.
 
 Each `MarketDataUpdate` is **one source message**, with a record key, dataset,
-message ID, snapshot flag and per-block event times. `value(Blocks.X)` returns
-the generated decoder type for X, or null if that block is absent/cleared.
-`changed(X)` and `cleared(X)` distinguish no change from deletion. Multiple blocks
-can be selected together; accessing an unselected descriptor fails locally.
-Decoders and buffers are allocated at request setup and reused on delivery.
+message ID, snapshot flag and per-block event times. Named getters are generated
+from this environment's schemas: `getBidAsk()` returns `Optional<BidAskDecoder>`.
+The same getters work in `latest`, `latestStream`, `timeseries`,
+`streamSubscribe`, `streamRecover`, `streamSnapshot` and Stream sink callbacks.
+All selected fields from a source message arrive together in one callback. A
+transport batch may contain many messages; it never turns their fields into
+independent updates. Field selection can omit fields, and latest snapshots contain
+the surviving latest fields grouped by their original message IDs.
+
+| This message's BidAsk state | `getBidAsk()` | `isBidAskChanged()` | `isBidAskCleared()` |
+| --- | --- | --- | --- |
+| Unchanged | empty | false | false |
+| New value | present | true | false |
+| Explicit clear | empty | true | true |
+
+Multiple blocks can be selected together. Accessing an unselected block, through
+a getter or a state flag, throws `IllegalArgumentException`; it does not return
+empty. Decoders, buffers and Optional containers are allocated at request setup
+and reused on delivery. Calling a getter does not allocate or copy the payload.
 There is no template-ID dispatch, decoder construction or cast in application code.
+Generic consumers can still use `value(Blocks.X)` (typed decoder or null),
+`changed(X)`, `cleared(X)` and `eventTimeMicros(X)`.
 
 ## Typed Catalog reads and subscriptions
 
 ```java
 dataset.read(apple, List.of(Fields.OPENMDTA__BASIC_MASTERDATA), record -> {
-    var master = record.value(Fields.OPENMDTA__BASIC_MASTERDATA);
-    if (record.exists() && master != null) {
-        String name = master.name(); // typed string accessor; deliberately allocates
-    }
+    record.basicMasterdata().ifPresent(master -> {
+        String name = master.name(); // owned, safe to retain
+    });
 });
 
 var subscription = dataset.catalogSubscribe(
@@ -127,9 +165,12 @@ var subscription = dataset.catalogSubscribe(
                 // Delete record.recordKeyBytes() from the current target store.
                 return;
             }
-            var master = record.value(Fields.OPENMDTA__BASIC_MASTERDATA);
             // Replace this record in the target store, including absent fields.
-            // Copy only the values you retain; record and master are borrowed.
+            record.basicMasterdata().ifPresent(master -> {
+                String name = master.name();
+                // Write name to the replacement record.
+            });
+            // The owned master value is safe to retain; record is borrowed.
         }
         @Override public void onSnapshotComplete(String cursor) {
             // Atomically publish the staging store and persist cursor.
@@ -148,12 +189,22 @@ replacements, not patches; `exists() == false` is a deletion. Lifecycle uses typ
 `Listing` / `Activity` enums (null when absent/not applicable), with visibility
 and primitive timestamps. Optional timestamp sentinels are documented on the API.
 
-`record.value(Fields.X)` returns X's generated decoder or null when absent.
-For fields with multiple subfields, use
-`record.forEachValue(Fields.X, (subfieldBytes, value) -> { ... })`; both arguments
-are borrowed. `value` rejects multi-valued fields instead of dropping entries.
+`record.getBasicMasterdata()` returns `Optional<BasicMasterdataDecoder>`, empty
+when the field is absent or the record is deleted. Named getters also work in
+`Feeds.CatalogSink.write(record)`. Accessing an unselected field throws
+`IllegalArgumentException`, even on a deleted record.
+
+For fields with multiple subfields, use the generated
+`record.forEachClassification((subfieldBytes, value) -> { ... })`; both arguments
+are borrowed. Single-value getters reject repeated/subfield values with
+`IllegalStateException` instead of dropping entries. Generic consumers can use
+`record.value(Fields.X)` (typed decoder or null) and `record.forEachValue(Fields.X, consumer)`.
 Omit field selection with `List.of()` to receive all fields; `Fields.ALL` is the
 generated codec inventory. These APIs use the exact environment's owner schemas.
+The [codec index](codecs.md) lists every named getter. Catalog message names shared
+by multiple namespaces receive a namespace prefix, for example
+`getOpenmdtaListing()` and `getVendorListing()`. A message named `Class` uses
+`getClass_()` to avoid Java's inherited `getClass()` method.
 Catalog and Stream subscriptions have no ordering relationship to each other.
 
 ## Cancellation and callback lifetime
@@ -180,59 +231,58 @@ buffering/asynchronous operators require owned values: copy selected primitives
 into a bounded application queue first. Do not publish these mutable borrowed
 views as retainable events. There is no automatic reconnect or retry.
 
-## Low-level Stream access
+## Typed source-wide Stream access
 
-For source-wide subscriptions, recovery, and manual protocol handling, the
-low-level Stream commands still expose `Response` and `BatchView`:
+A lambda receives one complete `MarketDataUpdate`. Implement `StreamListener`
+when you also need source coverage controls:
 
 ```java
-import com.openmdta.sdk.p_globex.*;
-import java.util.List;
-
-var quote = Blocks.BID_ASK.decoder().get(); // allocate once
-var batch = new BatchView();              // reuse for every delivery
-BatchView.FieldConsumer consume = (messageId, field) -> {
-    if (field.clear()) {
-        // Remove this block's previous value in your store.
-        return;
+var subscription = dataset.streamSubscribe(List.of(Blocks.BID_ASK), new StreamListener() {
+    @Override public void onUpdate(MarketDataUpdate message) {
+        message.bidAsk().ifPresent(quote -> quote.bid().ifPresent(bid -> {
+            BigDecimal price = bid.price();
+            // Commit this message's selected fields together with message.messageId().
+        }));
     }
-    field.decode(Blocks.BID_ASK, quote);
-    long mantissa = quote.bid().price().mantissa();
-    byte exponent = quote.bid().price().exponent();
-    // Store primitive values, or finish using this view before returning.
-};
-
-try (var client = Client.connect(tokenBytes).join()) {
-    try (var request = client.dataset("YOUR_DATASET_ALIAS")
-            .streamSubscribe(List.of(Blocks.BID_ASK), response -> {
-                if (response.templateId() == 108) {
-                    batch.wrap(response).forEachField(consume);
-                } else {
-                    // Decode FeedControl using a reusable generated decoder.
-                    // Controls carry the subscription fence, gaps and coverage.
-                }
-            })) {
-        request.completion().join();
-    }
-}
+    @Override public void onFence(long throughMessageId) { /* initial live boundary */ }
+    @Override public void onGap(long afterMessageId, long throughMessageId) { /* repair (after, through] */ }
+    @Override public void onWatermark(long afterMessageId, long throughMessageId) { /* confirmed coverage */ }
+});
+// Keep the handle until shutdown, then close it.
+subscription.close();
 ```
 
+`streamRecover(start, end, blocks, listener)` delivers messages in `(start, end]`.
+`streamSnapshot(blocks, listener)` calls `onSnapshotBegin(throughMessageId)`,
+`onSnapshotGap(afterMessageId, throughMessageId)` for any coverage gaps, then
+`onUpdate` for snapshot messages and `onSnapshotComplete()` before completing.
+Stream coverage uses source message IDs; `MarketDataListener.onGap` for history
+uses event times. Use `streamFeed` when you want the SDK to coordinate snapshot,
+live delivery, recovery and durable checkpoints.
+
+Protocol envelopes, template dispatch and transport callbacks are internal to
+the SDK. Client code never constructs a batch decoder or checks a template ID.
+
 Use the real alias and an available block from the linked environment/codec
-index. Different environments expose different blocks. Use generated primitive
-null-value constants to distinguish an absent optional price; a composite
+index. Different environments expose different blocks. When using the borrowed
+`getX()` decoder API, use generated primitive null-value constants to distinguish an absent optional price; a composite
 flyweight itself is never Java `null`. See the original owner XML for composite
-presence conventions. Decimal values stay as mantissa/exponent, and `uint64`
+presence conventions. Decoder decimal values stay as mantissa/exponent, and `uint64`
 IDs stay as Java `long` bit patterns: use `Long.compareUnsigned` and
 `Long.toUnsignedString`, never floating-point conversion. `BigDecimal`, strings
 and retained records are application choices.
 
-`MarketDataUpdate`, `CatalogRecord`, `Response`, `BatchView`, `BatchView.Field`, generated decoders and every buffer
+`MarketDataUpdate`, `CatalogRecord`, generated decoders and every buffer
 obtained from them are **borrowed until the callback returns**. They are mutable
-and reused, not thread-safe. Do not retain them, hand them to an executor, or
+and reused, not thread-safe. An `Optional` from a borrowed `getX()` getter contains that same
+borrowed decoder: retaining the Optional does **not** preserve its value. Getters
+rewind decoders for another traversal, so consume a value before calling its getter
+again. Do not retain borrowed values, hand them to an executor, or
 block waiting for another request on the same connection. For asynchronous work,
-copy the fields you need into your own bounded queue, or call `response.copy()`
-for an owned binary body. The latter deliberately allocates. For direct SBE use,
-`response.decode(yourReusableDecoder)` wraps the headerless application body.
+copy the values you need into your own bounded queue, or call `message.copy()` /
+`record.copy()` for an independent typed message/record, including metadata and
+all its selected fields. These copies deliberately allocate. Their SBE decoders
+remain mutable: use each owned copy from one thread at a time.
 Read groups/variable data in schema order; wrap/rewind before a second traversal.
 Use `wrapPayload(buffer)` / other `wrapX` accessors to borrow variable data;
 `getX(byte[])`, string accessors and `toString()` copy or allocate.
@@ -240,10 +290,13 @@ Use `wrapPayload(buffer)` / other `wrapX` accessors to borrow variable data;
 Unfragmented WebSocket buffers, session bodies and owner payloads are viewed
 without copying. Fragmented messages are copied into a bounded buffer reused
 across messages; it grows only when a larger message arrives. Decoding and batch
-iteration allocate no objects after initialization. This is **not a claim that
+iteration and borrowed `getX()` getters allocate no objects after initialization.
+Owned value accessors such as `bidAsk()` allocate records, Optionals and decimals. Application
+code such as Optional `map` chains, capturing lambdas and string accessors may
+allocate. This is **not a claim that
 network delivery allocates nothing**: JDK HTTP/WebSocket/TLS, request setup,
 credit sends (per consumed transport batch with v2, per 32 responses with v1), JSON controls, errors and explicit
-copies can allocate. There is no per-message SDK queue or map/record conversion.
+copies can allocate. There is no per-message SDK queue or automatic record conversion.
 Callbacks run serially and apply connection-wide backpressure. Use separate
 connections when a slow durable sink should not delay unrelated subscriptions.
 
@@ -252,22 +305,20 @@ connections when a slow durable sink should not delay unrelated subscriptions.
 - `latest(selector, blocks, listener)`, `latestStream(...)` and
   `timeseries(selector, from, through, blocks, listener)` deliver typed borrowed
   `MarketDataUpdate` views.
-- `streamSubscribe(blocks, listener)` delivers batches and fence/gap/watermark
-  controls. `streamRecover(start, end, blocks, listener)` covers `(start, end]`.
-  `streamSnapshot(blocks, listener)` starts with a snapshot header, then batches.
+- `streamSubscribe(blocks, listener)` delivers typed messages and named
+  fence/gap/watermark callbacks. `streamRecover(start, end, blocks, listener)`
+  covers `(start, end]`. `streamSnapshot(blocks, listener)` delivers typed
+  snapshot boundaries and messages.
 - `read(selector, fields, listener)` / `read(identifiers, fields, listener)` read
   typed `CatalogRecord` views. `catalogSubscribe(fields, cursor, listener)` delivers
   them with named snapshot and cursor callbacks. The cursor may be null; stale WAL history may cause
   a new snapshot. There is no `catalogRecover` or `catalogSnapshot` command.
 - `dataset.quality("DL")` / `quality("EOD")` selects configured Stream/history
-  request quality. `metadata(listener)` queries that source.
-- `client.request(operationName, generatedEncoder, listener)` covers **every**
-  advertised operation, including candles, pagination, listing, search,
-  keyfigures and service calls. Build exactly the JSON body/fingerprint from
-  [the operation contract](manual/operations/index.md); runtime capability and
-  authorization checks still apply. The encoder body is copied before return,
-  so its buffer can then be reused. `client.get(pathAndQuery)` is an allocating
-  HTTP/JSON convenience API scoped to this environment.
+  request quality.
+- `metadata(listener)` delivers the source metadata as a Jackson `JsonNode`.
+  `client.get(pathAndQuery)` is an allocating HTTP/JSON convenience API scoped
+  to this environment. Other operations in the environment's manual contract
+  do not yet have Java wrappers; there is no public raw request escape hatch.
 
 `Request.completion()` completes on DONE and fails on server/transport/callback
 errors. Closing a request cancels it. Closing a client fails its active requests.
@@ -304,6 +355,11 @@ retry of an ambiguous mutation or an unbounded transport queue. The optional
 allocate, and have no capacity limit or restart durability. Inspect their state
 only while delivery is stopped, or arrange external synchronization.
 
+For Stream memory, `records.get(key).get(Blocks.BID_ASK)` is the owned message
+that last updated that block. Its other fields belong to that same original
+message; they are not a synthesized current record. Catalog memory stores owned
+`CatalogRecord` values with the same typed getters as callback records.
+
 ## Schemas and reproducibility
 
 [Original XML](manual/schemas/README.md) is bundled unchanged, including every
@@ -320,7 +376,7 @@ as zero-copy `wrapX` accessors. Runtime binary payload encodings are unchanged.
 
 SBE's generated owner encoders are available alongside decoders. Stream batch
 payloads omit the SBE header; Catalog owner payloads start with the native
-four-byte blockLength/version prefix. `CatalogField.wrap` handles that prefix
+four-byte blockLength/version prefix. The internal Catalog adapter handles that prefix
 without copying. Encoding or decoding a field does not grant write permission;
 use only operations advertised by this environment.
 
@@ -328,6 +384,6 @@ use only operations advertised by this environment.
 Feed requests negotiate SBE session v2 count/byte windows when supported, with
 v1 fallback. Each feed reserves 8 MiB within a 64 MiB connection allowance and
 permits 16 outstanding responses. Batched responses are delivered in wire order
-through the same borrowed response views. Credits are returned only after all
+as complete borrowed messages in the same order. Credits are returned only after all
 callbacks in the batch finish; they are unrelated to rate limits or durable
 resume pointers.

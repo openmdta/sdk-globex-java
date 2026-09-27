@@ -2,9 +2,6 @@ package com.openmdta.sdk.p_globex;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import org.agrona.DirectBuffer;
-import org.agrona.concurrent.UnsafeBuffer;
-import com.openmdta.sdk.p_globex.sbe.gateway_protocol.*;
 
 /** Sink workflows. Sink methods are synchronous and finish before credits are replenished. */
 public final class Feeds {
@@ -18,7 +15,7 @@ public final class Feeds {
     public interface StreamSink {
         Resume resume() throws Exception;
         /** Commit each source message atomically. Ignore older/duplicate values per record AND block. */
-        void write(BatchView batch) throws Exception;
+        void write(MarketDataUpdate update) throws Exception;
         /** Atomically persist coverage, open gaps and bootstrap state, after all preceding data. */
         void checkpoint(Resume state) throws Exception;
     }
@@ -38,72 +35,50 @@ public final class Feeds {
         private final Dataset dataset;
         private final List<? extends Block<?>> blocks;
         private final StreamSink sink;
-        private final BatchView batch = new BatchView();
-        private final FeedControlDecoder control = new FeedControlDecoder();
-        private final FeedSnapshotHeaderDecoder snapshot = new FeedSnapshotHeaderDecoder();
-        private final UnsafeBuffer text = new UnsafeBuffer(0, 0);
         private final ArrayList<Gap> gaps = new ArrayList<>();
         private final ArrayList<Request> active = new ArrayList<>();
         private final CompletableFuture<Void> completion = new CompletableFuture<>();
         private long head, fence, snapshotHead;
-        private boolean initialized, hadResume, fenceSeen, snapshotSeen, snapshotDone, bootstrapScheduled, recovering, stopped;
+        private boolean initialized, hadResume, fenceSeen, snapshotDone, bootstrapScheduled, recovering, stopped;
         Stream(Dataset dataset, List<? extends Block<?>> blocks, StreamSink sink) {
             this.dataset = dataset; this.blocks = blocks; this.sink = sink;
             synchronized (dataset.client) {
                 try {
                     Resume resume = sink.resume();
                     if (resume != null) { hadResume = true; head = resume.through(); initialized = resume.initialized(); gaps.addAll(resume.gaps()); }
-                    Request live = dataset.streamSubscribe(blocks, this::live);
+                    Request live = dataset.streamSubscribe(blocks, new StreamListener() {
+                        @Override public void onUpdate(MarketDataUpdate update) throws Exception { sink.write(update); }
+                        @Override public void onFence(long through) throws Exception {
+                            fenceSeen = true; fence = through;
+                            if (!hadResume) { head = through; sink.checkpoint(new Resume(head, gaps, initialized)); }
+                            else if (Long.compareUnsigned(head, fence) < 0) open(new Gap(head, fence));
+                            advance();
+                        }
+                        @Override public void onGap(long after, long through) throws Exception {
+                            open(new Gap(after, through));
+                            advance();
+                        }
+                        @Override public void onWatermark(long after, long through) throws Exception {
+                            if (Long.compareUnsigned(through, head) > 0) { head = through; sink.checkpoint(new Resume(head, gaps, initialized)); }
+                            advance();
+                        }
+                    });
                     active.add(live);
                     live.completion().whenComplete((ignored, error) -> { if (!stopped) fail(error == null ? new IllegalStateException("Stream subscription ended") : error); });
                     if (!initialized) {
-                        Request request = dataset.streamSnapshot(blocks, this::snapshot);
+                        Request request = dataset.streamSnapshot(blocks, new StreamListener() {
+                            @Override public void onUpdate(MarketDataUpdate update) throws Exception { sink.write(update); }
+                            @Override public void onSnapshotBegin(long through) { snapshotHead = through; }
+                            @Override public void onSnapshotGap(long after, long through) throws Exception { open(new Gap(after, through)); }
+                            @Override public void onSnapshotComplete() throws Exception { snapshotDone = true; advance(); }
+                        });
                         active.add(request);
                         request.completion().whenComplete((ignored, error) -> {
-                            if (stopped) return;
-                            if (error != null) { fail(error); return; }
-                            try {
-                                if (!snapshotSeen) throw new IllegalStateException("Snapshot ended without header");
-                                snapshotDone = true; advance();
-                            } catch (Throwable failure) { fail(failure); }
+                            if (!stopped && error != null) fail(error);
                         });
                     }
                 } catch (Throwable failure) { fail(failure); }
             }
-        }
-        private void live(Response response) throws Exception {
-            if (response.templateId() == FeedControlDecoder.TEMPLATE_ID) {
-                response.decode(control); control.wrapDataset(text); checkDataset(text);
-                long after = control.afterMessageId(), through = control.throughMessageId();
-                if (!fenceSeen) {
-                    if (control.kind() != 1) throw new IllegalArgumentException("Stream must begin with a fence");
-                    fenceSeen = true; fence = through;
-                    if (!hadResume) { head = through; sink.checkpoint(new Resume(head, gaps, initialized)); }
-                    else if (Long.compareUnsigned(head, fence) < 0) open(new Gap(head, fence));
-                } else if (control.kind() == 2) open(new Gap(after, through));
-                else if (control.kind() == 3) {
-                    if (Long.compareUnsigned(through, head) > 0) { head = through; sink.checkpoint(new Resume(head, gaps, initialized)); }
-                } else throw new IllegalArgumentException("Unexpected Stream control");
-                advance();
-            } else {
-                if (!fenceSeen) throw new IllegalArgumentException("Data before subscription fence");
-                batch.wrap(response); checkDataset(batch.datasetBytes()); sink.write(batch);
-            }
-        }
-        private void snapshot(Response response) throws Exception {
-            if (!snapshotSeen) {
-                response.decode(snapshot); snapshotHead = snapshot.throughMessageId(); snapshotSeen = true;
-                var missing = snapshot.gaps();
-                if (missing.count() < 0 || missing.count() > response.body().capacity() / 16) throw new IllegalArgumentException("Invalid snapshot gap group");
-                while (missing.hasNext()) { missing.next(); open(new Gap(missing.afterMessageId(), missing.throughMessageId())); }
-                snapshot.wrapDataset(text); checkDataset(text);
-            } else {
-                batch.wrap(response); checkDataset(batch.datasetBytes()); sink.write(batch);
-            }
-        }
-        private void checkDataset(DirectBuffer actual) {
-            if (actual.capacity() != dataset.dataset.length) throw new IllegalArgumentException("Dataset mismatch");
-            for (int i = 0; i < actual.capacity(); i++) if (actual.getByte(i) != dataset.dataset[i]) throw new IllegalArgumentException("Dataset mismatch");
         }
         private void open(Gap gap) throws Exception {
             if (!gaps.contains(gap)) gaps.add(gap);
@@ -119,10 +94,7 @@ public final class Feeds {
             if (!recovering && !gaps.isEmpty()) {
                 recovering = true;
                 Gap gap = gaps.get(0);
-                Request recovery = dataset.streamRecover(gap.after(), gap.through(), blocks, response -> {
-                    // An unexpected control must not silently turn a missing interval into coverage.
-                    batch.wrap(response); checkDataset(batch.datasetBytes()); sink.write(batch);
-                });
+                Request recovery = dataset.streamRecover(gap.after(), gap.through(), blocks, sink::write);
                 active.add(recovery);
                 recovery.completion().whenComplete((ignored, error) -> {
                     active.remove(recovery);
@@ -174,28 +146,29 @@ public final class Feeds {
     }
     /** Allocating process-local convenience sink. Use a custom sink for a bounded durable store. */
     public static final class MemoryStream implements StreamSink, AutoCloseable {
-        public record Value(long messageId, long eventTimeMicros, Format format, boolean clear, byte[] payload) {}
-        public final Map<String, Map<Integer, Value>> records = new LinkedHashMap<>();
+        /** Last accepted source message for each record and selected block, retaining explicit clears. */
+        public final Map<String, Map<Block<?>, MarketDataUpdate>> records = new LinkedHashMap<>();
         private Resume state;
         public Stream handle;
         @Override public Resume resume() { return state; }
-        @Override public void write(BatchView batch) {
-            Map<Integer, Value> values = records.computeIfAbsent(batch.recordKey(), ignored -> new LinkedHashMap<>());
-            batch.forEachField((id, field) -> {
-                int key = (field.schemaId() << 16) | field.templateId();
-                Value previous = values.get(key);
-                if (previous != null && Long.compareUnsigned(previous.messageId(), id) >= 0) return;
-                byte[] bytes = new byte[field.payload().capacity()]; field.payload().getBytes(0, bytes);
-                values.put(key, new Value(id, field.eventTimeMicros(), new Format(field.schemaId(), field.templateId(), field.version(), field.blockLength()), field.clear(), bytes));
-            });
+        @Override public void write(MarketDataUpdate update) {
+            Map<Block<?>, MarketDataUpdate> values = records.computeIfAbsent(update.recordKey(), ignored -> new LinkedHashMap<>());
+            MarketDataUpdate owned = null;
+            for (Block<?> block : update.selection) {
+                if (!update.changed(block)) continue;
+                MarketDataUpdate previous = values.get(block);
+                if (previous != null && Long.compareUnsigned(previous.messageId(), update.messageId()) >= 0) continue;
+                if (owned == null) owned = update.copy();
+                values.put(block, owned);
+            }
         }
         @Override public void checkpoint(Resume resume) { state = resume; }
         @Override public void close() { if (handle != null) handle.close(); }
     }
     /** Allocating whole-record store with atomic staging-map replacement. */
     public static final class MemoryCatalog implements CatalogSink, AutoCloseable {
-        public Map<String, Response.Owned> records = new LinkedHashMap<>();
-        private Map<String, Response.Owned> staging;
+        public Map<String, CatalogRecord> records = new LinkedHashMap<>();
+        private Map<String, CatalogRecord> staging;
         private String cursor;
         public Catalog handle;
         @Override public String resume() { return cursor; }
@@ -203,7 +176,7 @@ public final class Feeds {
         @Override public void snapshotBegin() { staging = new LinkedHashMap<>(); }
         @Override public void write(CatalogRecord record) {
             String id = record.recordKey();
-            Map<String, Response.Owned> target = staging == null ? records : staging;
+            Map<String, CatalogRecord> target = staging == null ? records : staging;
             if (!record.exists()) target.remove(id); else target.put(id, record.copy());
         }
         @Override public void snapshotComplete(String value) {

@@ -2,7 +2,7 @@
 
 Continues until cancelled/error. Carry the request in a session OpenRequest, and route responses by request ID. See [session](../session.md) and [encoding](../encoding.md).
 
-The parameters JSON object is {dataset:string,quality:string,key:string,blocks:number[]}. Quality is RT/DL/EOD; key is a nonempty exact record key up to 1024 bytes; blocks contains 1..64 deployed field IDs. Response event JSON contains source (same selector), incarnation:string, snapshot:boolean, connected:boolean, and blocks:[{id,messageId:string,eventUs:string,clear:boolean,requirements,payload:number[]}]. The payload is a native universe body including its 4-byte blockLength/version prefix. uint64 values use decimal strings. Treat incarnation/disconnect changes as a reset of subscription continuity.
+ListingLatestRequest is typed SBE: a group of 1..64 uint16 field IDs, then UTF-8 dataset, quality, and exact record key. Quality is RT/DL/EOD; key is at most 1024 bytes. ListingLatestEvent is typed SBE: snapshot and connected bytes; source field-ID group; block group with uint16 ID, uint64 message ID and event microseconds, clear byte, nested qualified-license clause group, and native payload; then source dataset, quality, key and incarnation. License clause rows sharing an index form an OR; distinct indexes form an AND. An empty namespace/license row is Public. Payload includes the native universe 4-byte blockLength/version prefix. Treat incarnation/disconnect changes as a reset of subscription continuity.
 
 ## Request: ListingLatestRequest
 

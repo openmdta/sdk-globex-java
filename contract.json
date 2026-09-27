@@ -13,7 +13,13 @@
         ],
         "pluginSha256": "becef3688461fbbc9d9edeb1806541e78a50175dd158207c3daacc7f5c57299d",
         "qualities": {},
-        "fields": {}
+        "fields": {},
+        "catalogFields": {
+          "globexDisplayName": {
+            "label": "display_name",
+            "semantic": "globex::DisplayName"
+          }
+        }
       },
       "lus": {
         "id": "LUS@lus",
@@ -33,6 +39,12 @@
         "fields": {
           "openmdta::BidAsk": 10,
           "openmdta::BidAskCandle": 12
+        },
+        "catalogFields": {
+          "instrumentNames": {
+            "label": "instrument_names",
+            "semantic": "openmdta::InstrumentNames"
+          }
         }
       },
       "xetra": {
@@ -42,7 +54,57 @@
         ],
         "pluginSha256": "623758df1df60e6d8ee785767db74f444030dbb3c922a02544ca98026dab3071",
         "qualities": {},
-        "fields": {}
+        "fields": {},
+        "catalogFields": {
+          "classification": {
+            "label": "classification",
+            "semantic": "openmdta::Classification"
+          },
+          "instrumentNames": {
+            "label": "instrument_names",
+            "semantic": "openmdta::InstrumentNames"
+          },
+          "listingClassification": {
+            "label": "listing_classification",
+            "semantic": "openmdta::ListingClassification"
+          },
+          "listingOrderSize": {
+            "label": "listing_order_size",
+            "semantic": "openmdta::ListingOrderSize"
+          },
+          "listingQuotation": {
+            "label": "listing_quotation",
+            "semantic": "openmdta::ListingQuotation"
+          },
+          "listingQuoteParameters": {
+            "label": "listing_quote_parameters",
+            "semantic": "openmdta::ListingQuoteParameters"
+          },
+          "listingTickSchedule": {
+            "label": "listing_tick_schedule",
+            "semantic": "openmdta::ListingTickSchedule"
+          },
+          "listingTradingDates": {
+            "label": "listing_trading_dates",
+            "semantic": "openmdta::ListingTradingDates"
+          },
+          "listingTradingRules": {
+            "label": "listing_trading_rules",
+            "semantic": "openmdta::ListingTradingRules"
+          },
+          "listingVenue": {
+            "label": "listing_venue",
+            "semantic": "openmdta::ListingVenue"
+          },
+          "xetraXetraListing": {
+            "label": "xetra_listing",
+            "semantic": "xetra::XetraListing"
+          },
+          "xetraXetraMarketDetails": {
+            "label": "xetra_market_details",
+            "semantic": "xetra::XetraMarketDetails"
+          }
+        }
       }
     },
     "services": {

@@ -18,7 +18,7 @@ import org.agrona.sbe.MessageEncoderFlyweight;
 import com.openmdta.sdk.p_globex.sbe.sbe_websocket.*;
 
 /** One authenticated connection. Callbacks borrow transport bytes and run serially. */
-public final class Client implements AutoCloseable, WebSocket.Listener {
+public final class Client implements AutoCloseable {
     private static final CompletionStage<Void> CONSUMED = CompletableFuture.completedFuture(null);
     private static final int MAX_FRAME = Contract.ROOT.path("runtime").path("limits").path("websocketMessageBytes").asInt();
     private static final int MAX_BODY = Contract.ROOT.path("runtime").path("limits").path("applicationBodyBytes").asInt();
@@ -38,10 +38,54 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
     private final Response response = new Response();
     private ByteBuffer fragments;
     private WebSocket socket;
-    private boolean closed;
+    boolean closed;
     private long sequence = 2, lastHeartbeat = System.nanoTime();
     private CompletableFuture<Void> sending = CompletableFuture.completedFuture(null);
     private int queuedSendBytes;
+
+    private final WebSocket.Listener transport = new WebSocket.Listener() {
+        @Override public void onOpen(WebSocket webSocket) {
+            synchronized (Client.this) {
+                socket = webSocket;
+                if (closed) socket.abort(); else socket.request(1);
+            }
+        }
+        @Override public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
+            synchronized (Client.this) {
+                if (closed) return CONSUMED;
+                try {
+                    int accumulated = fragments == null ? 0 : fragments.position();
+                    int length = Math.addExact(accumulated, data.remaining());
+                    if (length > MAX_FRAME) throw new IOException("Oversized WebSocket message");
+                    if (accumulated == 0 && last) {
+                        incoming.wrap(data, data.position(), data.remaining());
+                    } else {
+                        if (fragments == null || fragments.capacity() < length) {
+                            ByteBuffer grown = ByteBuffer.allocate(Math.min(MAX_FRAME, Math.max(length, fragments == null ? 65536 : fragments.capacity() * 2)));
+                            if (fragments != null) { fragments.flip(); grown.put(fragments); }
+                            fragments = grown;
+                        }
+                        fragments.put(data);
+                        if (!last) { webSocket.request(1); return CONSUMED; }
+                        incoming.wrap(fragments, 0, fragments.position());
+                    }
+                    dispatch(incoming);
+                    if (fragments != null) fragments.clear();
+                } catch (Throwable error) { fail(error); }
+                if (!closed) webSocket.request(1);
+                return CONSUMED;
+            }
+        }
+        @Override public CompletionStage<?> onText(WebSocket socket, CharSequence text, boolean last) {
+            fail(new IOException("Unexpected WebSocket text message"));
+            return CONSUMED;
+        }
+        @Override public CompletionStage<?> onClose(WebSocket socket, int code, String reason) {
+            fail(new IOException("Gateway disconnected (" + code + "): " + reason));
+            return CONSUMED;
+        }
+        @Override public void onError(WebSocket socket, Throwable error) { fail(error); }
+    };
 
     private Client(HttpClient http, Supplier<? extends CompletionStage<byte[]>> tokens) {
         this.http = java.util.Objects.requireNonNull(http);
@@ -56,7 +100,7 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
         try {
             tokens.get().thenCompose(bytes -> {
                 if (bytes == null || bytes.length == 0 || bytes.length > 64 * 1024) throw new IllegalArgumentException("Invalid token length");
-                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL, Contract.ROOT.path("runtime").path("subprotocol").asText()).buildAsync(Environment.WEBSOCKET, client).thenAccept(socket -> {
+                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL, Contract.ROOT.path("runtime").path("subprotocol").asText()).buildAsync(Environment.WEBSOCKET, client.transport).thenAccept(socket -> {
                     UnsafeBuffer buffer = new UnsafeBuffer(new byte[20 + bytes.length]);
                     AuthRequestEncoder auth = new AuthRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
                     auth.requestId(1).putToken(bytes, 0, bytes.length);
@@ -75,6 +119,16 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
         }
         return client.ready;
     }
+    public Dataset datasetGlobex() {
+        return dataset("globex");
+    }
+    public Dataset datasetLus() {
+        return dataset("lus").quality("DL");
+    }
+    public Dataset datasetXetra() {
+        return dataset("xetra");
+    }
+
     public Dataset dataset(String alias) {
         JsonNode binding = Contract.ROOT.path("environment").path("datasets").get(alias);
         if (binding == null) throw new IllegalArgumentException("Dataset not exposed by this environment: " + alias);
@@ -82,7 +136,7 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
     }
 
     /** Encode with a generated SBE encoder; this copies its completed body before returning. */
-    public synchronized Request request(String operation, MessageEncoderFlyweight encoder, Request.Listener listener) {
+    synchronized Request request(String operation, MessageEncoderFlyweight encoder, Request.Listener listener) {
         if (closed || !ready.isDone() || ready.isCompletedExceptionally()) throw new IllegalStateException("Client is not connected");
         if (pending.size() >= Contract.ROOT.path("runtime").path("limits").path("activeRequests").asInt(64)) throw new IllegalStateException("Too many active requests");
         Format format = Contract.OPERATIONS.get(operation);
@@ -101,6 +155,7 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
             if ((long) reservedWindowBytes + WINDOW_BYTES > 64 * 1024 * 1024) throw new IllegalStateException("Connection feed buffer capacity reached");
             reservedWindowBytes += WINDOW_BYTES;
         }
+        listener.onRegistered(request);
         pending.put(id, request);
         send(buffer.byteArray());
         if (request.windowed) {
@@ -138,34 +193,6 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
         sending.whenComplete((ignored, error) -> {
             synchronized (this) { queuedSendBytes -= bytes.length; if (error != null) fail(error); }
         });
-    }
-    @Override public synchronized void onOpen(WebSocket webSocket) {
-        socket = webSocket;
-        if (closed) socket.abort(); else socket.request(1);
-    }
-    @Override public synchronized CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        if (closed) return CONSUMED;
-        try {
-            int accumulated = fragments == null ? 0 : fragments.position();
-            int length = Math.addExact(accumulated, data.remaining());
-            if (length > MAX_FRAME) throw new IOException("Oversized WebSocket message");
-            if (accumulated == 0 && last) {
-                incoming.wrap(data, data.position(), data.remaining());
-            } else {
-                if (fragments == null || fragments.capacity() < length) {
-                    ByteBuffer grown = ByteBuffer.allocate(Math.min(MAX_FRAME, Math.max(length, fragments == null ? 65536 : fragments.capacity() * 2)));
-                    if (fragments != null) { fragments.flip(); grown.put(fragments); }
-                    fragments = grown;
-                }
-                fragments.put(data);
-                if (!last) { webSocket.request(1); return CONSUMED; }
-                incoming.wrap(fragments, 0, fragments.position());
-            }
-            dispatch(incoming);
-            if (fragments != null) fragments.clear();
-        } catch (Throwable error) { fail(error); }
-        if (!closed) webSocket.request(1);
-        return CONSUMED;
     }
     private void dispatch(DirectBuffer frame) throws Exception {
         frame.boundsCheck(0, MessageHeaderDecoder.ENCODED_LENGTH);
@@ -211,7 +238,10 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
                     if (offset != body.capacity()) throw new IOException("Batch has trailing bytes");
                 } else deliver(target, format.schemaId(), format.templateId(), format.version(), format.blockLength(), body);
             }
+            if (target.closed || closed) return;
             if (status == Status.DONE) {
+                target.listener.onComplete();
+                if (target.closed || closed) return;
                 if (pending.remove(id) != null && target.windowed) reservedWindowBytes -= WINDOW_BYTES;
                 target.closed = true; target.completion.complete(null);
             } else if (target.windowed && pending.containsKey(id)) {
@@ -235,16 +265,6 @@ public final class Client implements AutoCloseable, WebSocket.Listener {
         response.wrap(schema, template, version, fixed, bytes);
         target.listener.onResponse(response);
     }
-    @Override public CompletionStage<?> onText(WebSocket socket, CharSequence text, boolean last) {
-        fail(new IOException("Unexpected WebSocket text message"));
-        return CONSUMED;
-    }
-    @Override public CompletionStage<?> onClose(WebSocket socket, int code, String reason) {
-        fail(new IOException("Gateway disconnected (" + code + "): " + reason));
-        return CONSUMED;
-    }
-    @Override public void onError(WebSocket socket, Throwable error) { fail(error); }
-
     /** Allocating HTTP/JSON convenience API. Token supplier is consulted for every call. */
     public CompletableFuture<JsonNode> get(String pathAndQuery) {
         var uri = Environment.HTTP.resolve(pathAndQuery);

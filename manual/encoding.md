@@ -54,12 +54,26 @@ bytes are zero. A zero mantissa with a regular exponent is a present zero price.
 
 ## MarketDataMessageBatch
 
+The delivery unit is a **message**, containing metadata and its selected fields.
+Iterate `batch.messages`, then each message's fields, and apply those fields
+together. Never publish independent field events or combine fields from different
+message IDs. A transport batch is only a container for several messages.
+
+The indexed message/field tables below are a physical encoding of that hierarchy.
+The producer emits one instrument update with its message ID and blocks; the
+gateway preserves that grouping through projection and batching. Dataset, record
+key and phase are shared by the messages in this batch; message ID belongs to the
+message, and event time belongs to each field. Selection and permissions can
+remove fields. A latest snapshot contains the surviving latest fields grouped by
+their original message IDs, rather than reconstructing every historical field.
+
 This response carries three groups: message descriptors, field descriptors and
 event-time gaps, then record key, dataset and payload bytes. Each message's
 `firstField` and `fieldCount` select a contiguous slice of the field group.
 Each field's offset/length selects bytes in the final payload blob. Bounds-check
 both slices. Dispatch owner payloads by `(schemaId, templateId)` and use their
-acting version/block length. Preserve the enclosing message ID and timestamp.
+acting version/block length. Preserve the enclosing message ID and each field's
+event timestamp.
 
 The transport's `eventTimeMicros` is separate from the owner payload. The
 TypeScript convenience codec may prepend this timestamp internally; that extra

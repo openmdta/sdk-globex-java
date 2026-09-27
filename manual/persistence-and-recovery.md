@@ -77,10 +77,11 @@ an empty string when no state exists. Keep the cursor as an opaque UTF-8 string
 of at most 4096 bytes. Scope it by environment, dataset, field selection and
 credential permissions. It is not a Stream message ID or an event timestamp.
 
-The server sends `CatalogFeedControl` JSON and `CatalogRecord` bodies on the same
-request, in order. JSON wire kinds use underscores:
+The server sends typed `CatalogFeedControl` and `CatalogRecord` SBE bodies on the same
+request, in order. The control kind is a `uint8` followed by one UTF-8 cursor
+member (empty only for kind 1):
 
-1. `{"kind":"snapshot_begin"}`: discard any unfinished staging table and start
+1. Kind 1, snapshot begin: discard any unfinished staging table and start
    a new empty one. Keep the previously committed Catalog visible until the
    replacement is ready. This can occur on first connection, an invalidated
    generation/incarnation/schema, excessive replay lag, or retained-WAL loss.
@@ -90,10 +91,10 @@ request, in order. JSON wire kinds use underscores:
    its complete selected field set; `exists=false` removes it. Do not keep old
    selected fields that are absent from a replacement record. Permissions can
    make a record absent even when the underlying source has it.
-3. `{"kind":"snapshot_complete","cursor":"..."}`: atomically replace the
+3. Kind 2, snapshot complete with cursor: atomically replace the
    visible table with staging and persist this cursor. Require an open snapshot.
 4. Outside a snapshot, apply update records to the visible table. On
-   `{"kind":"cursor","cursor":"..."}`, commit all preceding records and the
+   kind 3 cursor control, commit all preceding records and the
    new cursor together. Require no open snapshot. Repeated records are safe
    because each is a replacement/deletion, not a numeric delta.
 

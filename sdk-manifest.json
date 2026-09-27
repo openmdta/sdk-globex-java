@@ -11,10 +11,14 @@
     "java": "88523a8f1c2273f87db4a2d9972fa5f192921d27d4403a881044d812e906956b"
   },
   "projectId": "globex",
-  "requestId": "sdk-11cc3001c696ca99832192ef",
+  "requestId": "sdk-java-accessors-6a8a453506a81c5a84749bfb",
   "rulesetSha256": "becef3688461fbbc9d9edeb1806541e78a50175dd158207c3daacc7f5c57299d",
   "sdkConfigSha256": "4f9a408401117ec29fadaa9270bf6669914c6b0a9a4ee0a310bcb176dd645b94",
   "sdkInputsSha256": "123730a67117206b4eac9a5cb1934ccd76db9e626c679df1644ed6c2475780d5",
   "servicesSha256": "2ccedda65b927a3f9bd682bf83abe9c3c29db277e282b906ef553a04498fb5d6",
-  "version": 2
+  "version": 2,
+  "generatorRevision": "6a8a453506a81c5a84749bfbe91796434fa97128",
+  "previousRequestId": "sdk-11cc3001c696ca99832192ef",
+  "runtimeContractSha256": "31748ac93c1ea2179061cbf64915dccd10a13df5e600cdd03a8808966bfc57e5",
+  "datasetSchemaSha256": "d545b492a45f277f3ff3ade9fb282760c4c5d0b6df747cae6ad23267a8f54b1e"
 }

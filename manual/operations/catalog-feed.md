@@ -2,7 +2,7 @@
 
 Continues until cancelled/error. Carry the request in a session OpenRequest, and route responses by request ID. See [session](../session.md) and [encoding](../encoding.md).
 
-Subscribe to the complete selected Catalog using up to 64 field labels, exact catalog dataset and an opaque cursor (empty for a fresh snapshot). An empty fields group requests all fields; do not send `*`. CatalogFeedControl JSON uses kind `snapshot_begin`, `snapshot_complete` with cursor, or `cursor` with cursor. CatalogRecord responses share the catalog read layout, with phase 1 for snapshot and 2 for updates. Stage snapshot rows, replace durable state only at snapshot_complete, and commit later records before their cursor. A new snapshot_begin discards incomplete staging. See [Catalog persistence](../persistence-and-recovery.md#catalog-feed-storage).
+Subscribe to the complete selected Catalog using up to 64 field labels, exact catalog dataset and an opaque cursor (empty for a fresh snapshot). An empty fields group requests all fields; do not send `*`. CatalogFeedControl uses a typed kind byte (1 snapshot begin, 2 snapshot complete, 3 cursor) and one UTF-8 cursor member; only snapshot begin has an empty cursor. CatalogRecord responses share the catalog read layout, with phase 1 for snapshot and 2 for updates. Stage snapshot rows, replace durable state only at snapshot_complete, and commit later records before their cursor. A new snapshot_begin discards incomplete staging. See [Catalog persistence](../persistence-and-recovery.md#catalog-feed-storage).
 
 ## Request: CatalogFeedRequest
 

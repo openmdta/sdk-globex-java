@@ -6,16 +6,21 @@ import org.agrona.sbe.MessageDecoderFlyweight;
 import com.openmdta.sdk.p_globex.sbe.gateway_protocol.MarketDataMessageBatchDecoder;
 
 /** Reusable zero-copy batch, including message boundaries and headerless owner payloads. */
-public final class BatchView {
-    @FunctionalInterface public interface FieldConsumer { void accept(long messageId, Field field); }
+final class BatchView {
+    @FunctionalInterface interface FieldConsumer { void accept(Field field) throws Exception; }
+    @FunctionalInterface interface MessageConsumer { void accept(Message message) throws Exception; }
+    Response response;
     private final MarketDataMessageBatchDecoder decoder = new MarketDataMessageBatchDecoder();
     private final MarketDataMessageBatchDecoder messages = new MarketDataMessageBatchDecoder();
     private final UnsafeBuffer key = new UnsafeBuffer(0, 0), dataset = new UnsafeBuffer(0, 0), payload = new UnsafeBuffer(0, 0);
     private final Field field = new Field();
+    private final Message message = new Message();
     private int fieldsOffset, gapsOffset, fieldCount, messageCount;
 
     public BatchView wrap(Response response) {
+        this.response = response;
         response.decode(decoder);
+        if (decoder.phase().value() != 1 && decoder.phase().value() != 2) throw new IllegalArgumentException("Invalid batch phase");
         response.decode(messages);
         var group = decoder.messages();
         messageCount = group.count();
@@ -52,28 +57,50 @@ public final class BatchView {
         return decoder.gaps();
     }
 
-    /** Both Field and its payload buffer are reused. The callback must finish reading before returning. */
-    public void forEachField(FieldConsumer consumer) {
-        forEachField(consumer, null);
-    }
-
-    /** messageComplete runs after every source message, including messages without fields. */
-    public void forEachField(FieldConsumer consumer, java.util.function.LongConsumer messageComplete) {
+    /** One callback per source message, including messages with no selected fields. */
+    void forEachMessage(MessageConsumer consumer) throws Exception {
         messages.sbeRewind();
         var rows = messages.messages();
-        decoder.limit(fieldsOffset);
-        var values = decoder.fields();
         while (rows.hasNext()) {
             rows.next();
-            for (int i = 0; i < rows.fieldCount(); i++) {
+            message.id = rows.messageId();
+            message.firstField = Math.toIntExact(rows.firstField());
+            message.count = rows.fieldCount();
+            consumer.accept(message);
+        }
+    }
+
+    /** Borrowed message and fields; fields can only be visited within their owning message. */
+    final class Message {
+        private long id;
+        private int firstField, count;
+        long messageId() { return id; }
+        boolean snapshot() { return BatchView.this.snapshot(); }
+        DirectBuffer recordKeyBytes() { return key; }
+        DirectBuffer datasetBytes() { return dataset; }
+        void forEachField(FieldConsumer consumer) throws Exception {
+            decoder.limit(fieldsOffset);
+            var values = decoder.fields();
+            decoder.limit(Math.addExact(decoder.limit(), Math.multiplyExact(firstField, values.actingBlockLength())));
+            for (int i = 0; i < count; i++) {
                 values.next();
                 int offset = Math.toIntExact(values.payloadOffset()), length = Math.toIntExact(values.payloadLength());
                 payload.boundsCheck(offset, length);
                 if (values.clear() > 1 || values.clear() == 1 && length != 0 || values.clear() == 0 && length < values.blockLength()) throw new IllegalArgumentException("Invalid field payload");
                 field.value = values; field.body.wrap(payload, offset, length);
-                consumer.accept(rows.messageId(), field);
+                consumer.accept(field);
             }
-            if (messageComplete != null) messageComplete.accept(rows.messageId());
+        }
+    }
+
+    void requireRange(long after, long through) {
+        messages.sbeRewind();
+        var rows = messages.messages();
+        while (rows.hasNext()) {
+            long id = rows.next().messageId();
+            if (Long.compareUnsigned(id, after) <= 0 || Long.compareUnsigned(id, through) > 0) {
+                throw new IllegalArgumentException("Recovery row outside requested interval");
+            }
         }
     }
 

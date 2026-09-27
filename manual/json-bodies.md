@@ -1,34 +1,28 @@
-# JSON carried inside SBE
+# Remaining JSON bodies and typed SBE replacements
 
-JSON bodies are UTF-8 in the variable-data member named in the operation's XML.
-Do not add an extra JSON length inside that member. Names and case below are
-wire names. Omitted optional request members use server defaults; preserve
-explicit `null` values in responses. Readers should tolerate additional response
-properties. Bundled JSON Schemas specify the service, metadata, listing and page
-request types; this chapter supplies the remaining envelopes and conventions.
+Only Stream metadata, Catalog search/lookup, Keyfigures, and application service
+calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
+the member named by the operation's XML; do not add an extra JSON length inside
+that member. The Listing and Timeseries sections below describe typed SBE
+replacements. Names and case are wire names. Omitted optional JSON request
+members use server defaults; preserve explicit `null` values in JSON responses.
+Readers should tolerate additional JSON response properties. Bundled JSON
+Schemas specify the remaining service and metadata request types.
 
 ## Listing events
 
-`ListingLatestEvent.eventJson` is:
-
-```json
-{
-  "source": {"dataset":"TEST@feed","quality":"RT","key":"AAPL","blocks":[7]},
-  "incarnation":"opaque source incarnation",
-  "snapshot":true,
-  "connected":true,
-  "blocks":[{
-    "id":7,"messageId":"18446744073709551614","eventUs":"1790000000000000",
-    "clear":false,"requirements":{"clauses":["Public"]},"payload":[0,0,0,0]
-  }]
-}
-```
-
-The payload above is illustrative; real payloads follow their owner schema.
-An alternative requirement clause is `{"AnyOf":[{"namespace":"IEX","license":"TOPS"}]}`.
-Every clause must be satisfied; any license within one AnyOf is sufficient.
-These qualified names differ from Catalog's dataset-local numeric license IDs.
-Empty blocks can signal connectivity/incarnation changes. Do not discard them.
+ListingLatestRequest (schema 102, template 12, version 21) contains a repeating
+group of 1..64 `id:uint16` field IDs, then length-prefixed UTF-8 dataset,
+quality, and exact record key. ListingLatestEvent (template 107, version 21)
+starts with `snapshot:uint8` and `connected:uint8`, a source field-ID group,
+then a block group. Each block contains `id:uint16`, `messageId:uint64`,
+`eventTimeMicros:uint64`, `clear:uint8`, a nested qualified-license requirement
+group, and the native field payload. Requirement rows with the same
+`clauseIndex:uint16` are alternatives; consecutive clause indexes are ANDed.
+Each row has UTF-8 namespace and license; both empty means Public. Source
+dataset, quality, key, and incarnation follow the groups. These qualified
+names differ from Catalog's dataset-local numeric license IDs. Empty blocks
+can signal connectivity/incarnation changes. Do not discard them.
 
 ## Catalog search
 
@@ -72,15 +66,6 @@ A WAL cursor is `{dataset,generation,incarnation_id,universe_fingerprint,wal_id,
 incarnation_id is string or null, dataset is string, and the other values are
 unsigned 64-bit JSON integers. Use a lossless JSON reader when retaining them.
 
-## Catalog feed
-
-Whole-Catalog feed controls have exactly three wire variants:
-`{"kind":"snapshot_begin"}`, `{"kind":"snapshot_complete","cursor":"..."}`,
-and `{"kind":"cursor","cursor":"..."}`. The cursor is opaque text, including
-any embedded JSON, and is returned unchanged. The SDK's local reset event and
-camelCase control names are not wire messages. Follow the
-[storage algorithm](persistence-and-recovery.md#catalog-feed-storage).
-
 ## Catalog lookup
 
 Parameters are `{dimensions?,expression?,cursor?,limit?}`. Dimensions maps names
@@ -114,17 +99,26 @@ listing, activity and field permission are separate facts.
 
 ## Timeseries pages
 
-The request schema is in `schemas/timeseries-page-request.json`. Send unsigned
-64-bit values as decimal strings. `order` is asc/desc and `limit` is 1..200.
-Choose exactly one boundary or cursor. The guard is the other end of the search
+The WebSocket TimeseriesPageRequest is typed SBE (schema 102, template 14,
+version 20): `blockMask:uint64`, `resolutionMicros:uint64`, `boundary:uint64`,
+`guard:uint64`, `pageLimit:uint32`, `presence:uint8`, `order:uint8`, and
+`adjustment:uint8`, followed by length-prefixed UTF-8 selector, dataset,
+quality, and cursor. Presence bit 0 marks boundary and bit 1 marks guard;
+absent numeric members are zero. Order is 0 ascending or 1 descending;
+adjustment is 0 raw or 1 split. Empty dataset, quality, and cursor members
+mean absent. The HTTPS projection still uses
+`schemas/timeseries-page-request.json` with `limit` as its JSON property and
+decimal strings for unsigned
+64-bit values. Choose exactly one boundary or cursor. The guard is the other end of the search
 interval; it must be on the appropriate side of the boundary. Raw guards span
 at most 30 days; candle guards at most 365 days plus one resolution. Omitted
 guards choose a bounded server window (at least seven days). Candle resolution
 must appear in Stream metadata and is at least one second.
 
-Consume binary MarketDataMessageBatch responses first, followed by
-`{from:string,through:string,nextCursor:string|null,status:number}` and session
-DONE. A null nextCursor means this guarded scan is finished, not that all
+Consume binary MarketDataMessageBatch responses first, followed by a typed
+TimeseriesPageResult SBE footer: `fromMicros:uint64`, `throughMicros:uint64`,
+`status:uint8`, and `nextCursor:UTF-8` (empty means none), then session DONE.
+A missing next cursor means this guarded scan is finished, not that all
 possible history exists. Status 0 is exact, 1 open, 2 partial, 3 not ready; retain explicit
 gaps. Echo a cursor unchanged with the same selector/dataset/quality/mask/
 resolution/order/adjustment. A nonempty cursor is not proof of durable coverage.

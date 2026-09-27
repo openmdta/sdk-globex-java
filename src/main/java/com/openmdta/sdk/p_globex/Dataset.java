@@ -25,6 +25,8 @@ public final class Dataset {
         if (!binding.path("qualities").has(quality)) throw new IllegalArgumentException("Unconfigured quality");
         return new Dataset(client, binding, quality);
     }
+    /** Declared, typed Catalog fields for this dataset, including fields absent from current records. */
+    public List<CatalogField<?>> catalogFields() { return DatasetFields.forDataset(id); }
     public Request latest(MarketSelector selector, List<? extends Block<?>> blocks, MarketDataListener listener) {
         return latest(selector.expression(), blocks, listener);
     }
@@ -57,37 +59,26 @@ public final class Dataset {
         encoder.putExpression(expression, 0, expression.length).putQuality(quality, 0, quality.length).putAdjustment(adjustment, 0, adjustment.length).putDataset(dataset, 0, dataset.length);
         return client.request("ts-raw", encoder, MarketDataUpdate.listener(blocks, listener));
     }
-    public Request streamSubscribe(List<? extends Block<?>> blocks, Request.Listener listener) {
+    public Request streamSubscribe(List<? extends Block<?>> blocks, StreamListener listener) {
         require("feed");
         var encoder = new FeedLiveRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(mask(blocks, "STREAM"));
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length);
-        return client.request("feed-live", encoder, listener);
+        return client.request("feed-live", encoder, new StreamDispatch(StreamDispatch.Mode.SUBSCRIBE, dataset, 0, 0, blocks, listener));
     }
     /** Exclusive start and inclusive end, both unsigned uint64 bit patterns in Java longs. */
-    public Request streamRecover(long start, long end, List<? extends Block<?>> blocks, Request.Listener listener) {
+    public Request streamRecover(long start, long end, List<? extends Block<?>> blocks, StreamListener listener) {
         require("latest");
         if (Long.compareUnsigned(start, end) >= 0) throw new IllegalArgumentException("Invalid recovery range");
         var encoder = new FeedRecoveryRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(mask(blocks, "STREAM")).afterMessageId(start).throughMessageId(end);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length);
-        var batch = new MarketDataMessageBatchDecoder();
-        return client.request("feed-recovery", encoder, response -> {
-            if (response.templateId() == MarketDataMessageBatchDecoder.TEMPLATE_ID) {
-                response.decode(batch);
-                var messages = batch.messages();
-                if (messages.count() < 0 || messages.count() > response.body().capacity() / 14) throw new IllegalArgumentException("Invalid recovery batch");
-                while (messages.hasNext()) {
-                    long id = messages.next().messageId();
-                    if (Long.compareUnsigned(id, start) <= 0 || Long.compareUnsigned(id, end) > 0) throw new IllegalArgumentException("Recovery row outside requested interval");
-                }
-            }
-            listener.onResponse(response);
-        });
+        return client.request("feed-recovery", encoder, new StreamDispatch(StreamDispatch.Mode.RECOVER, dataset, start, end, blocks, listener));
     }
-    public Request streamSnapshot(List<? extends Block<?>> blocks, Request.Listener listener) {
+
+    public Request streamSnapshot(List<? extends Block<?>> blocks, StreamListener listener) {
         require("latest");
         var encoder = new FeedSnapshotRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(mask(blocks, "SNAPSHOT"));
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length);
-        return client.request("feed-snapshot", encoder, listener);
+        return client.request("feed-snapshot", encoder, new StreamDispatch(StreamDispatch.Mode.SNAPSHOT, dataset, 0, 0, blocks, listener));
     }
     public Request read(MarketSelector selector, List<? extends CatalogField<?>> fields, CatalogListener listener) {
         return read(List.of(selector.expression()), fields, listener);
@@ -117,11 +108,18 @@ public final class Dataset {
         encoder.putCatalog(dataset, 0, dataset.length).putCursor(resume, 0, resume.length);
         return client.request("catalog-feed", encoder, CatalogRecord.listener(fields, dataset, true, listener));
     }
-    public Request metadata(Request.Listener listener) {
+    public Request metadata(java.util.function.Consumer<com.fasterxml.jackson.databind.JsonNode> listener) {
         if (!binding.path("qualities").has(qualityName)) throw new IllegalArgumentException("Unconfigured quality");
         var encoder = new StreamMetadataQueryEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length);
-        return client.request("stream-metadata", encoder, listener);
+        java.util.Objects.requireNonNull(listener);
+        var metadata = new StreamMetadataResponseDecoder();
+        var json = new org.agrona.concurrent.UnsafeBuffer(0, 0);
+        return client.request("stream-metadata", encoder, response -> {
+            response.decode(metadata); metadata.wrapMetadataJson(json);
+            if (metadata.limit() != response.body().capacity()) throw new IllegalArgumentException("Invalid metadata response length");
+            listener.accept(Contract.JSON.readTree(json.getStringWithoutLengthUtf8(0, json.capacity())));
+        });
     }
     public Feeds.Stream streamFeed(List<? extends Block<?>> blocks, Feeds.StreamSink sink) {
         return new Feeds.Stream(this, List.copyOf(blocks), sink);

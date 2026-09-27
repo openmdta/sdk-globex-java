@@ -4,7 +4,11 @@ import java.util.concurrent.CompletableFuture;
 
 /** One request. Callbacks are serialized on the receiving connection; no per-message queue. */
 public final class Request implements AutoCloseable {
-    @FunctionalInterface public interface Listener { void onResponse(Response response) throws Exception; }
+    @FunctionalInterface interface Listener {
+        void onResponse(Response response) throws Exception;
+        default void onRegistered(Request request) {}
+        default void onComplete() throws Exception {}
+    }
     final Client client;
     final long id;
     final Listener listener;

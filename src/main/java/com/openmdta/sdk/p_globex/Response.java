@@ -5,7 +5,7 @@ import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.sbe.MessageDecoderFlyweight;
 
 /** Borrowed for one callback only. Reused on the next delivery. Never retain it. */
-public final class Response {
+final class Response {
     private int schemaId, templateId, version, blockLength;
     private final UnsafeBuffer body = new UnsafeBuffer(0, 0);
 
