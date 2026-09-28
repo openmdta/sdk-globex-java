@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="27" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="29" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -26,17 +26,20 @@
     <data name="expression" id="2" type="varDataEncoding"/>
     <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="StreamRequest" id="2" blockLength="8">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
     <data name="expression" id="2" type="varDataEncoding"/>
     <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="FeedLiveRequest" id="15" blockLength="8" sinceVersion="18">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
     <data name="dataset" id="2" type="varDataEncoding"/>
     <data name="quality" id="3" type="varDataEncoding"/>
+    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="FeedRecoveryRequest" id="16" blockLength="24" sinceVersion="18">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
@@ -44,11 +47,13 @@
     <field name="throughMessageId" id="3" type="uint64" offset="16"/>
     <data name="dataset" id="4" type="varDataEncoding"/>
     <data name="quality" id="5" type="varDataEncoding"/>
+    <data name="selectedFieldsSbe" id="6" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="FeedSnapshotRequest" id="17" blockLength="8" sinceVersion="18">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
     <data name="dataset" id="2" type="varDataEncoding"/>
     <data name="quality" id="3" type="varDataEncoding"/>
+    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="CatalogFeedRequest" id="18" blockLength="0" sinceVersion="19">
     <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
@@ -85,6 +90,7 @@
     <data name="quality" id="6" type="varDataEncoding" sinceVersion="5"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="TsCandleRequest" id="4" blockLength="32">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
@@ -95,6 +101,7 @@
     <data name="quality" id="6" type="varDataEncoding" sinceVersion="3"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="CatalogRequest" id="5" blockLength="0" sinceVersion="2">
     <group name="identifiers" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
@@ -114,6 +121,7 @@
     <data name="quality" id="6" type="varDataEncoding"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
   </message>
   <message name="TsCandleStreamRequest" id="7" blockLength="36" sinceVersion="5">
     <field name="blockMask" id="1" type="uint64" offset="0"/>
@@ -125,13 +133,19 @@
     <data name="quality" id="7" type="varDataEncoding"/>
     <data name="adjustment" id="8" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="9" type="varDataEncoding" sinceVersion="14"/>
+    <data name="selectedFieldsSbe" id="10" type="varDataEncoding" sinceVersion="29"/>
   </message>
-  <message name="CatalogKeyfiguresRequest" id="8" blockLength="8" sinceVersion="6">
+  <message name="CatalogKeyfiguresRequest" id="8" blockLength="16" sinceVersion="28">
     <field name="priceCutoffMs" id="1" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
+    <field name="after" id="6" type="uint64" offset="8"/>
     <data name="catalog" id="2" type="varDataEncoding"/>
     <data name="action" id="3" type="varDataEncoding"/>
-    <data name="parameters" id="4" type="varDataEncoding"/>
+    <data name="key" id="4" type="varDataEncoding"/>
     <data name="contractFingerprint" id="5" type="varDataEncoding"/>
+    <data name="priceAgeMode" id="7" type="varDataEncoding"/>
+    <data name="expression" id="8" type="varDataEncoding"/>
+    <!-- Complete keyfigures-protocol.xml KeyfiguresSearchQuery SBE frame for search. -->
+    <data name="searchQuerySbe" id="9" type="varDataEncoding"/>
   </message>
   <message name="CatalogKeyfiguresResult" id="103" blockLength="0" sinceVersion="6">
     <data name="resultJson" id="1" type="varDataEncoding"/>
@@ -306,6 +320,13 @@
     <data name="dataset" id="10" type="varDataEncoding"/>
     <data name="quality" id="11" type="varDataEncoding"/>
     <data name="cursor" id="12" type="varDataEncoding"/>
+    <data name="selectedFieldsSbe" id="13" type="varDataEncoding" sinceVersion="29"/>
+  </message>
+  <!-- Owner-bound semantic field selection. An empty list selects every available field. -->
+  <message name="FieldSelection" id="27" blockLength="0" sinceVersion="29">
+    <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="semantic" id="2" type="varDataEncoding"/>
+    </group>
   </message>
   <message name="TimeseriesPageResult" id="110" blockLength="17" sinceVersion="17">
     <field name="fromMicros" id="1" type="uint64" offset="0"/>

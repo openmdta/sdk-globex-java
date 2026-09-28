@@ -6,7 +6,7 @@ CatalogSearchQuery version 27 carries a complete owner CatalogSearchQuery frame 
 
 ## Request: CatalogSearchQuery
 
-Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing XML supports version 27; this message emits version 27.
+Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing XML supports version 29; this message emits version 27.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing 
 
 ## Response: CatalogSearchResponse
 
-Format: `schemaId=102, templateId=105, version=26, blockLength=0`. The enclosing XML supports version 27; this message emits version 26.
+Format: `schemaId=102, templateId=105, version=26, blockLength=0`. The enclosing XML supports version 29; this message emits version 26.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

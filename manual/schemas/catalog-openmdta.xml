@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="market.internal" id="100" byteOrder="littleEndian" version="3">
+<messageSchema package="market.internal" id="100" byteOrder="littleEndian" version="4">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -92,6 +92,16 @@
     <field name="tradeCount" id="6" type="uint64" offset="44"/>
   </message>
 
+  <message name="TradeOhlcvvCandle" id="21" blockLength="61">
+    <field name="open" id="1" type="DecimalEncoding" offset="0"/>
+    <field name="high" id="2" type="DecimalEncoding" offset="9"/>
+    <field name="low" id="3" type="DecimalEncoding" offset="18"/>
+    <field name="close" id="4" type="DecimalEncoding" offset="27"/>
+    <field name="totalVolume" id="5" type="uint64" offset="36"/>
+    <field name="tradeCount" id="6" type="uint64" offset="44"/>
+    <field name="totalTradedValue" id="7" type="DecimalEncoding" offset="52"/>
+  </message>
+
   <!-- Daily values are New York calendar days. The block is 53 fixed bytes
        (61 bytes including its SBE header) and remains separate per side/kind. -->
   <message name="BidDailyOhlc" id="14" blockLength="53">
@@ -122,6 +132,37 @@
     <field name="closePrevious" id="5" type="DecimalEncoding" offset="36"/>
     <field name="day" id="6" type="uint32" offset="45"/>
     <field name="flags" id="7" type="uint32" offset="49"/>
+  </message>
+
+  <message name="BidOhlc" id="17" blockLength="52">
+    <field name="open" id="1" type="DecimalEncoding" offset="0"/>
+    <field name="high" id="2" type="DecimalEncoding" offset="9"/>
+    <field name="low" id="3" type="DecimalEncoding" offset="18"/>
+    <field name="close" id="4" type="DecimalEncoding" offset="27"/>
+    <field name="closingSize" id="5" type="uint64" offset="36"/>
+    <field name="day" id="6" type="uint32" offset="44"/>
+    <field name="flags" id="7" type="uint32" offset="48"/>
+  </message>
+
+  <message name="AskOhlc" id="18" blockLength="52">
+    <field name="open" id="1" type="DecimalEncoding" offset="0"/>
+    <field name="high" id="2" type="DecimalEncoding" offset="9"/>
+    <field name="low" id="3" type="DecimalEncoding" offset="18"/>
+    <field name="close" id="4" type="DecimalEncoding" offset="27"/>
+    <field name="closingSize" id="5" type="uint64" offset="36"/>
+    <field name="day" id="6" type="uint32" offset="44"/>
+    <field name="flags" id="7" type="uint32" offset="48"/>
+  </message>
+
+  <message name="TradeOhlcvv" id="19" blockLength="61">
+    <field name="open" id="1" type="DecimalEncoding" offset="0"/>
+    <field name="high" id="2" type="DecimalEncoding" offset="9"/>
+    <field name="low" id="3" type="DecimalEncoding" offset="18"/>
+    <field name="close" id="4" type="DecimalEncoding" offset="27"/>
+    <field name="totalQuantity" id="5" type="uint64" offset="36"/>
+    <field name="totalTradedValue" id="6" type="DecimalEncoding" offset="44"/>
+    <field name="day" id="7" type="uint32" offset="53"/>
+    <field name="flags" id="8" type="uint32" offset="57"/>
   </message>
 
   <message name="InstrumentDefinition" id="20" blockLength="1">

@@ -6,10 +6,10 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 
 | Semantic | Descriptor | Borrowed getter | Owned value getter | Decoder / encoder package |
 | --- | --- | --- | --- | --- |
-| `openmdta::AskDailyOhlc` | `Blocks.ASK_DAILY_OHLC` | `MarketDataUpdate.getAskDailyOhlc()` | `MarketDataUpdate.askDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.AskDailyOhlc` |
+| `openmdta::AskOhlc` | `Blocks.ASK_OHLC` | `MarketDataUpdate.getAskOhlc()` | `MarketDataUpdate.askOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.AskOhlc` |
 | `openmdta::BidAsk` | `Blocks.BID_ASK` | `MarketDataUpdate.getBidAsk()` | `MarketDataUpdate.bidAsk()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidAsk` |
 | `openmdta::BidAskCandle` | `Blocks.BID_ASK_CANDLE` | `MarketDataUpdate.getBidAskCandle()` | `MarketDataUpdate.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_1.BidAskCandle` |
-| `openmdta::BidDailyOhlc` | `Blocks.BID_DAILY_OHLC` | `MarketDataUpdate.getBidDailyOhlc()` | `MarketDataUpdate.bidDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidDailyOhlc` |
+| `openmdta::BidOhlc` | `Blocks.BID_OHLC` | `MarketDataUpdate.getBidOhlc()` | `MarketDataUpdate.bidOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidOhlc` |
 | `globex::DisplayName` | `Fields.GLOBEX__DISPLAY_NAME` | `CatalogRecord.getDisplayName()` | `CatalogRecord.displayName()` | `com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayName` |
 | `lus::LusDomainObject` | `Fields.LUS__LUS_DOMAIN_OBJECT` | `CatalogRecord.getLusDomainObject()` | `CatalogRecord.lusDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObject` |
 | `lus::LusNameHash` | `Fields.LUS__LUS_NAME_HASH` | `CatalogRecord.getLusNameHash()` | `CatalogRecord.lusNameHash()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusNameHash` |
@@ -17,9 +17,13 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 | `openmdta::Trade` | `Fields.OPENMDTA__TRADE` | `CatalogRecord.getTrade()` | `CatalogRecord.trade()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Trade` |
 | `openmdta::BidAskCandle` | `Fields.OPENMDTA__BID_ASK_CANDLE` | `CatalogRecord.getBidAskCandle()` | `CatalogRecord.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidAskCandle` |
 | `openmdta::TradeCandle` | `Fields.OPENMDTA__TRADE_CANDLE` | `CatalogRecord.getTradeCandle()` | `CatalogRecord.tradeCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeCandle` |
+| `openmdta::TradeOhlcvvCandle` | `Fields.OPENMDTA__TRADE_OHLCVV_CANDLE` | `CatalogRecord.getTradeOhlcvvCandle()` | `CatalogRecord.tradeOhlcvvCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvCandle` |
 | `openmdta::BidDailyOhlc` | `Fields.OPENMDTA__BID_DAILY_OHLC` | `CatalogRecord.getBidDailyOhlc()` | `CatalogRecord.bidDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidDailyOhlc` |
 | `openmdta::AskDailyOhlc` | `Fields.OPENMDTA__ASK_DAILY_OHLC` | `CatalogRecord.getAskDailyOhlc()` | `CatalogRecord.askDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.AskDailyOhlc` |
 | `openmdta::TradeDailyOhlc` | `Fields.OPENMDTA__TRADE_DAILY_OHLC` | `CatalogRecord.getTradeDailyOhlc()` | `CatalogRecord.tradeDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeDailyOhlc` |
+| `openmdta::BidOhlc` | `Fields.OPENMDTA__BID_OHLC` | `CatalogRecord.getBidOhlc()` | `CatalogRecord.bidOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidOhlc` |
+| `openmdta::AskOhlc` | `Fields.OPENMDTA__ASK_OHLC` | `CatalogRecord.getAskOhlc()` | `CatalogRecord.askOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.AskOhlc` |
+| `openmdta::TradeOhlcvv` | `Fields.OPENMDTA__TRADE_OHLCVV` | `CatalogRecord.getTradeOhlcvv()` | `CatalogRecord.tradeOhlcvv()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvv` |
 | `openmdta::InstrumentDefinition` | `Fields.OPENMDTA__INSTRUMENT_DEFINITION` | `CatalogRecord.getInstrumentDefinition()` | `CatalogRecord.instrumentDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentDefinition` |
 | `openmdta::Listing` | `Fields.OPENMDTA__LISTING` | `CatalogRecord.getListing()` | `CatalogRecord.listingValue()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Listing` |
 | `openmdta::CompanyProfile` | `Fields.OPENMDTA__COMPANY_PROFILE` | `CatalogRecord.getCompanyProfile()` | `CatalogRecord.companyProfile()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.CompanyProfile` |

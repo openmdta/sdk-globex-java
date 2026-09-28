@@ -1,6 +1,6 @@
 # Remaining JSON bodies and typed SBE replacements
 
-Only Keyfigures and application service calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
+Only Keyfigures results and application service calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
 the member named by the operation's XML; do not add an extra JSON length inside
 that member. The Listing and Timeseries sections below describe typed SBE
 replacements. Names and case are wire names. Omitted optional JSON request
@@ -133,10 +133,14 @@ listing, activity and field permission are separate facts.
 ## Timeseries pages
 
 The WebSocket TimeseriesPageRequest is typed SBE (schema 102, template 14,
-version 20): `blockMask:uint64`, `resolutionMicros:uint64`, `boundary:uint64`,
+version 29 for generated SDK requests): `blockMask:uint64`, `resolutionMicros:uint64`, `boundary:uint64`,
 `guard:uint64`, `pageLimit:uint32`, `presence:uint8`, `order:uint8`, and
 `adjustment:uint8`, followed by length-prefixed UTF-8 selector, dataset,
-quality, and cursor. Presence bit 0 marks boundary and bit 1 marks guard;
+quality, and cursor, then a `selectedFieldsSbe` variable-data member containing
+the complete `FieldSelection` frame (schema 102, template 27, version 29).
+Its repeating `semantic` members identify business fields, without a 64-field
+limit. Generated SDKs send `blockMask=0`; an empty group selects all fields.
+The Gateway rejects a nonzero mask with a field-selection frame. Presence bit 0 marks boundary and bit 1 marks guard;
 absent numeric members are zero. Order is 0 ascending or 1 descending;
 adjustment is 0 raw or 1 split. Empty dataset, quality, and cursor members
 mean absent. The HTTPS projection still uses
@@ -167,7 +171,13 @@ includes the enclosing session frame. A deadline can expire after dispatch and
 therefore produce an unknown mutation outcome.
 
 Keyfigure contracts in the schema inventory define configured fields and their
-types. The operation carries JSON results; use the action/contract fingerprint
+types. CatalogKeyfiguresRequest (schema 102, template 8, version 28) carries
+`priceCutoffMs:uint64?` and `after:uint64`, then catalog, action, key,
+contract fingerprint, age mode, expression, and a complete
+KeyfiguresSearchQuery owner SBE frame (schema 10, template 3, version 1).
+The owner frame is required for search and empty for other actions. Expression
+is resolved by the gateway into search keys and cannot accompany explicit keys.
+The operation carries JSON results; use the action/contract fingerprint
 specified by that contract. Unknown fields can be retained as JSON. This data
 may contain uint64 JSON numbers as well as explicitly string-encoded integers;
 use a lossless JSON parser when exact identities or cursors matter.

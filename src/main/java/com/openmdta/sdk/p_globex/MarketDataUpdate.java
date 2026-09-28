@@ -111,16 +111,16 @@ public final class MarketDataUpdate {
         return (Optional<D>) (decoder == null ? EMPTY : present[block.format().templateId()]);
     }
     /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.AskDailyOhlcDecoder> getAskDailyOhlc() { return optionalValue(Blocks.ASK_DAILY_OHLC); }
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.AskOhlcDecoder> getAskOhlc() { return optionalValue(Blocks.ASK_OHLC); }
     /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.AskDailyOhlc> askDailyOhlc() {
-        var decoder = value(Blocks.ASK_DAILY_OHLC);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.AskDailyOhlc.decode(decoder));
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.AskOhlc> askOhlc() {
+        var decoder = value(Blocks.ASK_OHLC);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.AskOhlc.decode(decoder));
     }
     /** True for a value or an explicit clear in this source message. Selection is required. */
-    public boolean isAskDailyOhlcChanged() { return changed(Blocks.ASK_DAILY_OHLC); }
+    public boolean isAskOhlcChanged() { return changed(Blocks.ASK_OHLC); }
     /** True only for an explicit clear in this source message. Selection is required. */
-    public boolean isAskDailyOhlcCleared() { return cleared(Blocks.ASK_DAILY_OHLC); }
+    public boolean isAskOhlcCleared() { return cleared(Blocks.ASK_OHLC); }
 
     /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
     public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.BidAskDecoder> getBidAsk() { return optionalValue(Blocks.BID_ASK); }
@@ -147,16 +147,16 @@ public final class MarketDataUpdate {
     public boolean isBidAskCandleCleared() { return cleared(Blocks.BID_ASK_CANDLE); }
 
     /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.BidDailyOhlcDecoder> getBidDailyOhlc() { return optionalValue(Blocks.BID_DAILY_OHLC); }
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.BidOhlcDecoder> getBidOhlc() { return optionalValue(Blocks.BID_OHLC); }
     /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.BidDailyOhlc> bidDailyOhlc() {
-        var decoder = value(Blocks.BID_DAILY_OHLC);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.BidDailyOhlc.decode(decoder));
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.BidOhlc> bidOhlc() {
+        var decoder = value(Blocks.BID_OHLC);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.BidOhlc.decode(decoder));
     }
     /** True for a value or an explicit clear in this source message. Selection is required. */
-    public boolean isBidDailyOhlcChanged() { return changed(Blocks.BID_DAILY_OHLC); }
+    public boolean isBidOhlcChanged() { return changed(Blocks.BID_OHLC); }
     /** True only for an explicit clear in this source message. Selection is required. */
-    public boolean isBidDailyOhlcCleared() { return cleared(Blocks.BID_DAILY_OHLC); }
+    public boolean isBidOhlcCleared() { return cleared(Blocks.BID_OHLC); }
     public boolean changed(Block<?> block) { return (changed & (1L << selected(block))) != 0; }
     public boolean cleared(Block<?> block) { return (cleared & (1L << selected(block))) != 0; }
     public long eventTimeMicros(Block<?> block) {

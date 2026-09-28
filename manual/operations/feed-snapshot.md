@@ -6,17 +6,18 @@ Send the exact dataset, configured quality, and selected-field block mask. Feed 
 
 ## Request: FeedSnapshotRequest
 
-Format: `schemaId=102, templateId=17, version=18, blockLength=8`. The enclosing XML supports version 27; this message emits version 18.
+Format: `schemaId=102, templateId=17, version=29, blockLength=8`. The enclosing XML supports version 29; this message emits version 29.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
 | blockMask | field | uint64 | 0 | — | — |
 | dataset | data | varDataEncoding | — | — | — |
 | quality | data | varDataEncoding | — | — | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
 
 ## Response: FeedSnapshotHeader
 
-Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing XML supports version 27; this message emits version 18.
+Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing XML supports version 29; this message emits version 18.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -28,7 +29,7 @@ Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

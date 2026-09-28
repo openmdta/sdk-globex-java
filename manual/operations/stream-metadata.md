@@ -6,7 +6,7 @@ Send exact dataset and quality as UTF-8 data. StreamMetadataResponse is typed SB
 
 ## Request: StreamMetadataQuery
 
-Format: `schemaId=102, templateId=9, version=13, blockLength=0`. The enclosing XML supports version 27; this message emits version 13.
+Format: `schemaId=102, templateId=9, version=13, blockLength=0`. The enclosing XML supports version 29; this message emits version 13.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ Format: `schemaId=102, templateId=9, version=13, blockLength=0`. The enclosing X
 
 ## Response: StreamMetadataResponse
 
-Format: `schemaId=102, templateId=104, version=24, blockLength=1`. The enclosing XML supports version 27; this message emits version 24.
+Format: `schemaId=102, templateId=104, version=24, blockLength=1`. The enclosing XML supports version 29; this message emits version 24.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

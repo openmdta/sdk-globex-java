@@ -6,7 +6,7 @@ Use the same selector and field-mask convention as snapshot. Historical `from` a
 
 ## Request: TsRawStreamRequest
 
-Format: `schemaId=102, templateId=6, version=14, blockLength=28`. The enclosing XML supports version 27; this message emits version 14.
+Format: `schemaId=102, templateId=6, version=29, blockLength=28`. The enclosing XML supports version 29; this message emits version 29.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -18,10 +18,11 @@ Format: `schemaId=102, templateId=6, version=14, blockLength=28`. The enclosing 
 | quality | data | varDataEncoding | — | — | — |
 | adjustment | data | varDataEncoding | — | 11 | — |
 | dataset | data | varDataEncoding | — | 14 | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

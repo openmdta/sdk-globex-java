@@ -6,7 +6,7 @@ TimeseriesPageRequest is typed SBE: blockMask:uint64, resolutionMicros:uint64, b
 
 ## Request: TimeseriesPageRequest
 
-Format: `schemaId=102, templateId=14, version=20, blockLength=39`. The enclosing XML supports version 27; this message emits version 20.
+Format: `schemaId=102, templateId=14, version=29, blockLength=39`. The enclosing XML supports version 29; this message emits version 29.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -22,10 +22,11 @@ Format: `schemaId=102, templateId=14, version=20, blockLength=39`. The enclosing
 | dataset | data | varDataEncoding | — | — | — |
 | quality | data | varDataEncoding | — | — | — |
 | cursor | data | varDataEncoding | — | — | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -52,7 +53,7 @@ Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing
 
 ## Response: TimeseriesPageResult
 
-Format: `schemaId=102, templateId=110, version=17, blockLength=17`. The enclosing XML supports version 27; this message emits version 17.
+Format: `schemaId=102, templateId=110, version=17, blockLength=17`. The enclosing XML supports version 29; this message emits version 17.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

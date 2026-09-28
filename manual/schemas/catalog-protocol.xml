@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="openmdta.catalog.service" id="7" version="7" byteOrder="littleEndian">
+<messageSchema package="openmdta.catalog.service" id="7" byteOrder="littleEndian" version="9">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -252,5 +252,51 @@
   <message name="CatalogFeedControl" id="8" blockLength="1" sinceVersion="3">
     <field name="kind" id="1" type="FeedControlKind" offset="0"/>
     <data name="cursor" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogImportAuditQuery" id="9" blockLength="4">
+    <field name="pageLimit" id="1" type="uint16" offset="0"/>
+    <field name="history" id="2" type="uint8" offset="2"/>
+    <field name="afterPresent" id="3" type="uint8" offset="3"/>
+    <data name="after" id="4" type="varDataEncoding"/>
+    <data name="dataset" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogImportAuditPage" id="10" blockLength="9">
+    <field name="generation" id="1" type="uint64" offset="0"/>
+    <field name="history" id="2" type="uint8" offset="8"/>
+    <group name="runs" id="3" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <!-- Complete catalog-storage.xml CatalogImportRunRecord frame, schema 14 template 11. -->
+      <data name="runSbe" id="4" type="varDataEncoding"/>
+    </group>
+    <group name="attempts" id="5" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <!-- Complete catalog-storage.xml CatalogImportAttemptRecord frame, schema 14 template 12. -->
+      <data name="attemptSbe" id="6" type="varDataEncoding"/>
+    </group>
+    <data name="dataset" id="7" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogValueOriginsQuery" id="11" blockLength="0">
+    <data name="dataset" id="1" type="varDataEncoding"/>
+    <data name="key" id="2" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogValueOriginsPage" id="12" blockLength="1">
+    <field name="lifecyclePresent" id="1" type="uint8" offset="0"/>
+    <group name="fields" id="2" dimensionType="largeGroupSizeEncoding" blockLength="1">
+      <!-- bit 0: field label; bit 1: subfield. -->
+      <field name="presence" id="3" type="uint8" offset="0"/>
+      <group name="origins" id="4" dimensionType="largeGroupSizeEncoding" blockLength="0">
+        <!-- Complete catalog-storage.xml CatalogValueOrigin frame, schema 14 template 7. -->
+        <data name="originSbe" id="5" type="varDataEncoding"/>
+      </group>
+      <data name="fieldLabel" id="6" type="varDataEncoding"/>
+      <data name="subfield" id="7" type="varDataEncoding"/>
+    </group>
+    <group name="lifecycleOrigins" id="8" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <!-- Complete catalog-storage.xml CatalogValueOrigin frame, schema 14 template 7. -->
+      <data name="originSbe" id="9" type="varDataEncoding"/>
+    </group>
+    <group name="runs" id="10" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <!-- Complete catalog-storage.xml CatalogImportRunRecord frame, schema 14 template 11. -->
+      <data name="runSbe" id="11" type="varDataEncoding"/>
+    </group>
+    <data name="dataset" id="12" type="varDataEncoding"/>
   </message>
 </messageSchema>

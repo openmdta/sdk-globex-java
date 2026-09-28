@@ -6,7 +6,7 @@ Select fields with the deployed 64-bit block mask. `expression` accepts typed id
 
 ## Request: SnapshotRequest
 
-Format: `schemaId=102, templateId=1, version=14, blockLength=8`. The enclosing XML supports version 27; this message emits version 14.
+Format: `schemaId=102, templateId=1, version=29, blockLength=8`. The enclosing XML supports version 29; this message emits version 29.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -14,10 +14,11 @@ Format: `schemaId=102, templateId=1, version=14, blockLength=8`. The enclosing X
 | expression | data | varDataEncoding | — | — | — |
 | adjustment | data | varDataEncoding | — | 11 | — |
 | dataset | data | varDataEncoding | — | 14 | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

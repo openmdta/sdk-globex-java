@@ -201,6 +201,21 @@ public final class CatalogRecord {
     }
 
     /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvCandleDecoder> getTradeOhlcvvCandle() { return optionalValue(Fields.OPENMDTA__TRADE_OHLCVV_CANDLE); }
+    /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvvCandle> tradeOhlcvvCandle() {
+        var decoder = value(Fields.OPENMDTA__TRADE_OHLCVV_CANDLE);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvvCandle.decode(decoder));
+    }
+    /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
+    public void forEachTradeOhlcvvCandle(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvCandleDecoder> consumer) { forEachValue(Fields.OPENMDTA__TRADE_OHLCVV_CANDLE, consumer); }
+    /** Visits owned values with borrowed subfield keys. */
+    public void forEachTradeOhlcvvCandleValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvvCandle> consumer) {
+        java.util.Objects.requireNonNull(consumer);
+        forEachValue(Fields.OPENMDTA__TRADE_OHLCVV_CANDLE, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvvCandle.decode(decoder)));
+    }
+
+    /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
     public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_2.BidDailyOhlcDecoder> getBidDailyOhlc() { return optionalValue(Fields.OPENMDTA__BID_DAILY_OHLC); }
     /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
     public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_2.BidDailyOhlc> bidDailyOhlc() {
@@ -243,6 +258,51 @@ public final class CatalogRecord {
     public void forEachTradeDailyOhlcValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_2.TradeDailyOhlc> consumer) {
         java.util.Objects.requireNonNull(consumer);
         forEachValue(Fields.OPENMDTA__TRADE_DAILY_OHLC, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_2.TradeDailyOhlc.decode(decoder)));
+    }
+
+    /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_2.BidOhlcDecoder> getBidOhlc() { return optionalValue(Fields.OPENMDTA__BID_OHLC); }
+    /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_2.BidOhlc> bidOhlc() {
+        var decoder = value(Fields.OPENMDTA__BID_OHLC);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_2.BidOhlc.decode(decoder));
+    }
+    /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
+    public void forEachBidOhlc(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_2.BidOhlcDecoder> consumer) { forEachValue(Fields.OPENMDTA__BID_OHLC, consumer); }
+    /** Visits owned values with borrowed subfield keys. */
+    public void forEachBidOhlcValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_2.BidOhlc> consumer) {
+        java.util.Objects.requireNonNull(consumer);
+        forEachValue(Fields.OPENMDTA__BID_OHLC, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_2.BidOhlc.decode(decoder)));
+    }
+
+    /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_2.AskOhlcDecoder> getAskOhlc() { return optionalValue(Fields.OPENMDTA__ASK_OHLC); }
+    /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_2.AskOhlc> askOhlc() {
+        var decoder = value(Fields.OPENMDTA__ASK_OHLC);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_2.AskOhlc.decode(decoder));
+    }
+    /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
+    public void forEachAskOhlc(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_2.AskOhlcDecoder> consumer) { forEachValue(Fields.OPENMDTA__ASK_OHLC, consumer); }
+    /** Visits owned values with borrowed subfield keys. */
+    public void forEachAskOhlcValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_2.AskOhlc> consumer) {
+        java.util.Objects.requireNonNull(consumer);
+        forEachValue(Fields.OPENMDTA__ASK_OHLC, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_2.AskOhlc.decode(decoder)));
+    }
+
+    /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvDecoder> getTradeOhlcvv() { return optionalValue(Fields.OPENMDTA__TRADE_OHLCVV); }
+    /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvv> tradeOhlcvv() {
+        var decoder = value(Fields.OPENMDTA__TRADE_OHLCVV);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvv.decode(decoder));
+    }
+    /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
+    public void forEachTradeOhlcvv(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvDecoder> consumer) { forEachValue(Fields.OPENMDTA__TRADE_OHLCVV, consumer); }
+    /** Visits owned values with borrowed subfield keys. */
+    public void forEachTradeOhlcvvValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvv> consumer) {
+        java.util.Objects.requireNonNull(consumer);
+        forEachValue(Fields.OPENMDTA__TRADE_OHLCVV, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_2.TradeOhlcvv.decode(decoder)));
     }
 
     /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */

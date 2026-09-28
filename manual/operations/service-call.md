@@ -6,7 +6,7 @@ Set the logical service ID, command and exact command fingerprint from the servi
 
 ## Request: ServiceCallRequest
 
-Format: `schemaId=102, templateId=13, version=16, blockLength=8`. The enclosing XML supports version 27; this message emits version 16.
+Format: `schemaId=102, templateId=13, version=16, blockLength=8`. The enclosing XML supports version 29; this message emits version 16.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ Format: `schemaId=102, templateId=13, version=16, blockLength=8`. The enclosing 
 
 ## Response: ServiceCallResult
 
-Format: `schemaId=102, templateId=109, version=16, blockLength=0`. The enclosing XML supports version 27; this message emits version 16.
+Format: `schemaId=102, templateId=109, version=16, blockLength=0`. The enclosing XML supports version 29; this message emits version 16.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
