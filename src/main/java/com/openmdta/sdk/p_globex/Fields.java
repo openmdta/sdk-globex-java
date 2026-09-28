@@ -1,6 +1,6 @@
 package com.openmdta.sdk.p_globex;
 
- public final class Fields {private Fields() {} public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder> GLOBEX__DISPLAY_NAME = new CatalogField<>("globex::DisplayName", new Format(900, 1, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder::new);
+ public final class Fields {private Fields() {} public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder> GLOBEX__DISPLAY_NAME = new CatalogField<>("globex::DisplayName", new Format(0, 1, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder::new);
 
 public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObjectDecoder> LUS__LUS_DOMAIN_OBJECT = new CatalogField<>("lus::LusDomainObject", new Format(65001, 65011, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObjectDecoder::new);
 

@@ -1,7 +1,6 @@
 # Remaining JSON bodies and typed SBE replacements
 
-Only Stream metadata, Catalog search/lookup, Keyfigures, and application service
-calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
+Only Keyfigures and application service calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
 the member named by the operation's XML; do not add an extra JSON length inside
 that member. The Listing and Timeseries sections below describe typed SBE
 replacements. Names and case are wire names. Omitted optional JSON request
@@ -24,9 +23,27 @@ dataset, quality, key, and incarnation follow the groups. These qualified
 names differ from Catalog's dataset-local numeric license IDs. Empty blocks
 can signal connectivity/incarnation changes. Do not discard them.
 
+## Stream metadata
+
+StreamMetadataResponse (schema 102, template 104, version 24) has a one-byte
+presence bitmap: bit 0 activity, bit 1 schedule, bit 2 holiday calendar. Three
+groups follow: weekly windows (weekday 0 Monday through 6 Sunday, then UTF-8
+open/close), exceptions (closed flag, then UTF-8 date/open/close), and holidays
+(name-presence flag, then UTF-8 date/name). Trailing UTF-8 members are dataset,
+quality, time zone, calendar name, and calendar display name. Empty strings do
+not replace the presence flags. The complete response is limited to 128 KiB.
+
 ## Catalog search
 
-Parameters are an object. All members are optional: `text` (string, default
+CatalogSearchQuery (schema 102, template 10, version 27) has two variable-data
+members. `searchQuerySbe` is a complete CatalogSearchQuery owner frame
+(schema 7, template 5, version 5); `expression` is an optional UTF-8 gateway
+identity/list expression, empty when absent. The owner frame contains catalog,
+typed filters, ranges, facets, keys, and pagination controls. Expression and
+keys cannot both be present. HTTPS still accepts its declared JSON request and
+adapts it to the same typed query.
+
+The TypeScript SDK accepts a parameters object. All members are optional: `text` (string, default
 empty), `filters` (object of field -> string or string[]), `ranges` (array),
 `facets` (string[]), `keys` (string[] or null), `limit` (integer, zero chooses
 the server default), `autocomplete` and `describe` (booleans, default false),
@@ -40,20 +57,24 @@ interval requires ge/le. `absolute_margin` and `relative_margin` must remain
 zero for catalog search. Ask for `describe:true` before choosing configured
 text/facet/range fields.
 
-The result object has these members:
+CatalogSearchResponse (schema 102, template 105, version 26) carries one
+`searchPageSbe` variable-data member: a complete CatalogSearchPage frame
+(schema 7, template 6, version 7) defined in `schemas/catalog-protocol.xml`.
+State 0 is the disabled page and has only `{state:"disabled"}` in the SDK.
+Ready and building pages decode to these typed members:
 
 | Member | Type and meaning |
 | --- | --- |
 | fields | Array of field-description objects supplied by the search projection |
 | state | String describing projection availability |
 | entries | Array of `{key:string,text:string[],facets:object<string,string>,numbers:object<string,number>}` |
-| total | Integer or null; unknown is not zero |
-| facets | Object of facet -> value -> integer count |
+| total | `bigint` or null; unknown is not zero |
+| facets | Object of facet -> value -> `bigint` count |
 | facet_meta | Object of facet -> `{exhaustive:boolean}` |
 | next_cursor | String or null; echo unchanged with the same query |
-| indexed_at_millis | Unix milliseconds or null |
+| indexed_at_millis | Unix milliseconds as `bigint`, or null |
 | checkpoint | Catalog WAL cursor or null |
-| indexed_records, processed_records | Unsigned integer counters |
+| indexed_records, processed_records | Unsigned `bigint` counters |
 | config | `{exposure_approved,text,facets,ranges,max_facet_values,boost,ranking,refresh_seconds}` |
 | error | String or null |
 | elapsed_ms | Numeric elapsed milliseconds |
@@ -64,22 +85,34 @@ a JSON pointer. Boost may be null. Facet/range selectors also have `name` and
 match/class/boost, or `{mode:"weighted",relevance:number,class:number,boost:number}`.
 A WAL cursor is `{dataset,generation,incarnation_id,universe_fingerprint,wal_id,max_sequence}`;
 incarnation_id is string or null, dataset is string, and the other values are
-unsigned 64-bit JSON integers. Use a lossless JSON reader when retaining them.
+unsigned 64-bit `bigint` values in the TypeScript SDK.
 
 ## Catalog lookup
 
-Parameters are `{dimensions?,expression?,cursor?,limit?}`. Dimensions maps names
-to nonempty string arrays. Supply at least one dimension configured by the
-Catalog, with at most 256 alternatives per dimension. Expressions are at most
-4096 bytes. Choose dimensions or expression, never both. Limit defaults
-to 25. The result is:
+CatalogLookupQuery (schema 102, template 11, version 23) has a ten-byte fixed
+block: `mode:uint8` (0 dimensions, 1 expression), `presence:uint8` (bit 0
+cursor, bit 1 limit), and `pageLimit:uint64` (zero when absent). A dimension group
+follows. Each dimension contains a group of UTF-8 values and then a UTF-8
+name. The final UTF-8 members are catalog, expression, and cursor in that
+order. Empty expression or cursor bytes are valid only when their mode or
+presence bit specifies them. Supply nonempty configured dimensions or an
+expression, never both; each dimension has at most 256 alternatives and an
+expression is at most 4096 bytes. An absent limit defaults to 25.
+
+CatalogLookupResponse (schema 102, template 106, version 25) contains one
+`browsePageSbe` variable-data member. Its bytes are a complete
+CatalogBrowsePage frame (schema 7, template 4, version 6) as defined in
+`schemas/catalog-protocol.xml`. The embedded lifecycle is a complete
+CatalogLifecycle frame (schema 14, template 8); decode it using the acting
+version in its own SBE header. Value origins are typed entries in the browse
+page. The generated TypeScript SDK decodes the page to:
 
 | Member | Type |
 | --- | --- |
 | catalog | Exact dataset string |
 | dataset_record_type | String or null |
 | dimensions | String[] of dimension names |
-| generation | Unsigned 64-bit integer |
+| generation | `bigint` unsigned 64-bit integer |
 | incarnation | Opaque string |
 | entries | Array of `{key:string,dimensions:object<string,string[]>,lifecycle:object|null,requirements:number[][]}` |
 | fields | Array of `{entity_type:string|null,multiple:boolean,label:string,semantic:string|null,wire_id:uint16,fixed_length:uint32|null}` |
@@ -91,9 +124,9 @@ to 25. The result is:
 Catalog requirements are an AND of arrays, each an OR of dataset-local license
 IDs; 16383 denotes public. Lifecycle contains `listing` ("Listed" or
 "NotListed"), `activity` ("Active", "Inactive", "Unknown", or null), `visible`
-(boolean), `effective_time_micros` (uint64), `hide_at_micros` and
-`hidden_at_unix_seconds` (uint64 or null), `source_position` (source
-position `{incarnation:uint64,message_id:uint64}`), `requirements` (number[][]), and `origin_ids` (uint32[]). Preserve
+(boolean), `effective_time_micros` (`bigint`), `hide_at_micros` and
+`hidden_at_unix_seconds` (`bigint` or null), `source_position` (source
+position `{incarnation:bigint,message_id:bigint}`), `requirements` (number[][]), `origin_ids` (uint32[]), and typed `origins`. Preserve
 opaque source positions if you do not interpret provenance. Record absence,
 listing, activity and field permission are separate facts.
 

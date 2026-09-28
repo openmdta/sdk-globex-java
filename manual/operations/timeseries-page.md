@@ -6,15 +6,26 @@ TimeseriesPageRequest is typed SBE: blockMask:uint64, resolutionMicros:uint64, b
 
 ## Request: TimeseriesPageRequest
 
-Format: `schemaId=102, templateId=14, version=17, blockLength=0`. The enclosing XML supports version 19; this message emits version 17.
+Format: `schemaId=102, templateId=14, version=20, blockLength=39`. The enclosing XML supports version 27; this message emits version 20.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
-| parametersJson | data | varDataEncoding | — | — | — |
+| blockMask | field | uint64 | 0 | — | — |
+| resolutionMicros | field | uint64 | 8 | — | — |
+| boundary | field | uint64 | 16 | — | — |
+| guard | field | uint64 | 24 | — | — |
+| pageLimit | field | uint32 | 32 | — | — |
+| presence | field | uint8 | 36 | — | — |
+| order | field | uint8 | 37 | — | — |
+| adjustment | field | uint8 | 38 | — | — |
+| selector | data | varDataEncoding | — | — | — |
+| dataset | data | varDataEncoding | — | — | — |
+| quality | data | varDataEncoding | — | — | — |
+| cursor | data | varDataEncoding | — | — | — |
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 19; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -41,10 +52,13 @@ Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing
 
 ## Response: TimeseriesPageResult
 
-Format: `schemaId=102, templateId=110, version=17, blockLength=0`. The enclosing XML supports version 19; this message emits version 17.
+Format: `schemaId=102, templateId=110, version=17, blockLength=17`. The enclosing XML supports version 27; this message emits version 17.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
-| resultJson | data | varDataEncoding | — | — | — |
+| fromMicros | field | uint64 | 0 | — | — |
+| throughMicros | field | uint64 | 8 | — | — |
+| status | field | uint8 | 16 | — | — |
+| nextCursor | data | varDataEncoding | — | — | — |
 
 [Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

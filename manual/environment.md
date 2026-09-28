@@ -4,7 +4,7 @@
 | --- | --- |
 | Environment | globex |
 | Gateway | gateway |
-| Applied revision | fd61b179330fb830d802b79c04082fdd15dfb6e65f685fb597a8df673bec9191 |
+| Applied revision | 908ec38cf773064cc2d186c559cf61bb49ac6ebc596463b7292d3b587597858c |
 | Public base URL | https://globex.openmdta.com/explorer |
 | WebSocket URL | wss://globex.openmdta.com/api/v1/ws |
 | Subprotocol | openmdta.sbe-session.v1 |
@@ -21,7 +21,7 @@
 | connectionQueueBytes | 67108864 |
 | heartbeatIntervalMillis | 5000 |
 | heartbeatTimeoutMillis | 15000 |
-| maximumGatewaySchemaVersion | 19 |
+| maximumGatewaySchemaVersion | 27 |
 | processQueueBytes | 268435456 |
 | responseBatchMessages | 64 |
 | responseBatchTargetBytes | 262144 |
@@ -41,9 +41,9 @@ HTTP SSE enabled: **false**. The current HTTP [OpenAPI document](https://globex.
 
 | Alias | Exact dataset ID | Configured capabilities |
 | --- | --- | --- |
-| [globex](datasets/0.md) | GLOBEX@globex | catalog, search |
-| [lus](datasets/1.md) | LUS@lus | catalog, latest, timeseries |
-| [xetra](datasets/2.md) | XETR@xetra | catalog |
+| [globex](datasets/0.md) | globex/globex | catalog, search |
+| [lus](datasets/1.md) | globex/lus | catalog, latest, timeseries |
+| [xetra](datasets/2.md) | globex/xetra | catalog |
 
 ## Application services
 

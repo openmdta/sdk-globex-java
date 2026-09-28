@@ -108,17 +108,15 @@ public final class Dataset {
         encoder.putCatalog(dataset, 0, dataset.length).putCursor(resume, 0, resume.length);
         return client.request("catalog-feed", encoder, CatalogRecord.listener(fields, dataset, true, listener));
     }
-    public Request metadata(java.util.function.Consumer<com.fasterxml.jackson.databind.JsonNode> listener) {
+    public Request metadata(java.util.function.Consumer<StreamMetadata> listener) {
         if (!binding.path("qualities").has(qualityName)) throw new IllegalArgumentException("Unconfigured quality");
         var encoder = new StreamMetadataQueryEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length);
         java.util.Objects.requireNonNull(listener);
         var metadata = new StreamMetadataResponseDecoder();
-        var json = new org.agrona.concurrent.UnsafeBuffer(0, 0);
         return client.request("stream-metadata", encoder, response -> {
-            response.decode(metadata); metadata.wrapMetadataJson(json);
-            if (metadata.limit() != response.body().capacity()) throw new IllegalArgumentException("Invalid metadata response length");
-            listener.accept(Contract.JSON.readTree(json.getStringWithoutLengthUtf8(0, json.capacity())));
+            response.decode(metadata);
+            listener.accept(StreamMetadata.decode(metadata, response.body().capacity()));
         });
     }
     public Feeds.Stream streamFeed(List<? extends Block<?>> blocks, Feeds.StreamSink sink) {

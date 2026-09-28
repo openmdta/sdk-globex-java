@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.stream_protocol" id="1" version="17" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.stream_protocol" id="1" version="18" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -87,7 +87,10 @@
     <data name="consumerName" id="111" type="varDataEncoding" sinceVersion="6"/>
   </message>
 
-  <message name="LatestSnapshot" id="8" blockLength="0">
+  <message name="LatestSnapshot" id="8" blockLength="13">
+    <field name="tradingDay" id="140" type="uint32" offset="0" sinceVersion="18"/>
+    <field name="partial" id="141" type="uint8" offset="4" sinceVersion="18"/>
+    <field name="lastAppliedId" id="142" type="uint64" offset="5" sinceVersion="18"/>
     <group name="blockValues" id="91" dimensionType="groupSizeEncoding" blockLength="26">
       <field name="blockId" id="92" type="uint16" offset="0"/>
       <field name="messageId" id="94" type="uint64" offset="2"/>
@@ -142,4 +145,11 @@
     <field name="throughId" id="2" type="uint64" offset="8"/>
   </message>
   <message name="FeedSnapshotRequest" id="15" blockLength="0" sinceVersion="17"/>
+  <!-- Independent status publication: a gap can change quality without an input event. -->
+  <message name="AggregationQuality" id="16" blockLength="13" sinceVersion="18">
+    <field name="tradingDay" id="1" type="uint32" offset="0"/>
+    <field name="partial" id="2" type="uint8" offset="4"/>
+    <field name="lastAppliedId" id="3" type="uint64" offset="5"/>
+    <data name="instrumentIdentifier" id="4" type="varDataEncoding"/>
+  </message>
 </messageSchema>

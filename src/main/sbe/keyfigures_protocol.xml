@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.keyfigures_protocol" id="10" version="0" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.keyfigures_protocol" id="10" version="1" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -11,13 +11,68 @@
       <type name="length" primitiveType="uint32" maxValue="2147483647"/>
       <type name="varData" primitiveType="uint8" length="0"/>
     </composite>
+    <composite name="largeGroupSizeEncoding">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint32" maxValue="2147483647"/>
+    </composite>
   </types>
-  <!-- Only authenticated gateway sessions may supply grants. Contract-specific
-       parameters and projected universe values remain JSON inside the SBE frame. -->
-  <message name="KeyfiguresRequest" id="1" blockLength="0">
-    <data name="requestJson" id="1" type="varDataEncoding"/>
+  <!-- Only authenticated gateway sessions may supply grants. Action: 1 schema,
+       2 instrument, 3 search, 4 describe, 5 status, 6 snapshot, 7 feed.
+       Age mode: 0 absent, 1 elapsed, 2 trading time, 3 last completed session.
+       Presence bit 0 marks priceCutoffMs. Quality: 0 any, 1 RT, 2 DL, 3 EOD. -->
+  <message name="KeyfiguresRequest" id="1" blockLength="20">
+    <field name="action" id="1" type="uint8" offset="0"/>
+    <field name="ageMode" id="2" type="uint8" offset="1"/>
+    <field name="presence" id="3" type="uint8" offset="2"/>
+    <field name="reserved" id="4" type="uint8" offset="3"/>
+    <field name="after" id="5" type="uint64" offset="4"/>
+    <field name="priceCutoffMs" id="6" type="uint64" offset="12"/>
+    <group name="grants" id="7" dimensionType="largeGroupSizeEncoding" blockLength="1">
+      <field name="quality" id="8" type="uint8" offset="0"/>
+      <data name="package_" id="9" type="varDataEncoding"/>
+    </group>
+    <data name="key" id="10" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="11" type="varDataEncoding"/>
+    <!-- Complete KeyfiguresSearchQuery frame, empty for other actions. -->
+    <data name="searchQuerySbe" id="12" type="varDataEncoding"/>
   </message>
   <message name="KeyfiguresResult" id="2" blockLength="0">
     <data name="resultJson" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="KeyfiguresSearchQuery" id="3" blockLength="13">
+    <field name="queryOffset" id="1" type="uint32" offset="0"/>
+    <field name="queryLimit" id="2" type="uint32" offset="4"/>
+    <field name="budget" id="3" type="uint32" offset="8"/>
+    <!-- bit 0 keys present; bit 1 cursor present. Empty values remain distinct. -->
+    <field name="presence" id="4" type="uint8" offset="12"/>
+    <group name="filters" id="5" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <group name="values" id="6" dimensionType="largeGroupSizeEncoding" blockLength="0">
+        <data name="value" id="7" type="varDataEncoding"/>
+      </group>
+      <data name="name" id="8" type="varDataEncoding"/>
+    </group>
+    <group name="facets" id="9" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="name" id="10" type="varDataEncoding"/>
+    </group>
+    <group name="keys" id="11" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="key" id="12" type="varDataEncoding"/>
+    </group>
+    <group name="ranges" id="13" dimensionType="largeGroupSizeEncoding" blockLength="49">
+      <!-- bits 0..3: gt, ge, lt, le present. -->
+      <field name="presence" id="14" type="uint8" offset="0"/>
+      <field name="gt" id="15" type="double" offset="1"/>
+      <field name="ge" id="16" type="double" offset="9"/>
+      <field name="lt" id="17" type="double" offset="17"/>
+      <field name="le" id="18" type="double" offset="25"/>
+      <field name="absoluteMargin" id="19" type="double" offset="33"/>
+      <field name="relativeMargin" id="20" type="double" offset="41"/>
+      <data name="field" id="21" type="varDataEncoding"/>
+    </group>
+    <group name="sorts" id="22" dimensionType="largeGroupSizeEncoding" blockLength="1">
+      <field name="descending" id="23" type="uint8" offset="0"/>
+      <data name="field" id="24" type="varDataEncoding"/>
+    </group>
+    <data name="text" id="25" type="varDataEncoding"/>
+    <data name="cursor" id="26" type="varDataEncoding"/>
   </message>
 </messageSchema>

@@ -47,10 +47,9 @@ public final class CatalogRecord {
                 }
                 if (!subscription) throw new IllegalArgumentException("Unexpected Catalog read response");
                 response.decode(control);
-                control.wrapJson(cursorBytes);
-                var value = Contract.JSON.readTree(cursorBytes.getStringWithoutLengthUtf8(0, cursorBytes.capacity()));
-                int kind = switch (value.path("kind").asText()) { case "snapshot_begin" -> 1; case "snapshot_complete" -> 2; case "cursor" -> 3; default -> -1; };
-                String cursor = kind == 1 ? "" : value.path("cursor").isTextual() ? value.path("cursor").asText() : "";
+                int kind = control.kind();
+                control.wrapCursor(cursorBytes);
+                String cursor = cursorBytes.getStringWithoutLengthUtf8(0, cursorBytes.capacity());
                 if (control.limit() != response.body().capacity()) throw new IllegalArgumentException("Invalid Catalog control length");
                 switch (kind) {
                     case 1 -> {

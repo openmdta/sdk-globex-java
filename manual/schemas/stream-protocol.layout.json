@@ -1,8 +1,8 @@
 {
   "id": 1,
-  "version": 17,
+  "version": 18,
   "package": "openmdta.stream",
-  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.stream\" id=\"1\" version=\"17\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"largeGroupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint32\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <type name=\"licenseIds\" primitiveType=\"uint16\" length=\"4\"/>\n  </types>\n\n  <message name=\"InstrumentUpdate\" id=\"1\" blockLength=\"24\">\n    <field name=\"messageId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"eventTimeMicros\" id=\"3\" type=\"uint64\" offset=\"16\" sinceVersion=\"3\"/>\n    <group name=\"blockUpdates\" id=\"4\" dimensionType=\"groupSizeEncoding\" blockLength=\"18\">\n      <field name=\"blockId\" id=\"5\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"eventTimeMicros\" id=\"9\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"licenseIds\" id=\"10\" type=\"licenseIds\" offset=\"10\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"7\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"8\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"SnapshotManifest\" id=\"2\" blockLength=\"69\">\n    <field name=\"originId\" id=\"20\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"observedHead\" id=\"21\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"instrumentCapacity\" id=\"22\" type=\"uint32\" offset=\"16\"/>\n    <field name=\"shardCount\" id=\"23\" type=\"uint32\" offset=\"20\"/>\n    <field name=\"slotStride\" id=\"24\" type=\"uint32\" offset=\"24\"/>\n    <field name=\"rawLength\" id=\"25\" type=\"uint64\" offset=\"28\"/>\n    <field name=\"layoutFingerprint\" id=\"26\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"capacityExhausted\" id=\"41\" type=\"uint8\" offset=\"44\"/>\n    <field name=\"capacityExhaustedSinceMicros\" id=\"42\" type=\"uint64\" offset=\"45\"/>\n    <field name=\"capacityGapAfterId\" id=\"43\" type=\"uint64\" offset=\"53\"/>\n    <field name=\"sourcePolicyFingerprint\" id=\"46\" type=\"uint64\" offset=\"61\" sinceVersion=\"4\"/>\n    <group name=\"coverageEntries\" id=\"27\" dimensionType=\"groupSizeEncoding\" blockLength=\"62\">\n      <field name=\"kind\" id=\"28\" type=\"uint8\" offset=\"0\"/>\n      <field name=\"afterId\" id=\"29\" type=\"uint64\" offset=\"1\"/>\n      <field name=\"throughId\" id=\"30\" type=\"uint64\" offset=\"9\"/>\n      <field name=\"firstSeenMicros\" id=\"31\" type=\"uint64\" offset=\"17\"/>\n      <field name=\"lastSeenMicros\" id=\"32\" type=\"uint64\" offset=\"25\"/>\n      <field name=\"attempts\" id=\"33\" type=\"uint32\" offset=\"33\"/>\n      <field name=\"nextRetryMicros\" id=\"34\" type=\"uint64\" offset=\"37\"/>\n      <field name=\"status\" id=\"35\" type=\"uint8\" offset=\"45\"/>\n      <field name=\"beforeEventTimeMicros\" id=\"44\" type=\"uint64\" offset=\"46\" sinceVersion=\"3\"/>\n      <field name=\"afterEventTimeMicros\" id=\"45\" type=\"uint64\" offset=\"54\" sinceVersion=\"3\"/>\n    </group>\n    <group name=\"blockLayouts\" id=\"36\" dimensionType=\"groupSizeEncoding\" blockLength=\"10\">\n      <field name=\"blockId\" id=\"37\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"offset\" id=\"39\" type=\"uint32\" offset=\"2\"/>\n      <field name=\"length\" id=\"40\" type=\"uint32\" offset=\"6\"/>\n    </group>\n  </message>\n\n  <message name=\"InstrumentDirectory\" id=\"3\" blockLength=\"4\">\n    <field name=\"instrumentCount\" id=\"50\" type=\"uint32\" offset=\"0\"/>\n    <group name=\"instruments\" id=\"51\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"4\">\n      <field name=\"arenaPosition\" id=\"52\" type=\"uint32\" offset=\"0\"/>\n      <data name=\"instrumentIdentifier\" id=\"53\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n\n  <message name=\"StreamCoverage\" id=\"6\" blockLength=\"33\">\n    <field name=\"afterId\" id=\"80\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"81\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"kind\" id=\"82\" type=\"uint8\" offset=\"16\"/>\n    <field name=\"beforeEventTimeMicros\" id=\"84\" type=\"uint64\" offset=\"17\" sinceVersion=\"3\"/>\n    <field name=\"afterEventTimeMicros\" id=\"85\" type=\"uint64\" offset=\"25\" sinceVersion=\"3\"/>\n  </message>\n\n  <message name=\"StreamSubscribe\" id=\"7\" blockLength=\"0\">\n    <data name=\"datasetIdentifier\" id=\"83\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"111\" type=\"varDataEncoding\" sinceVersion=\"6\"/>\n  </message>\n\n  <message name=\"LatestSnapshot\" id=\"8\" blockLength=\"0\">\n    <group name=\"blockValues\" id=\"91\" dimensionType=\"groupSizeEncoding\" blockLength=\"26\">\n      <field name=\"blockId\" id=\"92\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"messageId\" id=\"94\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"eventTimeMicros\" id=\"95\" type=\"uint64\" offset=\"10\"/>\n      <field name=\"licenseIds\" id=\"99\" type=\"licenseIds\" offset=\"18\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"96\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"97\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"LatestSubscribe\" id=\"9\" blockLength=\"0\">\n    <data name=\"instrumentIdentifier\" id=\"98\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ImportBoundary\" id=\"10\" blockLength=\"57\">\n    <field name=\"messageId\" id=\"100\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"101\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"beginMessageId\" id=\"102\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"recordCount\" id=\"103\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"effectiveTimeMicros\" id=\"104\" type=\"uint64\" offset=\"32\"/>\n    <field name=\"kind\" id=\"105\" type=\"uint8\" offset=\"40\"/>\n    <field name=\"incarnation\" id=\"106\" type=\"uint64\" offset=\"41\"/>\n    <field name=\"eventTimeMicros\" id=\"109\" type=\"uint64\" offset=\"49\" sinceVersion=\"3\"/>\n    <data name=\"runId\" id=\"108\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"CatalogRecord\" id=\"11\" blockLength=\"50\">\n    <field name=\"messageId\" id=\"120\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"121\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"effectiveTimeMicros\" id=\"122\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"eventTimeMicros\" id=\"123\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"listed\" id=\"124\" type=\"uint8\" offset=\"32\"/>\n    <field name=\"activity\" id=\"125\" type=\"uint8\" offset=\"33\"/>\n    <field name=\"licenseIds\" id=\"126\" type=\"licenseIds\" offset=\"34\"/>\n    <field name=\"incarnation\" id=\"131\" type=\"uint64\" offset=\"42\"/>\n    <data name=\"dataset\" id=\"127\" type=\"varDataEncoding\"/>\n    <data name=\"datasetRecordKey\" id=\"128\" type=\"varDataEncoding\"/>\n    <data name=\"metadata\" id=\"129\" type=\"varDataEncoding\"/>\n    <data name=\"payload\" id=\"130\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Opt-in dataset-wide live subscription. Older StreamSubscribe clients retain their wire contract. -->\n  <message name=\"FeedSubscribe\" id=\"12\" blockLength=\"0\" sinceVersion=\"17\">\n    <data name=\"datasetIdentifier\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Sent first, after the receiver is registered and before any live records. -->\n  <message name=\"FeedFence\" id=\"13\" blockLength=\"8\" sinceVersion=\"17\">\n    <field name=\"throughId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n  </message>\n  <message name=\"FeedRecoveryRequest\" id=\"14\" blockLength=\"16\" sinceVersion=\"17\">\n    <field name=\"afterId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n  </message>\n  <message name=\"FeedSnapshotRequest\" id=\"15\" blockLength=\"0\" sinceVersion=\"17\"/>\n</messageSchema>\n",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.stream\" id=\"1\" version=\"18\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"largeGroupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint32\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <type name=\"licenseIds\" primitiveType=\"uint16\" length=\"4\"/>\n  </types>\n\n  <message name=\"InstrumentUpdate\" id=\"1\" blockLength=\"24\">\n    <field name=\"messageId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"eventTimeMicros\" id=\"3\" type=\"uint64\" offset=\"16\" sinceVersion=\"3\"/>\n    <group name=\"blockUpdates\" id=\"4\" dimensionType=\"groupSizeEncoding\" blockLength=\"18\">\n      <field name=\"blockId\" id=\"5\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"eventTimeMicros\" id=\"9\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"licenseIds\" id=\"10\" type=\"licenseIds\" offset=\"10\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"7\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"8\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"SnapshotManifest\" id=\"2\" blockLength=\"69\">\n    <field name=\"originId\" id=\"20\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"observedHead\" id=\"21\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"instrumentCapacity\" id=\"22\" type=\"uint32\" offset=\"16\"/>\n    <field name=\"shardCount\" id=\"23\" type=\"uint32\" offset=\"20\"/>\n    <field name=\"slotStride\" id=\"24\" type=\"uint32\" offset=\"24\"/>\n    <field name=\"rawLength\" id=\"25\" type=\"uint64\" offset=\"28\"/>\n    <field name=\"layoutFingerprint\" id=\"26\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"capacityExhausted\" id=\"41\" type=\"uint8\" offset=\"44\"/>\n    <field name=\"capacityExhaustedSinceMicros\" id=\"42\" type=\"uint64\" offset=\"45\"/>\n    <field name=\"capacityGapAfterId\" id=\"43\" type=\"uint64\" offset=\"53\"/>\n    <field name=\"sourcePolicyFingerprint\" id=\"46\" type=\"uint64\" offset=\"61\" sinceVersion=\"4\"/>\n    <group name=\"coverageEntries\" id=\"27\" dimensionType=\"groupSizeEncoding\" blockLength=\"62\">\n      <field name=\"kind\" id=\"28\" type=\"uint8\" offset=\"0\"/>\n      <field name=\"afterId\" id=\"29\" type=\"uint64\" offset=\"1\"/>\n      <field name=\"throughId\" id=\"30\" type=\"uint64\" offset=\"9\"/>\n      <field name=\"firstSeenMicros\" id=\"31\" type=\"uint64\" offset=\"17\"/>\n      <field name=\"lastSeenMicros\" id=\"32\" type=\"uint64\" offset=\"25\"/>\n      <field name=\"attempts\" id=\"33\" type=\"uint32\" offset=\"33\"/>\n      <field name=\"nextRetryMicros\" id=\"34\" type=\"uint64\" offset=\"37\"/>\n      <field name=\"status\" id=\"35\" type=\"uint8\" offset=\"45\"/>\n      <field name=\"beforeEventTimeMicros\" id=\"44\" type=\"uint64\" offset=\"46\" sinceVersion=\"3\"/>\n      <field name=\"afterEventTimeMicros\" id=\"45\" type=\"uint64\" offset=\"54\" sinceVersion=\"3\"/>\n    </group>\n    <group name=\"blockLayouts\" id=\"36\" dimensionType=\"groupSizeEncoding\" blockLength=\"10\">\n      <field name=\"blockId\" id=\"37\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"offset\" id=\"39\" type=\"uint32\" offset=\"2\"/>\n      <field name=\"length\" id=\"40\" type=\"uint32\" offset=\"6\"/>\n    </group>\n  </message>\n\n  <message name=\"InstrumentDirectory\" id=\"3\" blockLength=\"4\">\n    <field name=\"instrumentCount\" id=\"50\" type=\"uint32\" offset=\"0\"/>\n    <group name=\"instruments\" id=\"51\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"4\">\n      <field name=\"arenaPosition\" id=\"52\" type=\"uint32\" offset=\"0\"/>\n      <data name=\"instrumentIdentifier\" id=\"53\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n\n  <message name=\"StreamCoverage\" id=\"6\" blockLength=\"33\">\n    <field name=\"afterId\" id=\"80\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"81\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"kind\" id=\"82\" type=\"uint8\" offset=\"16\"/>\n    <field name=\"beforeEventTimeMicros\" id=\"84\" type=\"uint64\" offset=\"17\" sinceVersion=\"3\"/>\n    <field name=\"afterEventTimeMicros\" id=\"85\" type=\"uint64\" offset=\"25\" sinceVersion=\"3\"/>\n  </message>\n\n  <message name=\"StreamSubscribe\" id=\"7\" blockLength=\"0\">\n    <data name=\"datasetIdentifier\" id=\"83\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"111\" type=\"varDataEncoding\" sinceVersion=\"6\"/>\n  </message>\n\n  <message name=\"LatestSnapshot\" id=\"8\" blockLength=\"13\">\n    <field name=\"tradingDay\" id=\"140\" type=\"uint32\" offset=\"0\" sinceVersion=\"18\"/>\n    <field name=\"partial\" id=\"141\" type=\"uint8\" offset=\"4\" sinceVersion=\"18\"/>\n    <field name=\"lastAppliedId\" id=\"142\" type=\"uint64\" offset=\"5\" sinceVersion=\"18\"/>\n    <group name=\"blockValues\" id=\"91\" dimensionType=\"groupSizeEncoding\" blockLength=\"26\">\n      <field name=\"blockId\" id=\"92\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"messageId\" id=\"94\" type=\"uint64\" offset=\"2\"/>\n      <field name=\"eventTimeMicros\" id=\"95\" type=\"uint64\" offset=\"10\"/>\n      <field name=\"licenseIds\" id=\"99\" type=\"licenseIds\" offset=\"18\" sinceVersion=\"5\"/>\n      <data name=\"blockBytes\" id=\"96\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"instrumentIdentifier\" id=\"97\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"LatestSubscribe\" id=\"9\" blockLength=\"0\">\n    <data name=\"instrumentIdentifier\" id=\"98\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ImportBoundary\" id=\"10\" blockLength=\"57\">\n    <field name=\"messageId\" id=\"100\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"101\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"beginMessageId\" id=\"102\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"recordCount\" id=\"103\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"effectiveTimeMicros\" id=\"104\" type=\"uint64\" offset=\"32\"/>\n    <field name=\"kind\" id=\"105\" type=\"uint8\" offset=\"40\"/>\n    <field name=\"incarnation\" id=\"106\" type=\"uint64\" offset=\"41\"/>\n    <field name=\"eventTimeMicros\" id=\"109\" type=\"uint64\" offset=\"49\" sinceVersion=\"3\"/>\n    <data name=\"runId\" id=\"108\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"CatalogRecord\" id=\"11\" blockLength=\"50\">\n    <field name=\"messageId\" id=\"120\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"previousMessageId\" id=\"121\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"effectiveTimeMicros\" id=\"122\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"eventTimeMicros\" id=\"123\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"listed\" id=\"124\" type=\"uint8\" offset=\"32\"/>\n    <field name=\"activity\" id=\"125\" type=\"uint8\" offset=\"33\"/>\n    <field name=\"licenseIds\" id=\"126\" type=\"licenseIds\" offset=\"34\"/>\n    <field name=\"incarnation\" id=\"131\" type=\"uint64\" offset=\"42\"/>\n    <data name=\"dataset\" id=\"127\" type=\"varDataEncoding\"/>\n    <data name=\"datasetRecordKey\" id=\"128\" type=\"varDataEncoding\"/>\n    <data name=\"metadata\" id=\"129\" type=\"varDataEncoding\"/>\n    <data name=\"payload\" id=\"130\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Opt-in dataset-wide live subscription. Older StreamSubscribe clients retain their wire contract. -->\n  <message name=\"FeedSubscribe\" id=\"12\" blockLength=\"0\" sinceVersion=\"17\">\n    <data name=\"datasetIdentifier\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"consumerName\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Sent first, after the receiver is registered and before any live records. -->\n  <message name=\"FeedFence\" id=\"13\" blockLength=\"8\" sinceVersion=\"17\">\n    <field name=\"throughId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n  </message>\n  <message name=\"FeedRecoveryRequest\" id=\"14\" blockLength=\"16\" sinceVersion=\"17\">\n    <field name=\"afterId\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"throughId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n  </message>\n  <message name=\"FeedSnapshotRequest\" id=\"15\" blockLength=\"0\" sinceVersion=\"17\"/>\n  <!-- Independent status publication: a gap can change quality without an input event. -->\n  <message name=\"AggregationQuality\" id=\"16\" blockLength=\"13\" sinceVersion=\"18\">\n    <field name=\"tradingDay\" id=\"1\" type=\"uint32\" offset=\"0\"/>\n    <field name=\"partial\" id=\"2\" type=\"uint8\" offset=\"4\"/>\n    <field name=\"lastAppliedId\" id=\"3\" type=\"uint64\" offset=\"5\"/>\n    <data name=\"instrumentIdentifier\" id=\"4\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
   "messages": [
     {
       "name": "InstrumentUpdate",
@@ -560,9 +560,45 @@
     {
       "name": "LatestSnapshot",
       "id": 8,
-      "blockLength": 0,
+      "blockLength": 13,
       "sinceVersion": 0,
       "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "140",
+            "name": "tradingDay",
+            "offset": "0",
+            "sinceVersion": "18",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "141",
+            "name": "partial",
+            "offset": "4",
+            "sinceVersion": "18",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "142",
+            "name": "lastAppliedId",
+            "offset": "5",
+            "sinceVersion": "18",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
         {
           "kind": "group",
           "attributes": {
@@ -986,6 +1022,57 @@
       "blockLength": 0,
       "sinceVersion": 17,
       "fields": []
+    },
+    {
+      "name": "AggregationQuality",
+      "id": 16,
+      "blockLength": 13,
+      "sinceVersion": 18,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "1",
+            "name": "tradingDay",
+            "offset": "0",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "2",
+            "name": "partial",
+            "offset": "4",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "3",
+            "name": "lastAppliedId",
+            "offset": "5",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "4",
+            "name": "instrumentIdentifier",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
     }
   ],
   "types": [
@@ -2972,7 +3059,67 @@
       "name": "LatestSnapshot",
       "id": 8,
       "signal": "BeginMessage",
+      "offset": 13,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "tradingDay",
+      "id": 140,
+      "signal": "BeginField",
       "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 18
+    },
+    {
+      "name": "tradingDay",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "partial",
+      "id": 141,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 18
+    },
+    {
+      "name": "partial",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "lastAppliedId",
+      "id": 142,
+      "signal": "BeginField",
+      "offset": 5,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 18
+    },
+    {
+      "name": "lastAppliedId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
       "primitive": null,
       "length": null,
       "presence": "Required",
@@ -4460,6 +4607,166 @@
     },
     {
       "name": "FeedSnapshotRequest",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "AggregationQuality",
+      "id": 16,
+      "signal": "BeginMessage",
+      "offset": 13,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 18
+    },
+    {
+      "name": "tradingDay",
+      "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "tradingDay",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "partial",
+      "id": 2,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "partial",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "lastAppliedId",
+      "id": 3,
+      "signal": "BeginField",
+      "offset": 5,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "lastAppliedId",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": 4,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "instrumentIdentifier",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "AggregationQuality",
       "id": null,
       "signal": "EndMessage",
       "offset": null,

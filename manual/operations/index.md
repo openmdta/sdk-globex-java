@@ -7,10 +7,8 @@ These operations are configured for this environment. Availability and permissio
 | [snapshot](snapshot.md) | latest | Finite; wait for DONE |
 | [stream](stream.md) | latest | Continues until cancelled/error |
 | [ts-raw](ts-raw.md) | timeseries | Finite; wait for DONE |
-| [ts-candle](ts-candle.md) | timeseries | Finite; wait for DONE |
 | [catalog](catalog.md) | catalog | Finite; wait for DONE |
 | [ts-raw-stream](ts-raw-stream.md) | timeseries | Continues until cancelled/error |
-| [ts-candle-stream](ts-candle-stream.md) | timeseries | Continues until cancelled/error |
 | [stream-metadata](stream-metadata.md) | latest | Finite; wait for DONE |
 | [catalog-search](catalog-search.md) | search | Finite; wait for DONE |
 | [catalog-lookup](catalog-lookup.md) | catalog | Finite; wait for DONE |

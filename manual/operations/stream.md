@@ -2,11 +2,11 @@
 
 Continues until cancelled/error. Carry the request in a session OpenRequest, and route responses by request ID. See [session](../session.md) and [encoding](../encoding.md).
 
-Select fields with the deployed 64-bit block mask. `expression` accepts typed identifiers such as `ISIN(US0378331005)`, `US(AAPL)`, `LIST(CODE)`, or an exact `RAW(DATASET@source,recordKey)`. Venue groups append `@XNAS,XXXX` for a union or `@XNAS>XXXX` for fallback. A RAW selector has no venue preferences. Set adjustment to `raw` or `split`; send the exact dataset explicitly. Snapshot batches have phase 1; live updates phase 2. A stream first establishes current state, then updates it. Preserve clear markers and source message boundaries.
+Select fields with the deployed 64-bit block mask. `expression` accepts typed identifiers such as `ISIN(US0378331005)`, `US(AAPL)`, `LIST(CODE)`, or an exact `RAW(namespace/name,recordKey)`. Venue groups append `@XNAS,XXXX` for a union or `@XNAS>XXXX` for fallback. A RAW selector has no venue preferences. Set adjustment to `raw` or `split`; send the exact dataset explicitly. Snapshot batches have phase 1; live updates phase 2. A stream first establishes current state, then updates it. Preserve clear markers and source message boundaries.
 
 ## Request: StreamRequest
 
-Format: `schemaId=102, templateId=2, version=14, blockLength=8`. The enclosing XML supports version 19; this message emits version 14.
+Format: `schemaId=102, templateId=2, version=14, blockLength=8`. The enclosing XML supports version 27; this message emits version 14.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -17,7 +17,7 @@ Format: `schemaId=102, templateId=2, version=14, blockLength=8`. The enclosing X
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 19; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 27; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

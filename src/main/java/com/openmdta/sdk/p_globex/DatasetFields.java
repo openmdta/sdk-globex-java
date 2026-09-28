@@ -2,7 +2,7 @@ package com.openmdta.sdk.p_globex;
 
 public final class DatasetFields {
     private DatasetFields() {}
-    public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder> GLOBEX_GLOBEX_DISPLAY_NAME = new CatalogField<>("display_name", "globex::DisplayName", new Format(900, 1, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder::new);
+    public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder> GLOBEX_GLOBEX_DISPLAY_NAME = new CatalogField<>("DisplayName", "globex::DisplayName", new Format(0, 1, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayNameDecoder::new);
     public static final java.util.List<CatalogField<?>> GLOBEX_ALL = java.util.List.of(GLOBEX_GLOBEX_DISPLAY_NAME);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder> LUS_INSTRUMENT_NAMES = new CatalogField<>("instrument_names", "openmdta::InstrumentNames", new Format(100, 35, 3, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder::new);
     public static final java.util.List<CatalogField<?>> LUS_ALL = java.util.List.of(LUS_INSTRUMENT_NAMES);
@@ -16,14 +16,12 @@ public final class DatasetFields {
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingDatesDecoder> XETRA_LISTING_TRADING_DATES = new CatalogField<>("listing_trading_dates", "openmdta::ListingTradingDates", new Format(100, 41, 3, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingDatesDecoder::new);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingRulesDecoder> XETRA_LISTING_TRADING_RULES = new CatalogField<>("listing_trading_rules", "openmdta::ListingTradingRules", new Format(100, 42, 3, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingRulesDecoder::new);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.ListingVenueDecoder> XETRA_LISTING_VENUE = new CatalogField<>("listing_venue", "openmdta::ListingVenue", new Format(100, 40, 3, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.ListingVenueDecoder::new);
-    public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListingDecoder> XETRA_XETRA_XETRA_LISTING = new CatalogField<>("xetra_listing", "xetra::XetraListing", new Format(201, 101, 1, 0), com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListingDecoder::new);
-    public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraMarketDetailsDecoder> XETRA_XETRA_XETRA_MARKET_DETAILS = new CatalogField<>("xetra_market_details", "xetra::XetraMarketDetails", new Format(201, 102, 1, 0), com.openmdta.sdk.p_globex.sbe.catalog_3.XetraMarketDetailsDecoder::new);
-    public static final java.util.List<CatalogField<?>> XETRA_ALL = java.util.List.of(XETRA_CLASSIFICATION, XETRA_INSTRUMENT_NAMES, XETRA_LISTING_CLASSIFICATION, XETRA_LISTING_ORDER_SIZE, XETRA_LISTING_QUOTATION, XETRA_LISTING_QUOTE_PARAMETERS, XETRA_LISTING_TICK_SCHEDULE, XETRA_LISTING_TRADING_DATES, XETRA_LISTING_TRADING_RULES, XETRA_LISTING_VENUE, XETRA_XETRA_XETRA_LISTING, XETRA_XETRA_XETRA_MARKET_DETAILS);
+    public static final java.util.List<CatalogField<?>> XETRA_ALL = java.util.List.of(XETRA_CLASSIFICATION, XETRA_INSTRUMENT_NAMES, XETRA_LISTING_CLASSIFICATION, XETRA_LISTING_ORDER_SIZE, XETRA_LISTING_QUOTATION, XETRA_LISTING_QUOTE_PARAMETERS, XETRA_LISTING_TICK_SCHEDULE, XETRA_LISTING_TRADING_DATES, XETRA_LISTING_TRADING_RULES, XETRA_LISTING_VENUE);
     public static java.util.List<CatalogField<?>> forDataset(String dataset) {
         return switch (dataset) {
-            case "GLOBEX@globex" -> GLOBEX_ALL;
-            case "LUS@lus" -> LUS_ALL;
-            case "XETR@xetra" -> XETRA_ALL;
+            case "globex/globex" -> GLOBEX_ALL;
+            case "globex/lus" -> LUS_ALL;
+            case "globex/xetra" -> XETRA_ALL;
             default -> java.util.List.of();
         };
     }

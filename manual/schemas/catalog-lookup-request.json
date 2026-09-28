@@ -35,6 +35,6 @@
       ]
     }
   },
-  "title": "Parameters",
+  "title": "CatalogLookupParameters",
   "type": "object"
 }

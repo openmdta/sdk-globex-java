@@ -43,6 +43,7 @@
 <argument>${project.basedir}/src/main/sbe/sbe_websocket.xml</argument>
 <argument>${project.basedir}/src/main/sbe/service_protocol.xml</argument>
 <argument>${project.basedir}/src/main/sbe/stream_0.xml</argument>
+<argument>${project.basedir}/src/main/sbe/stream_1.xml</argument>
 <argument>${project.basedir}/src/main/sbe/stream_protocol.xml</argument>
 <argument>${project.basedir}/src/main/sbe/timeseries_protocol.xml</argument>
 </arguments>

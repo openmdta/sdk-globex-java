@@ -1,6 +1,6 @@
 # globex — Java 17 client
 
-This package targets applied revision `fd61b179330fb830d802b79c04082fdd15dfb6e65f685fb597a8df673bec9191`. Its endpoints, datasets,
+This package targets applied revision `908ec38cf773064cc2d186c559cf61bb49ac6ebc596463b7292d3b587597858c`. Its endpoints, datasets,
 field bindings and service fingerprints describe this one environment. Start
 with [the environment](manual/environment.md), [operations](manual/operations/index.md)
 and [codec index](codecs.md). Credentials are intentionally absent.
@@ -315,7 +315,8 @@ connections when a slow durable sink should not delay unrelated subscriptions.
   a new snapshot. There is no `catalogRecover` or `catalogSnapshot` command.
 - `dataset.quality("DL")` / `quality("EOD")` selects configured Stream/history
   request quality.
-- `metadata(listener)` delivers the source metadata as a Jackson `JsonNode`.
+- `metadata(listener)` delivers an owned, typed `StreamMetadata` with optional
+  activity, weekly windows, exceptions, and holidays.
   `client.get(pathAndQuery)` is an allocating HTTP/JSON convenience API scoped
   to this environment. Other operations in the environment's manual contract
   do not yet have Java wrappers; there is no public raw request escape hatch.

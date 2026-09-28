@@ -6,8 +6,10 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 
 | Semantic | Descriptor | Borrowed getter | Owned value getter | Decoder / encoder package |
 | --- | --- | --- | --- | --- |
+| `openmdta::AskDailyOhlc` | `Blocks.ASK_DAILY_OHLC` | `MarketDataUpdate.getAskDailyOhlc()` | `MarketDataUpdate.askDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.AskDailyOhlc` |
 | `openmdta::BidAsk` | `Blocks.BID_ASK` | `MarketDataUpdate.getBidAsk()` | `MarketDataUpdate.bidAsk()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidAsk` |
-| `openmdta::BidAskCandle` | `Blocks.BID_ASK_CANDLE` | `MarketDataUpdate.getBidAskCandle()` | `MarketDataUpdate.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandle` |
+| `openmdta::BidAskCandle` | `Blocks.BID_ASK_CANDLE` | `MarketDataUpdate.getBidAskCandle()` | `MarketDataUpdate.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_1.BidAskCandle` |
+| `openmdta::BidDailyOhlc` | `Blocks.BID_DAILY_OHLC` | `MarketDataUpdate.getBidDailyOhlc()` | `MarketDataUpdate.bidDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidDailyOhlc` |
 | `globex::DisplayName` | `Fields.GLOBEX__DISPLAY_NAME` | `CatalogRecord.getDisplayName()` | `CatalogRecord.displayName()` | `com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayName` |
 | `lus::LusDomainObject` | `Fields.LUS__LUS_DOMAIN_OBJECT` | `CatalogRecord.getLusDomainObject()` | `CatalogRecord.lusDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObject` |
 | `lus::LusNameHash` | `Fields.LUS__LUS_NAME_HASH` | `CatalogRecord.getLusNameHash()` | `CatalogRecord.lusNameHash()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusNameHash` |
