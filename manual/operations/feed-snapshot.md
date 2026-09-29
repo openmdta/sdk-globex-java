@@ -2,22 +2,21 @@
 
 Finite; wait for DONE. Carry the request in a session OpenRequest, and route responses by request ID. See [session](../session.md) and [encoding](../encoding.md).
 
-Send the exact dataset, configured quality, and selected-field block mask. Feed recovery additionally sends exclusive afterMessageId and inclusive throughMessageId. Live must start with a fence; snapshot must start with its header. FeedControl kinds are 1=fence, 2=opened gap, 3=coverage watermark. Follow the full [persistence and recovery algorithm](../persistence-and-recovery.md). Message batches alone never establish durable coverage.
+Send the exact dataset, configured quality, and a FieldSelection SBE frame with semantic field names. Feed recovery additionally sends exclusive afterMessageId and inclusive throughMessageId. Live must start with a fence; snapshot must start with its header. FeedControl kinds are 1=fence, 2=opened gap, 3=coverage watermark. Follow the full [persistence and recovery algorithm](../persistence-and-recovery.md). Message batches alone never establish durable coverage.
 
 ## Request: FeedSnapshotRequest
 
-Format: `schemaId=102, templateId=17, version=29, blockLength=8`. The enclosing XML supports version 29; this message emits version 29.
+Format: `schemaId=102, templateId=17, version=30, blockLength=0`. The enclosing XML supports version 32; this message emits version 30.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
-| blockMask | field | uint64 | 0 | — | — |
 | dataset | data | varDataEncoding | — | — | — |
 | quality | data | varDataEncoding | — | — | — |
-| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 30 | — |
 
 ## Response: FeedSnapshotHeader
 
-Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing XML supports version 29; this message emits version 18.
+Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing XML supports version 32; this message emits version 18.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -29,7 +28,7 @@ Format: `schemaId=102, templateId=112, version=18, blockLength=8`. The enclosing
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 32; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -54,4 +53,4 @@ Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing
 | dataset | data | varDataEncoding | — | — | — |
 | payload | data | varDataEncoding | — | — | — |
 
-[Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.
+[Complete gateway XML](../schemas/gateway-protocol.xml) · [Binary bodies](../binary-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

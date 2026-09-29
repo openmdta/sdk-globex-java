@@ -6,7 +6,7 @@ Encode the identifiers group, then the field-label group, then the exact catalog
 
 ## Request: CatalogRequest
 
-Format: `schemaId=102, templateId=5, version=5, blockLength=0`. The enclosing XML supports version 29; this message emits version 5.
+Format: `schemaId=102, templateId=5, version=5, blockLength=0`. The enclosing XML supports version 32; this message emits version 5.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Format: `schemaId=102, templateId=5, version=5, blockLength=0`. The enclosing XM
 
 ## Response: CatalogRecord
 
-Format: `schemaId=102, templateId=102, version=5, blockLength=30`. The enclosing XML supports version 29; this message emits version 5.
+Format: `schemaId=102, templateId=102, version=5, blockLength=30`. The enclosing XML supports version 32; this message emits version 5.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -41,4 +41,4 @@ Format: `schemaId=102, templateId=102, version=5, blockLength=30`. The enclosing
 | identifier | data | varDataEncoding | — | — | — |
 | recordIdentifier | data | varDataEncoding | — | — | — |
 
-[Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.
+[Complete gateway XML](../schemas/gateway-protocol.xml) · [Binary bodies](../binary-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

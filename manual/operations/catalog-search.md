@@ -6,7 +6,7 @@ CatalogSearchQuery version 27 carries a complete owner CatalogSearchQuery frame 
 
 ## Request: CatalogSearchQuery
 
-Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing XML supports version 29; this message emits version 27.
+Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing XML supports version 32; this message emits version 27.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -15,10 +15,10 @@ Format: `schemaId=102, templateId=10, version=27, blockLength=0`. The enclosing 
 
 ## Response: CatalogSearchResponse
 
-Format: `schemaId=102, templateId=105, version=26, blockLength=0`. The enclosing XML supports version 29; this message emits version 26.
+Format: `schemaId=102, templateId=105, version=26, blockLength=0`. The enclosing XML supports version 32; this message emits version 26.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
 | searchPageSbe | data | varDataEncoding | — | — | — |
 
-[Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.
+[Complete gateway XML](../schemas/gateway-protocol.xml) · [Binary bodies](../binary-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

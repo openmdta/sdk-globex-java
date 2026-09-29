@@ -30,20 +30,20 @@ start with `/api/v1`.
 
 | Read | Method and path | Input |
 | --- | --- | --- |
-| Latest values | GET `/market-data/latest` | selector, optional dataset, blocks or blockMask, adjustment |
+| Latest values | GET `/market-data/latest` | selector, optional dataset, blocks, adjustment |
 | Raw history | GET `/market-data/timeseries/raw` | same selection plus from, through, optional quality and maxRows |
 | Candle history | GET `/market-data/timeseries/candles` | same history selection plus cadenceMicros |
 | History page | GET `/market-data/timeseries/{raw,candles}/page` | selector, exactly one boundary or cursor, optional guard, order, limit; candles require cadenceMicros |
 | Dataset-pinned prices | GET `/datasets/{alias}/{latest,timeseries/raw,timeseries/candles}` | same parameters; alias fixes the dataset |
 | Catalog records | GET `/datasets/{alias}/records` | one selector, optional comma-separated fields; omit fields for all |
-| Catalog lookup/search | POST `/datasets/{alias}/{lookup,search}` | the corresponding JSON parameters from [JSON bodies](json-bodies.md) |
+| Catalog lookup/search | POST `/datasets/{alias}/{lookup,search}` | the corresponding JSON parameters from [binary bodies](binary-bodies.md) |
 | Stream metadata | GET `/streams/{dataset}/{quality}/metadata` | exact dataset and configured quality in the path |
 | Key figures | GET `/keyfigures/{catalog}/{schema,instrument}`, POST `/keyfigures/{catalog}/search` | instrument selector/query as specified in OpenAPI |
 | Application service read | POST `/services/{alias}/{command}` | the command's declared input object; mutations use the binary service-call operation |
 
 `selector` uses the same typed identifier expressions as binary reads. `blocks`
-contains comma-separated block names from the HTTP schema, for example `BidAsk`;
-`blockMask` is an unsigned decimal mask. Do not supply both. Omitted selection
+contains comma-separated block names from the HTTP schema, for example `BidAsk`.
+Omitted selection
 chooses supported fields. Historical times, cadence, boundary and guard are
 decimal strings in Unix microseconds (cadence is a duration); IDs remain exact
 decimal strings in JSON. `adjustment` defaults to raw. `maxRows` is 1..10000;
@@ -94,8 +94,8 @@ reads. Use the binary session for feed subscriptions and recovery.
 
 | Path | Availability | Parameters / result |
 | --- | --- | --- |
-| `/api/v1/snapshot` | A configured Latest source | `selector` required; optional `quality`, `block_mask` (decimal uint64, default 0), `adjustment` (raw/split, default raw), `source_field`. |
-| `/api/v1/timeseries` | A configured Timeseries source | `selector`, `from`, `through` required; optional `quality`, `block_mask`, `resolution` (microseconds, default 0 for raw), `max_rows` (default 10000), `adjustment`. All numeric query values are decimal. |
+| `/api/v1/snapshot` | A configured Latest source | `selector` required; optional `quality`, `adjustment` (raw/split, default raw), `source_field`. |
+| `/api/v1/timeseries` | A configured Timeseries source | `selector`, `from`, `through` required; optional `quality`, `resolution` (microseconds, default 0 for raw), `max_rows` (default 10000), `adjustment`. All numeric query values are decimal. |
 | `/api/v1/catalog/search` | A configured search catalog | `dataset` required, optional `text`, `expression`, `limit`, `cursor`, and `action` (search/autocomplete/search-describe). `filters`, `ranges`, `facets` are JSON text in query parameters. Requires the dataset's SEARCH grant. |
 
 The Explorer inventory endpoint `/api/v1/markets` requires an administrator

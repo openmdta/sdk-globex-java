@@ -34,7 +34,7 @@ public final class Dataset {
         require("latest");
         byte[] expression = selector.getBytes(StandardCharsets.UTF_8), adjustment = "raw".getBytes(StandardCharsets.UTF_8);
         byte[] selected = selection(blocks, "SNAPSHOT");
-        var encoder = new SnapshotRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0);
+        var encoder = new SnapshotRequestEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putExpression(expression, 0, expression.length).putAdjustment(adjustment, 0, adjustment.length).putDataset(dataset, 0, dataset.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("snapshot", encoder, MarketDataUpdate.listener(blocks, listener));
     }
@@ -45,7 +45,7 @@ public final class Dataset {
         require("latest");
         byte[] expression = selector.getBytes(StandardCharsets.UTF_8), adjustment = "raw".getBytes(StandardCharsets.UTF_8);
         byte[] selected = selection(blocks, "STREAM");
-        var encoder = new StreamRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0);
+        var encoder = new StreamRequestEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putExpression(expression, 0, expression.length).putAdjustment(adjustment, 0, adjustment.length).putDataset(dataset, 0, dataset.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("stream", encoder, MarketDataUpdate.listener(blocks, listener));
     }
@@ -58,14 +58,14 @@ public final class Dataset {
         if (through.isBefore(from)) throw new IllegalArgumentException("History end precedes start");
         byte[] expression = selector.getBytes(StandardCharsets.UTF_8), adjustment = "raw".getBytes(StandardCharsets.UTF_8);
         byte[] selected = selection(blocks, "TS_RAW");
-        var encoder = new TsRawRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0).from(micros(from)).through(micros(through)).maxRows(10_000);
+        var encoder = new TsRawRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).from(micros(from)).through(micros(through)).maxRows(10_000);
         encoder.putExpression(expression, 0, expression.length).putQuality(quality, 0, quality.length).putAdjustment(adjustment, 0, adjustment.length).putDataset(dataset, 0, dataset.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("ts-raw", encoder, MarketDataUpdate.listener(blocks, listener));
     }
     public Request streamSubscribe(List<? extends Block<?>> blocks, StreamListener listener) {
         require("feed");
         byte[] selected = selection(blocks, "STREAM");
-        var encoder = new FeedLiveRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0);
+        var encoder = new FeedLiveRequestEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("feed-live", encoder, new StreamDispatch(StreamDispatch.Mode.SUBSCRIBE, dataset, 0, 0, blocks, listener));
     }
@@ -74,7 +74,7 @@ public final class Dataset {
         require("latest");
         if (Long.compareUnsigned(start, end) >= 0) throw new IllegalArgumentException("Invalid recovery range");
         byte[] selected = selection(blocks, "STREAM");
-        var encoder = new FeedRecoveryRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0).afterMessageId(start).throughMessageId(end);
+        var encoder = new FeedRecoveryRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).afterMessageId(start).throughMessageId(end);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("feed-recovery", encoder, new StreamDispatch(StreamDispatch.Mode.RECOVER, dataset, start, end, blocks, listener));
     }
@@ -82,7 +82,7 @@ public final class Dataset {
     public Request streamSnapshot(List<? extends Block<?>> blocks, StreamListener listener) {
         require("latest");
         byte[] selected = selection(blocks, "SNAPSHOT");
-        var encoder = new FeedSnapshotRequestEncoder().wrap(new ExpandableArrayBuffer(), 0).blockMask(0);
+        var encoder = new FeedSnapshotRequestEncoder().wrap(new ExpandableArrayBuffer(), 0);
         encoder.putDataset(dataset, 0, dataset.length).putQuality(quality, 0, quality.length).putSelectedFieldsSbe(selected, 0, selected.length);
         return client.request("feed-snapshot", encoder, new StreamDispatch(StreamDispatch.Mode.SNAPSHOT, dataset, 0, 0, blocks, listener));
     }

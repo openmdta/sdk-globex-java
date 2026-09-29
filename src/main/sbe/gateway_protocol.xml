@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="29" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="32" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -21,39 +21,34 @@
     </enum>
   </types>
 
-  <message name="SnapshotRequest" id="1" blockLength="8">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
+  <message name="SnapshotRequest" id="1" blockLength="0" sinceVersion="30">
     <data name="expression" id="2" type="varDataEncoding"/>
     <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="StreamRequest" id="2" blockLength="8">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
+  <message name="StreamRequest" id="2" blockLength="0" sinceVersion="30">
     <data name="expression" id="2" type="varDataEncoding"/>
     <data name="adjustment" id="3" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="4" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="5" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="FeedLiveRequest" id="15" blockLength="8" sinceVersion="18">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
+  <message name="FeedLiveRequest" id="15" blockLength="0" sinceVersion="30">
     <data name="dataset" id="2" type="varDataEncoding"/>
     <data name="quality" id="3" type="varDataEncoding"/>
-    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="FeedRecoveryRequest" id="16" blockLength="24" sinceVersion="18">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="afterMessageId" id="2" type="uint64" offset="8"/>
-    <field name="throughMessageId" id="3" type="uint64" offset="16"/>
+  <message name="FeedRecoveryRequest" id="16" blockLength="16" sinceVersion="30">
+    <field name="afterMessageId" id="2" type="uint64" offset="0"/>
+    <field name="throughMessageId" id="3" type="uint64" offset="8"/>
     <data name="dataset" id="4" type="varDataEncoding"/>
     <data name="quality" id="5" type="varDataEncoding"/>
-    <data name="selectedFieldsSbe" id="6" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="6" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="FeedSnapshotRequest" id="17" blockLength="8" sinceVersion="18">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
+  <message name="FeedSnapshotRequest" id="17" blockLength="0" sinceVersion="30">
     <data name="dataset" id="2" type="varDataEncoding"/>
     <data name="quality" id="3" type="varDataEncoding"/>
-    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="4" type="varDataEncoding" sinceVersion="30"/>
   </message>
   <message name="CatalogFeedRequest" id="18" blockLength="0" sinceVersion="19">
     <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
@@ -81,27 +76,25 @@
     <field name="throughMessageId" id="3" type="uint64" offset="9"/>
     <data name="dataset" id="4" type="varDataEncoding"/>
   </message>
-  <message name="TsRawRequest" id="3" blockLength="28">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="from" id="2" type="uint64" offset="8"/>
-    <field name="through" id="3" type="uint64" offset="16"/>
-    <field name="maxRows" id="4" type="uint32" offset="24"/>
+  <message name="TsRawRequest" id="3" blockLength="20" sinceVersion="30">
+    <field name="from" id="2" type="uint64" offset="0"/>
+    <field name="through" id="3" type="uint64" offset="8"/>
+    <field name="maxRows" id="4" type="uint32" offset="16"/>
     <data name="expression" id="5" type="varDataEncoding"/>
     <data name="quality" id="6" type="varDataEncoding" sinceVersion="5"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="TsCandleRequest" id="4" blockLength="32">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="from" id="2" type="uint64" offset="8"/>
-    <field name="through" id="3" type="uint64" offset="16"/>
-    <field name="cadenceMicros" id="4" type="uint64" offset="24"/>
+  <message name="TsCandleRequest" id="4" blockLength="24" sinceVersion="30">
+    <field name="from" id="2" type="uint64" offset="0"/>
+    <field name="through" id="3" type="uint64" offset="8"/>
+    <field name="cadenceMicros" id="4" type="uint64" offset="16"/>
     <data name="expression" id="5" type="varDataEncoding"/>
     <data name="quality" id="6" type="varDataEncoding" sinceVersion="3"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="30"/>
   </message>
   <message name="CatalogRequest" id="5" blockLength="0" sinceVersion="2">
     <group name="identifiers" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
@@ -112,28 +105,26 @@
     </group>
     <data name="catalog" id="5" type="varDataEncoding"/>
   </message>
-  <message name="TsRawStreamRequest" id="6" blockLength="28" sinceVersion="5">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="from" id="2" type="uint64" offset="8"/>
-    <field name="through" id="3" type="uint64" offset="16"/>
-    <field name="maxRows" id="4" type="uint32" offset="24"/>
+  <message name="TsRawStreamRequest" id="6" blockLength="20" sinceVersion="30">
+    <field name="from" id="2" type="uint64" offset="0"/>
+    <field name="through" id="3" type="uint64" offset="8"/>
+    <field name="maxRows" id="4" type="uint32" offset="16"/>
     <data name="expression" id="5" type="varDataEncoding"/>
     <data name="quality" id="6" type="varDataEncoding"/>
     <data name="adjustment" id="7" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="8" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="9" type="varDataEncoding" sinceVersion="30"/>
   </message>
-  <message name="TsCandleStreamRequest" id="7" blockLength="36" sinceVersion="5">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="from" id="2" type="uint64" offset="8"/>
-    <field name="through" id="3" type="uint64" offset="16"/>
-    <field name="cadenceMicros" id="4" type="uint64" offset="24"/>
-    <field name="updateIntervalMillis" id="5" type="uint32" offset="32"/>
+  <message name="TsCandleStreamRequest" id="7" blockLength="28" sinceVersion="30">
+    <field name="from" id="2" type="uint64" offset="0"/>
+    <field name="through" id="3" type="uint64" offset="8"/>
+    <field name="cadenceMicros" id="4" type="uint64" offset="16"/>
+    <field name="updateIntervalMillis" id="5" type="uint32" offset="24"/>
     <data name="expression" id="6" type="varDataEncoding"/>
     <data name="quality" id="7" type="varDataEncoding"/>
     <data name="adjustment" id="8" type="varDataEncoding" sinceVersion="11"/>
     <data name="dataset" id="9" type="varDataEncoding" sinceVersion="14"/>
-    <data name="selectedFieldsSbe" id="10" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="10" type="varDataEncoding" sinceVersion="30"/>
   </message>
   <message name="CatalogKeyfiguresRequest" id="8" blockLength="16" sinceVersion="28">
     <field name="priceCutoffMs" id="1" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
@@ -147,8 +138,8 @@
     <!-- Complete keyfigures-protocol.xml KeyfiguresSearchQuery SBE frame for search. -->
     <data name="searchQuerySbe" id="9" type="varDataEncoding"/>
   </message>
-  <message name="CatalogKeyfiguresResult" id="103" blockLength="0" sinceVersion="6">
-    <data name="resultJson" id="1" type="varDataEncoding"/>
+  <message name="CatalogKeyfiguresResult" id="103" blockLength="0" sinceVersion="32">
+    <data name="resultSbe" id="1" type="varDataEncoding"/>
   </message>
   <message name="MarketDataMessageBatch" id="108" blockLength="1" sinceVersion="11">
     <field name="phase" id="1" type="Phase" offset="0"/>
@@ -295,35 +286,44 @@
     <data name="incarnation" id="18" type="varDataEncoding"/>
     <data name="aggregationQuality" id="19" type="varDataEncoding" sinceVersion="22"/>
   </message>
-  <message name="ServiceCallRequest" id="13" blockLength="8" sinceVersion="16">
+  <message name="ServiceCallRequest" id="13" blockLength="8" sinceVersion="31">
     <field name="deadlineUnixMillis" id="1" type="uint64" offset="0"/>
     <data name="serviceId" id="2" type="varDataEncoding"/>
     <data name="command" id="3" type="varDataEncoding"/>
     <data name="contractFingerprint" id="4" type="varDataEncoding"/>
     <data name="mutationId" id="5" type="varDataEncoding"/>
-    <data name="inputJson" id="6" type="varDataEncoding"/>
+    <!-- Complete owner input frame declared by the pinned service command. -->
+    <data name="inputSbe" id="6" type="varDataEncoding"/>
   </message>
-  <message name="ServiceCallResult" id="109" blockLength="0" sinceVersion="16">
-    <data name="resultJson" id="1" type="varDataEncoding"/>
+  <message name="ServiceCallResult" id="109" blockLength="2" sinceVersion="31">
+    <field name="ok" id="1" type="uint8" offset="0"/>
+    <field name="outcome" id="2" type="uint8" offset="1"/>
+    <data name="serviceId" id="3" type="varDataEncoding"/>
+    <data name="command" id="4" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="5" type="varDataEncoding"/>
+    <data name="mutationId" id="6" type="varDataEncoding"/>
+    <data name="errorCode" id="7" type="varDataEncoding"/>
+    <data name="errorMessage" id="8" type="varDataEncoding"/>
+    <!-- Complete owner output or declared error frame. -->
+    <data name="valueSbe" id="9" type="varDataEncoding"/>
   </message>
-  <message name="TimeseriesPageRequest" id="14" blockLength="39" sinceVersion="20">
-    <field name="blockMask" id="1" type="uint64" offset="0"/>
-    <field name="resolutionMicros" id="2" type="uint64" offset="8"/>
-    <field name="boundary" id="3" type="uint64" offset="16"/>
-    <field name="guard" id="4" type="uint64" offset="24"/>
-    <field name="pageLimit" id="5" type="uint32" offset="32"/>
+  <message name="TimeseriesPageRequest" id="14" blockLength="31" sinceVersion="30">
+    <field name="resolutionMicros" id="2" type="uint64" offset="0"/>
+    <field name="boundary" id="3" type="uint64" offset="8"/>
+    <field name="guard" id="4" type="uint64" offset="16"/>
+    <field name="pageLimit" id="5" type="uint32" offset="24"/>
     <!-- bit 0: boundary present; bit 1: guard present -->
-    <field name="presence" id="6" type="uint8" offset="36"/>
-    <field name="order" id="7" type="uint8" offset="37"/>
-    <field name="adjustment" id="8" type="uint8" offset="38"/>
+    <field name="presence" id="6" type="uint8" offset="28"/>
+    <field name="order" id="7" type="uint8" offset="29"/>
+    <field name="adjustment" id="8" type="uint8" offset="30"/>
     <data name="selector" id="9" type="varDataEncoding"/>
     <data name="dataset" id="10" type="varDataEncoding"/>
     <data name="quality" id="11" type="varDataEncoding"/>
     <data name="cursor" id="12" type="varDataEncoding"/>
-    <data name="selectedFieldsSbe" id="13" type="varDataEncoding" sinceVersion="29"/>
+    <data name="selectedFieldsSbe" id="13" type="varDataEncoding" sinceVersion="30"/>
   </message>
   <!-- Owner-bound semantic field selection. An empty list selects every available field. -->
-  <message name="FieldSelection" id="27" blockLength="0" sinceVersion="29">
+  <message name="FieldSelection" id="27" blockLength="0" sinceVersion="30">
     <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="0">
       <data name="semantic" id="2" type="varDataEncoding"/>
     </group>

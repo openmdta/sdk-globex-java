@@ -2,27 +2,26 @@
 
 Finite; wait for DONE. Carry the request in a session OpenRequest, and route responses by request ID. See [session](../session.md) and [encoding](../encoding.md).
 
-Use the same selector and field-mask convention as snapshot. Historical `from` and `through` are Unix microseconds with `from <= through`; quality is explicitly RT, DL or EOD as configured. Raw requests carry `maxRows`; send 1..10000. Candle reads have a server cap of 10000 rows. Raw windows are at most 15 minutes; candle windows at most five days, cadence at least 1 second and at most 7200 intervals. Candle-stream updateIntervalMillis controls partial-bar refresh. Historical gaps describe missing event-time coverage; they are distinct from message-ID feed recovery gaps. Send adjustment `raw` or `split` and exact dataset. Finite reads require DONE; streaming variants continue after their initial history.
+Use the same selector and FieldSelection semantic names as snapshot. Historical `from` and `through` are Unix microseconds with `from <= through`; quality is explicitly RT, DL or EOD as configured. Raw requests carry `maxRows`; send 1..10000. Candle reads have a server cap of 10000 rows. Raw windows are at most 15 minutes; candle windows at most five days, cadence at least 1 second and at most 7200 intervals. Candle-stream updateIntervalMillis controls partial-bar refresh. Historical gaps describe missing event-time coverage; they are distinct from message-ID feed recovery gaps. Send adjustment `raw` or `split` and exact dataset. Finite reads require DONE; streaming variants continue after their initial history.
 
 ## Request: TsRawRequest
 
-Format: `schemaId=102, templateId=3, version=29, blockLength=28`. The enclosing XML supports version 29; this message emits version 29.
+Format: `schemaId=102, templateId=3, version=30, blockLength=20`. The enclosing XML supports version 32; this message emits version 30.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
-| blockMask | field | uint64 | 0 | — | — |
-| from | field | uint64 | 8 | — | — |
-| through | field | uint64 | 16 | — | — |
-| maxRows | field | uint32 | 24 | — | — |
+| from | field | uint64 | 0 | — | — |
+| through | field | uint64 | 8 | — | — |
+| maxRows | field | uint32 | 16 | — | — |
 | expression | data | varDataEncoding | — | — | — |
 | quality | data | varDataEncoding | — | 5 | — |
 | adjustment | data | varDataEncoding | — | 11 | — |
 | dataset | data | varDataEncoding | — | 14 | — |
-| selectedFieldsSbe | data | varDataEncoding | — | 29 | — |
+| selectedFieldsSbe | data | varDataEncoding | — | 30 | — |
 
 ## Response: MarketDataMessageBatch
 
-Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 29; this message emits version 12.
+Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing XML supports version 32; this message emits version 12.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -47,4 +46,4 @@ Format: `schemaId=102, templateId=108, version=12, blockLength=1`. The enclosing
 | dataset | data | varDataEncoding | — | — | — |
 | payload | data | varDataEncoding | — | — | — |
 
-[Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.
+[Complete gateway XML](../schemas/gateway-protocol.xml) · [Binary bodies](../binary-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

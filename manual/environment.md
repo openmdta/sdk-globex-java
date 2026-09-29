@@ -4,10 +4,10 @@
 | --- | --- |
 | Environment | globex |
 | Gateway | gateway |
-| Applied revision | 1a16d092a6e0de9afc294551adc7cb0e3f73406d99fb1efd3ac8c206b81fe732 |
+| Applied revision | 5a95fd4b8b38fb0e2f025f9151b18dbc1d177080ed2b0efbafdcbcf87e27a90e |
 | Public base URL | https://globex.openmdta.com/explorer |
 | WebSocket URL | wss://globex.openmdta.com/api/v1/ws |
-| Subprotocol | openmdta.sbe-session.v1 |
+| Subprotocol | openmdta.sbe-session.v2 |
 | Token audience | openmdta-data:globex |
 | Runtime behavior version | 1 |
 
@@ -21,7 +21,7 @@
 | connectionQueueBytes | 67108864 |
 | heartbeatIntervalMillis | 5000 |
 | heartbeatTimeoutMillis | 15000 |
-| maximumGatewaySchemaVersion | 29 |
+| maximumGatewaySchemaVersion | 32 |
 | processQueueBytes | 268435456 |
 | responseBatchMessages | 64 |
 | responseBatchTargetBytes | 262144 |

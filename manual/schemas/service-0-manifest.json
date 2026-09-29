@@ -2,10 +2,18 @@
   "kind": "observation",
   "apiVersion": 1,
   "schemas": "stream/crates/observation-service/contract/schema.json",
+  "wireSchema": "schemas/observation-service.xml",
   "commands": {
     "getWatcher": {
       "input": "GetWatcherRequest",
       "output": "Watcher",
+      "wire": {
+        "input": 2,
+        "output": 4,
+        "errors": {
+          "not_found": 7
+        }
+      },
       "positional": [
         "watcherId"
       ],
@@ -19,6 +27,11 @@
     "getWatchers": {
       "input": "GetWatchersRequest",
       "output": "WatcherList",
+      "wire": {
+        "input": 1,
+        "output": 5,
+        "errors": {}
+      },
       "positional": [
         "accountId"
       ],
@@ -30,6 +43,14 @@
     "setWatcher": {
       "input": "SetWatcherRequest",
       "output": "Watcher",
+      "wire": {
+        "input": 3,
+        "output": 4,
+        "errors": {
+          "conflict": 6,
+          "not_found": 7
+        }
+      },
       "positional": [
         "watcherId"
       ],

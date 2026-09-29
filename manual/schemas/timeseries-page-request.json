@@ -15,9 +15,6 @@
       "$ref": "#/$defs/AdjustmentMode",
       "default": "raw"
     },
-    "blockMask": {
-      "type": "string"
-    },
     "boundary": {
       "type": [
         "string",
@@ -65,7 +62,6 @@
   },
   "required": [
     "selector",
-    "blockMask",
     "resolutionMicros",
     "order",
     "limit"

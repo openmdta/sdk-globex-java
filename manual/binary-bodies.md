@@ -1,12 +1,8 @@
-# Remaining JSON bodies and typed SBE replacements
+# Typed binary bodies and HTTP JSON projections
 
-Only Keyfigures results and application service calls still carry JSON in SBE variable-data members. Those bodies are UTF-8 in
-the member named by the operation's XML; do not add an extra JSON length inside
-that member. The Listing and Timeseries sections below describe typed SBE
-replacements. Names and case are wire names. Omitted optional JSON request
-members use server defaults; preserve explicit `null` values in JSON responses.
-Readers should tolerate additional JSON response properties. Bundled JSON
-Schemas specify the remaining service and metadata request types.
+# Public Gateway messages carry typed SBE bodies, including complete owner frames
+inside the Gateway envelope. Names and case are wire names. HTTP remains a
+JSON projection; its JSON Schemas describe the same service commands.
 
 ## Listing events
 
@@ -133,20 +129,18 @@ listing, activity and field permission are separate facts.
 ## Timeseries pages
 
 The WebSocket TimeseriesPageRequest is typed SBE (schema 102, template 14,
-version 29 for generated SDK requests): `blockMask:uint64`, `resolutionMicros:uint64`, `boundary:uint64`,
+version 30): `resolutionMicros:uint64`, `boundary:uint64`,
 `guard:uint64`, `pageLimit:uint32`, `presence:uint8`, `order:uint8`, and
 `adjustment:uint8`, followed by length-prefixed UTF-8 selector, dataset,
 quality, and cursor, then a `selectedFieldsSbe` variable-data member containing
-the complete `FieldSelection` frame (schema 102, template 27, version 29).
+the complete `FieldSelection` frame (schema 102, template 27, version 30–32).
 Its repeating `semantic` members identify business fields, without a 64-field
-limit. Generated SDKs send `blockMask=0`; an empty group selects all fields.
-The Gateway rejects a nonzero mask with a field-selection frame. Presence bit 0 marks boundary and bit 1 marks guard;
+limit. An empty group selects all fields. Presence bit 0 marks boundary and bit 1 marks guard;
 absent numeric members are zero. Order is 0 ascending or 1 descending;
 adjustment is 0 raw or 1 split. Empty dataset, quality, and cursor members
-mean absent. The HTTPS projection still uses
-`schemas/timeseries-page-request.json` with `limit` as its JSON property and
-decimal strings for unsigned
-64-bit values. Choose exactly one boundary or cursor. The guard is the other end of the search
+mean absent. HTTPS page routes use query parameters, including `limit` and
+optional comma-separated `blocks` names; unsigned 64-bit values remain exact
+decimal strings. Choose exactly one boundary or cursor. The guard is the other end of the search
 interval; it must be on the appropriate side of the boundary. Raw guards span
 at most 30 days; candle guards at most 365 days plus one resolution. Omitted
 guards choose a bounded server window (at least seven days). Candle resolution
@@ -162,22 +156,36 @@ resolution/order/adjustment. A nonempty cursor is not proof of durable coverage.
 
 ## Service results and keyfigures
 
-Service result envelopes and command input/output/error definitions are bundled
-JSON Schemas. Read commands have no mutation ID. Never infer retry safety from
-an HTTP/WebSocket timeout: follow the command's effect and replay metadata.
-The gateway caps dispatch deadlines at 30 seconds from receipt. Input JSON is
-at most 64 KiB and results at most 4 MiB; the effective transport limit also
-includes the enclosing session frame. A deadline can expire after dispatch and
-therefore produce an unknown mutation outcome.
+ServiceCallRequest (schema 102, template 13, version 31) carries a typed
+deadline and service ID, command, fingerprint, mutation ID, and `inputSbe`
+members. `inputSbe` is a complete frame from the service's pinned owner XML;
+its template must match the command manifest. ServiceCallResult (template 109,
+version 31) carries typed outcome/error metadata and a complete owner output
+or declared-error frame. The internal ServiceCall RPC uses the same owner frame
+and typed envelope (schema 11, templates 1 and 2). The generated SDK checks
+the fingerprint and frame identity, decodes the owner value, and exposes the
+command's declared TypeScript type. Bundled JSON Schemas describe the HTTPS
+projection of those same commands. Read commands have no mutation ID. Never
+infer retry safety from an HTTP/WebSocket timeout: follow the command's effect
+and replay metadata. The gateway caps dispatch deadlines at 30 seconds from
+receipt. Owner input is at most 64 KiB and results at most 4 MiB; the effective
+transport limit also includes the enclosing session frame. A deadline can
+expire after dispatch and therefore produce an unknown mutation outcome.
 
 Keyfigure contracts in the schema inventory define configured fields and their
 types. CatalogKeyfiguresRequest (schema 102, template 8, version 28) carries
 `priceCutoffMs:uint64?` and `after:uint64`, then catalog, action, key,
 contract fingerprint, age mode, expression, and a complete
-KeyfiguresSearchQuery owner SBE frame (schema 10, template 3, version 1).
+KeyfiguresSearchQuery owner SBE frame (schema 10, template 3, version 1 or 2).
 The owner frame is required for search and empty for other actions. Expression
 is resolved by the gateway into search keys and cannot accompany explicit keys.
-The operation carries JSON results; use the action/contract fingerprint
-specified by that contract. Unknown fields can be retained as JSON. This data
-may contain uint64 JSON numbers as well as explicitly string-encoded integers;
-use a lossless JSON parser when exact identities or cursors matter.
+CatalogKeyfiguresResult (schema 102, template 103, version 32) contains a
+complete Keyfigures owner frame in `resultSbe`. The public actions are schema,
+instrument, and search. Their owner templates are 2, 4, and 5 respectively in
+schema 10, version 2. Instrument and search rows contain complete template 6
+frames. Each row carries ordered customer field IDs and scalar kinds, exact
+observation IDs, template 7 provenance frames and a template 8 license frame.
+The SDK checks every field against the bundled customer contract fingerprint
+before exposing the generated business types. HTTPS returns the decoded JSON
+projection. Template 9 is an internal-only diagnostic result for retained
+owner actions; the Gateway does not forward it to public clients.

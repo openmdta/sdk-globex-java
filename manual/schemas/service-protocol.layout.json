@@ -1,19 +1,70 @@
 {
   "id": 11,
-  "version": 0,
+  "version": 1,
   "package": "openmdta.service",
-  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.service\" id=\"11\" version=\"0\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n  </types>\n  <message name=\"ServiceRequest\" id=\"1\" blockLength=\"0\">\n    <data name=\"credential\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"requestJson\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"ServiceResult\" id=\"2\" blockLength=\"0\">\n    <data name=\"resultJson\" id=\"1\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.service\" id=\"11\" version=\"1\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n  </types>\n  <message name=\"ServiceRequest\" id=\"1\" blockLength=\"8\">\n    <field name=\"deadlineUnixMillis\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <data name=\"serviceId\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"command\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"mutationId\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"credential\" id=\"6\" type=\"varDataEncoding\"/>\n    <!-- Complete command input frame from its manifest's owner SBE schema. -->\n    <data name=\"inputSbe\" id=\"7\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"ServiceResult\" id=\"2\" blockLength=\"2\">\n    <field name=\"ok\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <!-- Outcome: 0 not applied, 1 unknown. On success this is zero. -->\n    <field name=\"outcome\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <data name=\"serviceId\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"command\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"mutationId\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"errorCode\" id=\"7\" type=\"varDataEncoding\"/>\n    <data name=\"errorMessage\" id=\"8\" type=\"varDataEncoding\"/>\n    <!-- Success output or declared error details; empty for undeclared errors. -->\n    <data name=\"valueSbe\" id=\"9\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
   "messages": [
     {
       "name": "ServiceRequest",
       "id": 1,
-      "blockLength": 0,
+      "blockLength": 8,
       "sinceVersion": 0,
       "fields": [
         {
-          "kind": "data",
+          "kind": "field",
           "attributes": {
             "id": "1",
+            "name": "deadlineUnixMillis",
+            "offset": "0",
+            "type": "uint64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "2",
+            "name": "serviceId",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "3",
+            "name": "command",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "4",
+            "name": "contractFingerprint",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "5",
+            "name": "mutationId",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "6",
             "name": "credential",
             "type": "varDataEncoding"
           },
@@ -23,8 +74,8 @@
         {
           "kind": "data",
           "attributes": {
-            "id": "2",
-            "name": "requestJson",
+            "id": "7",
+            "name": "inputSbe",
             "type": "varDataEncoding"
           },
           "value": null,
@@ -35,14 +86,96 @@
     {
       "name": "ServiceResult",
       "id": 2,
-      "blockLength": 0,
+      "blockLength": 2,
       "sinceVersion": 0,
       "fields": [
         {
-          "kind": "data",
+          "kind": "field",
           "attributes": {
             "id": "1",
-            "name": "resultJson",
+            "name": "ok",
+            "offset": "0",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "2",
+            "name": "outcome",
+            "offset": "1",
+            "type": "uint8"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "3",
+            "name": "serviceId",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "4",
+            "name": "command",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "5",
+            "name": "contractFingerprint",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "6",
+            "name": "mutationId",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "7",
+            "name": "errorCode",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "8",
+            "name": "errorMessage",
+            "type": "varDataEncoding"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "data",
+          "attributes": {
+            "id": "9",
+            "name": "valueSbe",
             "type": "varDataEncoding"
           },
           "value": null,
@@ -291,7 +424,347 @@
       "name": "ServiceRequest",
       "id": 1,
       "signal": "BeginMessage",
+      "offset": 8,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "deadlineUnixMillis",
+      "id": 1,
+      "signal": "BeginField",
       "offset": 0,
+      "primitive": "UInt64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "deadlineUnixMillis",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "serviceId",
+      "id": 2,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "serviceId",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "command",
+      "id": 3,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "command",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "contractFingerprint",
+      "id": 4,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "contractFingerprint",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mutationId",
+      "id": 5,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mutationId",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
       "primitive": null,
       "length": null,
       "presence": "Required",
@@ -299,7 +772,7 @@
     },
     {
       "name": "credential",
-      "id": 1,
+      "id": 6,
       "signal": "BeginVarData",
       "offset": null,
       "primitive": null,
@@ -378,8 +851,8 @@
       "sinceVersion": 0
     },
     {
-      "name": "requestJson",
-      "id": 2,
+      "name": "inputSbe",
+      "id": 7,
       "signal": "BeginVarData",
       "offset": null,
       "primitive": null,
@@ -448,7 +921,7 @@
       "sinceVersion": 0
     },
     {
-      "name": "requestJson",
+      "name": "inputSbe",
       "id": null,
       "signal": "EndVarData",
       "offset": null,
@@ -471,15 +944,55 @@
       "name": "ServiceResult",
       "id": 2,
       "signal": "BeginMessage",
-      "offset": 0,
+      "offset": 2,
       "primitive": null,
       "length": null,
       "presence": "Required",
       "sinceVersion": 0
     },
     {
-      "name": "resultJson",
+      "name": "ok",
       "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "ok",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "outcome",
+      "id": 2,
+      "signal": "BeginField",
+      "offset": 1,
+      "primitive": "UInt8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "outcome",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "serviceId",
+      "id": 3,
       "signal": "BeginVarData",
       "offset": null,
       "primitive": null,
@@ -548,7 +1061,487 @@
       "sinceVersion": 0
     },
     {
-      "name": "resultJson",
+      "name": "serviceId",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "command",
+      "id": 4,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "command",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "contractFingerprint",
+      "id": 5,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "contractFingerprint",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mutationId",
+      "id": 6,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mutationId",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "errorCode",
+      "id": 7,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "errorCode",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "errorMessage",
+      "id": 8,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "errorMessage",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "valueSbe",
+      "id": 9,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "valueSbe",
       "id": null,
       "signal": "EndVarData",
       "offset": null,

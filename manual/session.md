@@ -6,7 +6,7 @@ application messages. TLS and WebSocket framing can be handled by a standard
 WebSocket library; encode the binary session yourself using
 [sbe-websocket.xml](schemas/sbe-websocket.xml).
 
-1. Connect with `Sec-WebSocket-Protocol: openmdta.sbe-session.v1`.
+1. Connect with `Sec-WebSocket-Protocol: openmdta.sbe-session.v2`.
 2. Immediately send `AuthRequest` (schema 5, template 1, version 0, fixed block
    8): nonzero `uint64 requestId` (conventionally 1), then length-prefixed opaque
    token bytes. Wait for its successful response before opening requests.
@@ -18,9 +18,9 @@ WebSocket library; encode the binary session yourself using
    8 parent-span bytes, the 8-byte application format descriptor, and a
    length-prefixed **headerless** application body. All-zero trace/span bytes
    mean no propagated trace. Keep an ID-to-operation table.
-5. Send `CreditRequest` (template 4, block 12) after opening: target ID and
-   `uint32 credits` in `1..responseCredits`. One credit permits one `CONTINUE`
-   response on requests with flow control. Replenish only after consuming or
+5. For a feed, send the bounded response window described below after opening.
+   Finite requests can use `CreditRequest` (template 4, block 12): target ID and
+   `uint32 credits` in `1..responseCredits`. Replenish only after consuming or
    durably writing a response. Credit messages have no separate request ID.
 6. Decode `Response` (template 101, block 17): request ID at offset 0, status at
    8, format at 9, then body and UTF-8 error as separate length-prefixed data.
@@ -50,15 +50,13 @@ limits in environment.md, including session overhead. Bound queues by both
 count and bytes; a slow consumer must pause credits, cancel, or disconnect.
 WebSocket ping/pong control frames are separate from application heartbeats.
 
-## Bounded response windows (optional v2)
+## Bounded response windows
 
-Offer `openmdta.sbe-session.v2` before `openmdta.sbe-session.v1`. Inspect the
-selected WebSocket subprotocol. A v1 selection retains the CreditRequest
-behavior above; never send v2 window frames to a v1 server.
+Require the `openmdta.sbe-session.v2` subprotocol in the upgrade response.
 Unchanged session templates keep acting version 0, including AUTH, OPEN,
 CANCEL and CreditRequest, even when codecs are generated from schema version 1.
 
-For each feed request on v2 send exactly one ResponseWindow (schema 5,
+For each feed request send exactly one ResponseWindow (schema 5,
 template 5, version 1, block 20): target ID (uint64), response count (uint32),
 byte allowance (uint32), maximum application body size (uint32). The count
 cannot exceed 32, bytes cannot exceed 32 MiB, and maximum body size cannot

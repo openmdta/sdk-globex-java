@@ -6,7 +6,7 @@ Send exact catalog dataset and typed CatalogLookupQuery fields. The fixed block 
 
 ## Request: CatalogLookupQuery
 
-Format: `schemaId=102, templateId=11, version=23, blockLength=10`. The enclosing XML supports version 29; this message emits version 23.
+Format: `schemaId=102, templateId=11, version=23, blockLength=10`. The enclosing XML supports version 32; this message emits version 23.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -23,10 +23,10 @@ Format: `schemaId=102, templateId=11, version=23, blockLength=10`. The enclosing
 
 ## Response: CatalogLookupResponse
 
-Format: `schemaId=102, templateId=106, version=25, blockLength=0`. The enclosing XML supports version 29; this message emits version 25.
+Format: `schemaId=102, templateId=106, version=25, blockLength=0`. The enclosing XML supports version 32; this message emits version 25.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
 | browsePageSbe | data | varDataEncoding | — | — | — |
 
-[Complete gateway XML](../schemas/gateway-protocol.xml) · [JSON envelopes](../json-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.
+[Complete gateway XML](../schemas/gateway-protocol.xml) · [Binary bodies](../binary-bodies.md). Variable members follow the acting fixed block in the listed order. Group children repeat per entry.

@@ -100,7 +100,8 @@ public final class Client implements AutoCloseable {
         try {
             tokens.get().thenCompose(bytes -> {
                 if (bytes == null || bytes.length == 0 || bytes.length > 64 * 1024) throw new IllegalArgumentException("Invalid token length");
-                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL, Contract.ROOT.path("runtime").path("subprotocol").asText()).buildAsync(Environment.WEBSOCKET, client.transport).thenAccept(socket -> {
+                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL).buildAsync(Environment.WEBSOCKET, client.transport).thenAccept(socket -> {
+                    if (!WINDOW_PROTOCOL.equals(socket.getSubprotocol())) throw new IllegalStateException("Gateway did not negotiate the SBE session protocol");
                     UnsafeBuffer buffer = new UnsafeBuffer(new byte[20 + bytes.length]);
                     AuthRequestEncoder auth = new AuthRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
                     auth.requestId(1).putToken(bytes, 0, bytes.length);
@@ -149,8 +150,7 @@ public final class Client implements AutoCloseable {
         OpenRequestEncoder open = new OpenRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder()).requestId(id);
         open.format().schemaId(format.schemaId()).templateId(format.templateId()).version(format.version()).blockLength(format.blockLength());
         open.putBody(encoder.buffer(), encoder.offset(), encoder.encodedLength());
-        request.windowed = WINDOW_PROTOCOL.equals(socket.getSubprotocol())
-            && (operation.startsWith("feed-") || operation.equals("catalog-feed"));
+        request.windowed = operation.startsWith("feed-") || operation.equals("catalog-feed");
         if (request.windowed) {
             if ((long) reservedWindowBytes + WINDOW_BYTES > 64 * 1024 * 1024) throw new IllegalStateException("Connection feed buffer capacity reached");
             reservedWindowBytes += WINDOW_BYTES;

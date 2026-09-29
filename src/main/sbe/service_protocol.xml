@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.service_protocol" id="11" version="0" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.service_protocol" id="11" version="1" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -12,11 +12,27 @@
       <type name="varData" primitiveType="uint8" length="0"/>
     </composite>
   </types>
-  <message name="ServiceRequest" id="1" blockLength="0">
-    <data name="credential" id="1" type="varDataEncoding"/>
-    <data name="requestJson" id="2" type="varDataEncoding"/>
+  <message name="ServiceRequest" id="1" blockLength="8">
+    <field name="deadlineUnixMillis" id="1" type="uint64" offset="0"/>
+    <data name="serviceId" id="2" type="varDataEncoding"/>
+    <data name="command" id="3" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="4" type="varDataEncoding"/>
+    <data name="mutationId" id="5" type="varDataEncoding"/>
+    <data name="credential" id="6" type="varDataEncoding"/>
+    <!-- Complete command input frame from its manifest's owner SBE schema. -->
+    <data name="inputSbe" id="7" type="varDataEncoding"/>
   </message>
-  <message name="ServiceResult" id="2" blockLength="0">
-    <data name="resultJson" id="1" type="varDataEncoding"/>
+  <message name="ServiceResult" id="2" blockLength="2">
+    <field name="ok" id="1" type="uint8" offset="0"/>
+    <!-- Outcome: 0 not applied, 1 unknown. On success this is zero. -->
+    <field name="outcome" id="2" type="uint8" offset="1"/>
+    <data name="serviceId" id="3" type="varDataEncoding"/>
+    <data name="command" id="4" type="varDataEncoding"/>
+    <data name="contractFingerprint" id="5" type="varDataEncoding"/>
+    <data name="mutationId" id="6" type="varDataEncoding"/>
+    <data name="errorCode" id="7" type="varDataEncoding"/>
+    <data name="errorMessage" id="8" type="varDataEncoding"/>
+    <!-- Success output or declared error details; empty for undeclared errors. -->
+    <data name="valueSbe" id="9" type="varDataEncoding"/>
   </message>
 </messageSchema>

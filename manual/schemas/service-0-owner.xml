@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Observation owns these business frames. Service and Gateway envelopes carry
+     complete frames; JSON Schema remains the HTTPS projection. Version 0 is a
+     greenfield contract and every optional member has an explicit presence
+     state, so empty strings and zero values remain ordinary values. -->
+<messageSchema package="openmdta.observation" id="21" version="0" byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16"/>
+      <type name="schemaId" primitiveType="uint16"/>
+      <type name="version" primitiveType="uint16"/>
+    </composite>
+    <composite name="varDataEncoding">
+      <type name="length" primitiveType="uint32"/>
+      <type name="varData" primitiveType="uint8" length="0"/>
+    </composite>
+    <composite name="largeGroupSizeEncoding">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint32"/>
+    </composite>
+    <!-- Required values use the full unsigned range; absence is carried by
+         separate state bytes, never by the SBE default null sentinel. -->
+    <type name="fullUint64" primitiveType="uint64" maxValue="18446744073709551615"/>
+    <type name="fullUint16" primitiveType="uint16" maxValue="65535"/>
+  </types>
+  <message name="GetWatchersRequest" id="1" blockLength="0">
+    <data name="accountId" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="GetWatcherRequest" id="2" blockLength="0">
+    <data name="watcherId" id="1" type="varDataEncoding"/>
+  </message>
+  <message name="SetWatcherRequest" id="3" blockLength="25">
+    <!-- State bytes: 0 absent, 1 explicit null, 2 value. Update itself is
+         required. For a value rule, blockId/threshold/field are meaningful;
+         for a value notification policy, bits 0..2 mark supplied booleans. -->
+    <field name="expectedRevisionState" id="1" type="uint8" offset="0"/>
+    <field name="ruleState" id="2" type="uint8" offset="1"/>
+    <field name="notificationsState" id="3" type="uint8" offset="2"/>
+    <field name="notificationPresence" id="4" type="uint8" offset="3"/>
+    <field name="expectedRevision" id="5" type="fullUint64" offset="4"/>
+    <field name="blockId" id="6" type="fullUint16" offset="12"/>
+    <field name="threshold" id="7" type="double" offset="14"/>
+    <field name="liveOn" id="8" type="uint8" offset="22"/>
+    <field name="liveOff" id="9" type="uint8" offset="23"/>
+    <field name="gapRecovery" id="10" type="uint8" offset="24"/>
+    <data name="watcherId" id="11" type="varDataEncoding"/>
+    <data name="ruleField" id="12" type="varDataEncoding"/>
+  </message>
+  <message name="Watcher" id="4" blockLength="22">
+    <!-- alertType: 1 over, 2 under. status: 1 triggered, 2 flapping,
+         3 not triggered. activeUntilState: 0 absent, 1 null, 2 value. -->
+    <field name="revision" id="1" type="fullUint64" offset="0"/>
+    <field name="alertType" id="2" type="uint8" offset="8"/>
+    <field name="blockId" id="3" type="fullUint16" offset="9"/>
+    <field name="threshold" id="4" type="double" offset="11"/>
+    <field name="status" id="5" type="uint8" offset="19"/>
+    <field name="notificationValues" id="6" type="uint8" offset="20"/>
+    <field name="activeUntilState" id="7" type="uint8" offset="21"/>
+    <data name="watcherId" id="8" type="varDataEncoding"/>
+    <data name="accountId" id="9" type="varDataEncoding"/>
+    <data name="listingExpression" id="10" type="varDataEncoding"/>
+    <data name="ruleField" id="11" type="varDataEncoding"/>
+    <data name="activeFrom" id="12" type="varDataEncoding"/>
+    <data name="activeUntil" id="13" type="varDataEncoding"/>
+    <data name="createdAt" id="14" type="varDataEncoding"/>
+    <data name="updatedAt" id="15" type="varDataEncoding"/>
+  </message>
+  <message name="WatcherList" id="5" blockLength="0">
+    <group name="watchers" id="1" dimensionType="largeGroupSizeEncoding" blockLength="22">
+      <field name="revision" id="2" type="fullUint64" offset="0"/>
+      <field name="alertType" id="3" type="uint8" offset="8"/>
+      <field name="blockId" id="4" type="fullUint16" offset="9"/>
+      <field name="threshold" id="5" type="double" offset="11"/>
+      <field name="status" id="6" type="uint8" offset="19"/>
+      <field name="notificationValues" id="7" type="uint8" offset="20"/>
+      <field name="activeUntilState" id="8" type="uint8" offset="21"/>
+      <data name="watcherId" id="9" type="varDataEncoding"/>
+      <data name="accountId" id="10" type="varDataEncoding"/>
+      <data name="listingExpression" id="11" type="varDataEncoding"/>
+      <data name="ruleField" id="12" type="varDataEncoding"/>
+      <data name="activeFrom" id="13" type="varDataEncoding"/>
+      <data name="activeUntil" id="14" type="varDataEncoding"/>
+      <data name="createdAt" id="15" type="varDataEncoding"/>
+      <data name="updatedAt" id="16" type="varDataEncoding"/>
+    </group>
+  </message>
+  <message name="RevisionConflict" id="6" blockLength="16">
+    <field name="expectedRevision" id="1" type="fullUint64" offset="0"/>
+    <field name="actualRevision" id="2" type="fullUint64" offset="8"/>
+  </message>
+  <message name="WatcherNotFound" id="7" blockLength="0">
+    <data name="watcherId" id="1" type="varDataEncoding"/>
+  </message>
+</messageSchema>
