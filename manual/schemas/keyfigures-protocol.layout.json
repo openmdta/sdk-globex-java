@@ -2,7 +2,7 @@
   "id": 10,
   "version": 2,
   "package": "openmdta.keyfigures",
-  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.keyfigures\" id=\"10\" version=\"2\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <composite name=\"largeGroupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint32\"/>\n    </composite>\n  </types>\n  <!-- Only authenticated gateway sessions may supply grants. Action: 1 schema,\n       2 instrument, 3 search, 4 describe, 5 status, 6 snapshot, 7 feed.\n       Age mode: 0 absent, 1 elapsed, 2 trading time, 3 last completed session.\n       Presence bit 0 marks priceCutoffMs. Quality: 0 any, 1 RT, 2 DL, 3 EOD. -->\n  <message name=\"KeyfiguresRequest\" id=\"1\" blockLength=\"20\">\n    <field name=\"action\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"ageMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"2\"/>\n    <field name=\"reserved\" id=\"4\" type=\"uint8\" offset=\"3\"/>\n    <field name=\"after\" id=\"5\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"priceCutoffMs\" id=\"6\" type=\"uint64\" offset=\"12\"/>\n    <group name=\"grants\" id=\"7\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"quality\" id=\"8\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"package\" id=\"9\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"key\" id=\"10\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"11\" type=\"varDataEncoding\"/>\n    <!-- Complete KeyfiguresSearchQuery frame, empty for other actions. -->\n    <data name=\"searchQuerySbe\" id=\"12\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Public results bind every customer field ID and scalar type to contractFingerprint.\n       A row's projected blocks are rebuilt from the same checked fields and the pinned contract. -->\n  <message name=\"KeyfiguresSchemaResult\" id=\"2\" blockLength=\"36\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"allowNoPriceCutoff\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"maxFacetValues\" id=\"3\" type=\"uint16\" offset=\"2\"/>\n    <field name=\"priceCutoffMs\" id=\"4\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"maxRequestPriceCutoffMs\" id=\"5\" type=\"uint64\" offset=\"12\"/>\n    <field name=\"maxPage\" id=\"6\" type=\"uint32\" offset=\"20\"/>\n    <field name=\"maxCandidates\" id=\"7\" type=\"uint32\" offset=\"24\"/>\n    <field name=\"maxOffset\" id=\"8\" type=\"uint32\" offset=\"28\"/>\n    <field name=\"reserved\" id=\"9\" type=\"uint32\" offset=\"32\"/>\n    <group name=\"fields\" id=\"10\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"3\">\n      <field name=\"columnId\" id=\"11\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"facet\" id=\"12\" type=\"uint8\" offset=\"2\"/>\n      <group name=\"operators\" id=\"13\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"name\" id=\"14\" type=\"varDataEncoding\"/>\n      </group>\n    </group>\n    <group name=\"facets\" id=\"15\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"precedence\" id=\"16\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"value\" id=\"17\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"18\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"catalog\" id=\"19\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"20\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresInstrumentResult\" id=\"4\" blockLength=\"18\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"priceAgeMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"epoch\" id=\"3\" type=\"uint64\" offset=\"2\"/>\n    <field name=\"priceCutoffMs\" id=\"4\" type=\"uint64\" offset=\"10\"/>\n    <data name=\"catalog\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"rowSbe\" id=\"7\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresSearchResult\" id=\"5\" blockLength=\"53\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"priceAgeMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <!-- bit 0 snapshotCutoffUs; bit 1 liveCutoffUs; bit 2 nextCursor. -->\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"2\"/>\n    <field name=\"flags\" id=\"4\" type=\"uint8\" offset=\"3\"/>\n    <field name=\"epoch\" id=\"5\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"priceCutoffMs\" id=\"6\" type=\"uint64\" offset=\"12\"/>\n    <field name=\"snapshotCutoffUs\" id=\"7\" type=\"uint64\" offset=\"20\"/>\n    <field name=\"liveCutoffUs\" id=\"8\" type=\"uint64\" offset=\"28\"/>\n    <field name=\"snapshotMatches\" id=\"9\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"candidates\" id=\"10\" type=\"uint64\" offset=\"44\"/>\n    <field name=\"reserved\" id=\"11\" type=\"uint8\" offset=\"52\"/>\n    <group name=\"rows\" id=\"12\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"rowSbe\" id=\"13\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"facets\" id=\"14\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"values\" id=\"15\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"8\">\n        <field name=\"total\" id=\"16\" type=\"uint64\" offset=\"0\"/>\n        <data name=\"value\" id=\"17\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"18\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"facetMeta\" id=\"19\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"exhaustive\" id=\"20\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"name\" id=\"21\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"catalog\" id=\"22\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"23\" type=\"varDataEncoding\"/>\n    <data name=\"nextCursor\" id=\"24\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresRow\" id=\"6\" blockLength=\"17\">\n    <field name=\"eventUs\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"messageId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <!-- bit 0 eventUs; bit 1 messageId; bit 2 reason. -->\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"16\"/>\n    <group name=\"fields\" id=\"4\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"21\">\n      <field name=\"columnId\" id=\"5\" type=\"uint16\" offset=\"0\"/>\n      <!-- kind: 1 string, 2 integer, 3 number, 4 boolean; present 0 null, 1 value. -->\n      <field name=\"kind\" id=\"6\" type=\"uint8\" offset=\"2\"/>\n      <field name=\"present\" id=\"7\" type=\"uint8\" offset=\"3\"/>\n      <field name=\"numberValue\" id=\"8\" type=\"double\" offset=\"4\"/>\n      <field name=\"integerValue\" id=\"9\" type=\"int64\" offset=\"12\"/>\n      <field name=\"booleanValue\" id=\"10\" type=\"uint8\" offset=\"20\"/>\n      <data name=\"textValue\" id=\"11\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"sources\" id=\"12\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <!-- role 1 primary, 2 dependency. -->\n      <field name=\"role\" id=\"13\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"provenanceSbe\" id=\"14\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"requirementsSbe\" id=\"15\" type=\"varDataEncoding\"/>\n    <data name=\"reason\" id=\"16\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"17\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresProvenance\" id=\"7\" blockLength=\"35\">\n    <field name=\"cutoffUs\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"priceCutoffMs\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"quoteEventUs\" id=\"3\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"messageId\" id=\"4\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"quality\" id=\"5\" type=\"uint8\" offset=\"32\"/>\n    <field name=\"clock\" id=\"6\" type=\"uint8\" offset=\"33\"/>\n    <field name=\"priceAgeMode\" id=\"7\" type=\"uint8\" offset=\"34\"/>\n    <group name=\"fallback\" id=\"8\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"input\" id=\"9\" type=\"varDataEncoding\"/>\n      <data name=\"reason\" id=\"10\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"input\" id=\"11\" type=\"varDataEncoding\"/>\n    <data name=\"catalog\" id=\"12\" type=\"varDataEncoding\"/>\n    <data name=\"key\" id=\"13\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresRequirements\" id=\"8\" blockLength=\"0\">\n    <group name=\"clauses\" id=\"1\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <!-- kind 0 Public, 1 AnyOf. -->\n      <field name=\"kind\" id=\"2\" type=\"uint8\" offset=\"0\"/>\n      <group name=\"alternatives\" id=\"3\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"namespace\" id=\"4\" type=\"varDataEncoding\"/>\n        <data name=\"license\" id=\"5\" type=\"varDataEncoding\"/>\n      </group>\n    </group>\n  </message>\n  <!-- Authenticated owner-private diagnostics and retained-epoch inspection; never exposed as public result 103. -->\n  <message name=\"KeyfiguresDebugResult\" id=\"9\" blockLength=\"0\">\n    <data name=\"debugJson\" id=\"1\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresSearchQuery\" id=\"3\" blockLength=\"13\">\n    <field name=\"queryOffset\" id=\"1\" type=\"uint32\" offset=\"0\"/>\n    <field name=\"queryLimit\" id=\"2\" type=\"uint32\" offset=\"4\"/>\n    <field name=\"budget\" id=\"3\" type=\"uint32\" offset=\"8\"/>\n    <!-- bit 0 keys present; bit 1 cursor present. Empty values remain distinct. -->\n    <field name=\"presence\" id=\"4\" type=\"uint8\" offset=\"12\"/>\n    <group name=\"filters\" id=\"5\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"values\" id=\"6\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"value\" id=\"7\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"8\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"facets\" id=\"9\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"name\" id=\"10\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"keys\" id=\"11\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"key\" id=\"12\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"ranges\" id=\"13\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"49\">\n      <!-- bits 0..3: gt, ge, lt, le present. -->\n      <field name=\"presence\" id=\"14\" type=\"uint8\" offset=\"0\"/>\n      <field name=\"gt\" id=\"15\" type=\"double\" offset=\"1\"/>\n      <field name=\"ge\" id=\"16\" type=\"double\" offset=\"9\"/>\n      <field name=\"lt\" id=\"17\" type=\"double\" offset=\"17\"/>\n      <field name=\"le\" id=\"18\" type=\"double\" offset=\"25\"/>\n      <field name=\"absoluteMargin\" id=\"19\" type=\"double\" offset=\"33\"/>\n      <field name=\"relativeMargin\" id=\"20\" type=\"double\" offset=\"41\"/>\n      <data name=\"field\" id=\"21\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"sorts\" id=\"22\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"descending\" id=\"23\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"field\" id=\"24\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"text\" id=\"25\" type=\"varDataEncoding\"/>\n    <data name=\"cursor\" id=\"26\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.keyfigures\" id=\"10\" version=\"2\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <composite name=\"largeGroupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint32\"/>\n    </composite>\n  </types>\n  <!-- Only authenticated gateway sessions may supply grants. Action: 1 schema,\n       2 instrument, 3 search, 4 describe, 5 status, 6 snapshot, 7 feed.\n       Age mode: 0 absent, 1 elapsed, 2 trading time, 3 last completed session.\n       Presence bit 0 marks priceCutoffMs. Quality: 0 any, 1 RT, 2 DL, 3 EOD. -->\n  <message name=\"KeyfiguresRequest\" id=\"1\" blockLength=\"20\">\n    <field name=\"action\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"ageMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"2\"/>\n    <field name=\"reserved\" id=\"4\" type=\"uint8\" offset=\"3\"/>\n    <field name=\"after\" id=\"5\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"priceCutoffMs\" id=\"6\" type=\"uint64\" offset=\"12\"/>\n    <group name=\"grants\" id=\"7\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"quality\" id=\"8\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"package\" id=\"9\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"key\" id=\"10\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"11\" type=\"varDataEncoding\"/>\n    <!-- Complete KeyfiguresSearchQuery frame, empty for other actions. -->\n    <data name=\"searchQuerySbe\" id=\"12\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Public results bind every customer field ID and scalar type to contractFingerprint.\n       A row carries exactly the contract's declared fields, in column-ID order; its\n       projected blocks are rebuilt from the same checked fields and the pinned contract.\n       Schema and instrument results are one frame. A search result is zero or more\n       KeyfiguresRowChunk frames followed by its KeyfiguresSearchResult summary. -->\n  <message name=\"KeyfiguresSchemaResult\" id=\"2\" blockLength=\"36\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"allowNoPriceCutoff\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"maxFacetValues\" id=\"3\" type=\"uint16\" offset=\"2\"/>\n    <field name=\"priceCutoffMs\" id=\"4\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"maxRequestPriceCutoffMs\" id=\"5\" type=\"uint64\" offset=\"12\"/>\n    <field name=\"maxPage\" id=\"6\" type=\"uint32\" offset=\"20\"/>\n    <field name=\"maxCandidates\" id=\"7\" type=\"uint32\" offset=\"24\"/>\n    <field name=\"maxOffset\" id=\"8\" type=\"uint32\" offset=\"28\"/>\n    <field name=\"reserved\" id=\"9\" type=\"uint32\" offset=\"32\"/>\n    <group name=\"fields\" id=\"10\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"3\">\n      <field name=\"columnId\" id=\"11\" type=\"uint16\" offset=\"0\"/>\n      <field name=\"facet\" id=\"12\" type=\"uint8\" offset=\"2\"/>\n      <group name=\"operators\" id=\"13\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"name\" id=\"14\" type=\"varDataEncoding\"/>\n      </group>\n    </group>\n    <group name=\"facets\" id=\"15\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"precedence\" id=\"16\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"value\" id=\"17\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"18\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"catalog\" id=\"19\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"20\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresInstrumentResult\" id=\"4\" blockLength=\"18\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"priceAgeMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <field name=\"epoch\" id=\"3\" type=\"uint64\" offset=\"2\"/>\n    <field name=\"priceCutoffMs\" id=\"4\" type=\"uint64\" offset=\"10\"/>\n    <data name=\"catalog\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"rowSbe\" id=\"7\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Search rows precede this summary in KeyfiguresRowChunk frames; rowCount is their total. -->\n  <message name=\"KeyfiguresSearchResult\" id=\"5\" blockLength=\"56\">\n    <field name=\"clock\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <field name=\"priceAgeMode\" id=\"2\" type=\"uint8\" offset=\"1\"/>\n    <!-- bit 0 snapshotCutoffUs; bit 1 liveCutoffUs; bit 2 nextCursor. -->\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"2\"/>\n    <field name=\"flags\" id=\"4\" type=\"uint8\" offset=\"3\"/>\n    <field name=\"epoch\" id=\"5\" type=\"uint64\" offset=\"4\"/>\n    <field name=\"priceCutoffMs\" id=\"6\" type=\"uint64\" offset=\"12\"/>\n    <field name=\"snapshotCutoffUs\" id=\"7\" type=\"uint64\" offset=\"20\"/>\n    <field name=\"liveCutoffUs\" id=\"8\" type=\"uint64\" offset=\"28\"/>\n    <field name=\"snapshotMatches\" id=\"9\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"candidates\" id=\"10\" type=\"uint64\" offset=\"44\"/>\n    <field name=\"rowCount\" id=\"11\" type=\"uint32\" offset=\"52\"/>\n    <group name=\"facets\" id=\"14\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"values\" id=\"15\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"8\">\n        <field name=\"total\" id=\"16\" type=\"uint64\" offset=\"0\"/>\n        <data name=\"value\" id=\"17\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"18\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"facetMeta\" id=\"19\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"exhaustive\" id=\"20\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"name\" id=\"21\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"catalog\" id=\"22\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"23\" type=\"varDataEncoding\"/>\n    <data name=\"nextCursor\" id=\"24\" type=\"varDataEncoding\"/>\n  </message>\n  <!-- Bounded search-row delivery. Each public owner frame is at most 1 MiB; chunks\n       arrive in order before the KeyfiguresSearchResult summary. firstRow is the\n       zero-based index of this chunk's first row in the complete result. -->\n  <message name=\"KeyfiguresRowChunk\" id=\"10\" blockLength=\"4\">\n    <field name=\"firstRow\" id=\"1\" type=\"uint32\" offset=\"0\"/>\n    <group name=\"rows\" id=\"2\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"rowSbe\" id=\"3\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n  <message name=\"KeyfiguresRow\" id=\"6\" blockLength=\"17\">\n    <field name=\"eventUs\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"messageId\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <!-- bit 0 eventUs; bit 1 messageId; bit 2 reason. -->\n    <field name=\"presence\" id=\"3\" type=\"uint8\" offset=\"16\"/>\n    <group name=\"fields\" id=\"4\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"21\">\n      <field name=\"columnId\" id=\"5\" type=\"uint16\" offset=\"0\"/>\n      <!-- kind: 1 string, 2 integer, 3 number, 4 boolean, 5 string list (a\n           contract field with multiple: true); present 0 null, 1 value.\n           Only kind 5 uses listValues and only kind 1 uses textValue. -->\n      <field name=\"kind\" id=\"6\" type=\"uint8\" offset=\"2\"/>\n      <field name=\"present\" id=\"7\" type=\"uint8\" offset=\"3\"/>\n      <field name=\"numberValue\" id=\"8\" type=\"double\" offset=\"4\"/>\n      <field name=\"integerValue\" id=\"9\" type=\"int64\" offset=\"12\"/>\n      <field name=\"booleanValue\" id=\"10\" type=\"uint8\" offset=\"20\"/>\n      <group name=\"listValues\" id=\"18\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"value\" id=\"19\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"textValue\" id=\"11\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"sources\" id=\"12\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <!-- role 1 primary, 2 dependency. -->\n      <field name=\"role\" id=\"13\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"provenanceSbe\" id=\"14\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"requirementsSbe\" id=\"15\" type=\"varDataEncoding\"/>\n    <data name=\"reason\" id=\"16\" type=\"varDataEncoding\"/>\n    <data name=\"contractFingerprint\" id=\"17\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresProvenance\" id=\"7\" blockLength=\"35\">\n    <field name=\"cutoffUs\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n    <field name=\"priceCutoffMs\" id=\"2\" type=\"uint64\" offset=\"8\"/>\n    <field name=\"quoteEventUs\" id=\"3\" type=\"uint64\" offset=\"16\"/>\n    <field name=\"messageId\" id=\"4\" type=\"uint64\" offset=\"24\"/>\n    <field name=\"quality\" id=\"5\" type=\"uint8\" offset=\"32\"/>\n    <field name=\"clock\" id=\"6\" type=\"uint8\" offset=\"33\"/>\n    <field name=\"priceAgeMode\" id=\"7\" type=\"uint8\" offset=\"34\"/>\n    <group name=\"fallback\" id=\"8\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"input\" id=\"9\" type=\"varDataEncoding\"/>\n      <data name=\"reason\" id=\"10\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"input\" id=\"11\" type=\"varDataEncoding\"/>\n    <data name=\"catalog\" id=\"12\" type=\"varDataEncoding\"/>\n    <data name=\"key\" id=\"13\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresRequirements\" id=\"8\" blockLength=\"0\">\n    <group name=\"clauses\" id=\"1\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <!-- kind 0 Public, 1 AnyOf. -->\n      <field name=\"kind\" id=\"2\" type=\"uint8\" offset=\"0\"/>\n      <group name=\"alternatives\" id=\"3\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"namespace\" id=\"4\" type=\"varDataEncoding\"/>\n        <data name=\"license\" id=\"5\" type=\"varDataEncoding\"/>\n      </group>\n    </group>\n  </message>\n  <!-- Authenticated owner-private diagnostics and retained-epoch inspection; never exposed as public result 103. -->\n  <message name=\"KeyfiguresDebugResult\" id=\"9\" blockLength=\"0\">\n    <data name=\"debugJson\" id=\"1\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"KeyfiguresSearchQuery\" id=\"3\" blockLength=\"13\">\n    <field name=\"queryOffset\" id=\"1\" type=\"uint32\" offset=\"0\"/>\n    <field name=\"queryLimit\" id=\"2\" type=\"uint32\" offset=\"4\"/>\n    <field name=\"budget\" id=\"3\" type=\"uint32\" offset=\"8\"/>\n    <!-- bit 0 keys present; bit 1 cursor present. Empty values remain distinct. -->\n    <field name=\"presence\" id=\"4\" type=\"uint8\" offset=\"12\"/>\n    <group name=\"filters\" id=\"5\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <group name=\"values\" id=\"6\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n        <data name=\"value\" id=\"7\" type=\"varDataEncoding\"/>\n      </group>\n      <data name=\"name\" id=\"8\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"facets\" id=\"9\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"name\" id=\"10\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"keys\" id=\"11\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"0\">\n      <data name=\"key\" id=\"12\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"ranges\" id=\"13\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"49\">\n      <!-- bits 0..3: gt, ge, lt, le present. -->\n      <field name=\"presence\" id=\"14\" type=\"uint8\" offset=\"0\"/>\n      <field name=\"gt\" id=\"15\" type=\"double\" offset=\"1\"/>\n      <field name=\"ge\" id=\"16\" type=\"double\" offset=\"9\"/>\n      <field name=\"lt\" id=\"17\" type=\"double\" offset=\"17\"/>\n      <field name=\"le\" id=\"18\" type=\"double\" offset=\"25\"/>\n      <field name=\"absoluteMargin\" id=\"19\" type=\"double\" offset=\"33\"/>\n      <field name=\"relativeMargin\" id=\"20\" type=\"double\" offset=\"41\"/>\n      <data name=\"field\" id=\"21\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"sorts\" id=\"22\" dimensionType=\"largeGroupSizeEncoding\" blockLength=\"1\">\n      <field name=\"descending\" id=\"23\" type=\"uint8\" offset=\"0\"/>\n      <data name=\"field\" id=\"24\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"text\" id=\"25\" type=\"varDataEncoding\"/>\n    <data name=\"cursor\" id=\"26\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
   "messages": [
     {
       "name": "KeyfiguresRequest",
@@ -453,7 +453,7 @@
     {
       "name": "KeyfiguresSearchResult",
       "id": 5,
-      "blockLength": 53,
+      "blockLength": 56,
       "sinceVersion": 0,
       "fields": [
         {
@@ -570,34 +570,12 @@
           "kind": "field",
           "attributes": {
             "id": "11",
-            "name": "reserved",
+            "name": "rowCount",
             "offset": "52",
-            "type": "uint8"
+            "type": "uint32"
           },
           "value": null,
           "children": []
-        },
-        {
-          "kind": "group",
-          "attributes": {
-            "blockLength": "0",
-            "dimensionType": "largeGroupSizeEncoding",
-            "id": "12",
-            "name": "rows"
-          },
-          "value": null,
-          "children": [
-            {
-              "kind": "data",
-              "attributes": {
-                "id": "13",
-                "name": "rowSbe",
-                "type": "varDataEncoding"
-              },
-              "value": null,
-              "children": []
-            }
-          ]
         },
         {
           "kind": "group",
@@ -720,6 +698,47 @@
       ]
     },
     {
+      "name": "KeyfiguresRowChunk",
+      "id": 10,
+      "blockLength": 4,
+      "sinceVersion": 0,
+      "fields": [
+        {
+          "kind": "field",
+          "attributes": {
+            "id": "1",
+            "name": "firstRow",
+            "offset": "0",
+            "type": "uint32"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "group",
+          "attributes": {
+            "blockLength": "0",
+            "dimensionType": "largeGroupSizeEncoding",
+            "id": "2",
+            "name": "rows"
+          },
+          "value": null,
+          "children": [
+            {
+              "kind": "data",
+              "attributes": {
+                "id": "3",
+                "name": "rowSbe",
+                "type": "varDataEncoding"
+              },
+              "value": null,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "KeyfiguresRow",
       "id": 6,
       "blockLength": 17,
@@ -833,6 +852,28 @@
               },
               "value": null,
               "children": []
+            },
+            {
+              "kind": "group",
+              "attributes": {
+                "blockLength": "0",
+                "dimensionType": "largeGroupSizeEncoding",
+                "id": "18",
+                "name": "listValues"
+              },
+              "value": null,
+              "children": [
+                {
+                  "kind": "data",
+                  "attributes": {
+                    "id": "19",
+                    "name": "value",
+                    "type": "varDataEncoding"
+                  },
+                  "value": null,
+                  "children": []
+                }
+              ]
             },
             {
               "kind": "data",
@@ -3619,7 +3660,7 @@
       "name": "KeyfiguresSearchResult",
       "id": 5,
       "signal": "BeginMessage",
-      "offset": 53,
+      "offset": 56,
       "primitive": null,
       "length": null,
       "presence": "Required",
@@ -3826,179 +3867,19 @@
       "sinceVersion": 0
     },
     {
-      "name": "reserved",
+      "name": "rowCount",
       "id": 11,
       "signal": "BeginField",
       "offset": 52,
-      "primitive": "UInt8",
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "reserved",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "rows",
-      "id": 12,
-      "signal": "BeginGroup",
-      "offset": 0,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "largeGroupSizeEncoding",
-      "id": null,
-      "signal": "BeginComposite",
-      "offset": 6,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "blockLength",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 0,
-      "primitive": "UInt16",
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "blockLength",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "numInGroup",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 2,
       "primitive": "UInt32",
       "length": null,
       "presence": "Required",
       "sinceVersion": 0
     },
     {
-      "name": "numInGroup",
+      "name": "rowCount",
       "id": null,
       "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "largeGroupSizeEncoding",
-      "id": null,
-      "signal": "EndComposite",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "rowSbe",
-      "id": 13,
-      "signal": "BeginVarData",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "varDataEncoding",
-      "id": null,
-      "signal": "BeginComposite",
-      "offset": 4,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "length",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 0,
-      "primitive": "UInt32",
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "length",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "varData",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 4,
-      "primitive": "UInt8",
-      "length": 0,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "varData",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "varDataEncoding",
-      "id": null,
-      "signal": "EndComposite",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "rowSbe",
-      "id": null,
-      "signal": "EndVarData",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "rows",
-      "id": null,
-      "signal": "EndGroup",
       "offset": null,
       "primitive": null,
       "length": null,
@@ -4776,6 +4657,206 @@
       "sinceVersion": 0
     },
     {
+      "name": "KeyfiguresRowChunk",
+      "id": 10,
+      "signal": "BeginMessage",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "firstRow",
+      "id": 1,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "firstRow",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rows",
+      "id": 2,
+      "signal": "BeginGroup",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 6,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rowSbe",
+      "id": 3,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rowSbe",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "rows",
+      "id": null,
+      "signal": "EndGroup",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "KeyfiguresRowChunk",
+      "id": null,
+      "signal": "EndMessage",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
       "name": "KeyfiguresRow",
       "id": 6,
       "signal": "BeginMessage",
@@ -5029,6 +5110,166 @@
       "name": "booleanValue",
       "id": null,
       "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "listValues",
+      "id": 18,
+      "signal": "BeginGroup",
+      "offset": 0,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 6,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "largeGroupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "value",
+      "id": 19,
+      "signal": "BeginVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt32",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "length",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 4,
+      "primitive": "UInt8",
+      "length": 0,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varData",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "varDataEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "value",
+      "id": null,
+      "signal": "EndVarData",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "listValues",
+      "id": null,
+      "signal": "EndGroup",
       "offset": null,
       "primitive": null,
       "length": null,

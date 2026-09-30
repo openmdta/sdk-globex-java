@@ -37,7 +37,10 @@
     <data name="searchQuerySbe" id="12" type="varDataEncoding"/>
   </message>
   <!-- Public results bind every customer field ID and scalar type to contractFingerprint.
-       A row's projected blocks are rebuilt from the same checked fields and the pinned contract. -->
+       A row carries exactly the contract's declared fields, in column-ID order; its
+       projected blocks are rebuilt from the same checked fields and the pinned contract.
+       Schema and instrument results are one frame. A search result is zero or more
+       KeyfiguresRowChunk frames followed by its KeyfiguresSearchResult summary. -->
   <message name="KeyfiguresSchemaResult" id="2" blockLength="36">
     <field name="clock" id="1" type="uint8" offset="0"/>
     <field name="allowNoPriceCutoff" id="2" type="uint8" offset="1"/>
@@ -73,7 +76,8 @@
     <data name="contractFingerprint" id="6" type="varDataEncoding"/>
     <data name="rowSbe" id="7" type="varDataEncoding"/>
   </message>
-  <message name="KeyfiguresSearchResult" id="5" blockLength="53">
+  <!-- Search rows precede this summary in KeyfiguresRowChunk frames; rowCount is their total. -->
+  <message name="KeyfiguresSearchResult" id="5" blockLength="56">
     <field name="clock" id="1" type="uint8" offset="0"/>
     <field name="priceAgeMode" id="2" type="uint8" offset="1"/>
     <!-- bit 0 snapshotCutoffUs; bit 1 liveCutoffUs; bit 2 nextCursor. -->
@@ -85,10 +89,7 @@
     <field name="liveCutoffUs" id="8" type="uint64" offset="28"/>
     <field name="snapshotMatches" id="9" type="uint64" offset="36"/>
     <field name="candidates" id="10" type="uint64" offset="44"/>
-    <field name="reserved" id="11" type="uint8" offset="52"/>
-    <group name="rows" id="12" dimensionType="largeGroupSizeEncoding" blockLength="0">
-      <data name="rowSbe" id="13" type="varDataEncoding"/>
-    </group>
+    <field name="rowCount" id="11" type="uint32" offset="52"/>
     <group name="facets" id="14" dimensionType="largeGroupSizeEncoding" blockLength="0">
       <group name="values" id="15" dimensionType="largeGroupSizeEncoding" blockLength="8">
         <field name="total" id="16" type="uint64" offset="0"/>
@@ -104,6 +105,15 @@
     <data name="contractFingerprint" id="23" type="varDataEncoding"/>
     <data name="nextCursor" id="24" type="varDataEncoding"/>
   </message>
+  <!-- Bounded search-row delivery. Each public owner frame is at most 1 MiB; chunks
+       arrive in order before the KeyfiguresSearchResult summary. firstRow is the
+       zero-based index of this chunk's first row in the complete result. -->
+  <message name="KeyfiguresRowChunk" id="10" blockLength="4">
+    <field name="firstRow" id="1" type="uint32" offset="0"/>
+    <group name="rows" id="2" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="rowSbe" id="3" type="varDataEncoding"/>
+    </group>
+  </message>
   <message name="KeyfiguresRow" id="6" blockLength="17">
     <field name="eventUs" id="1" type="uint64" offset="0"/>
     <field name="messageId" id="2" type="uint64" offset="8"/>
@@ -111,12 +121,17 @@
     <field name="presence" id="3" type="uint8" offset="16"/>
     <group name="fields" id="4" dimensionType="largeGroupSizeEncoding" blockLength="21">
       <field name="columnId" id="5" type="uint16" offset="0"/>
-      <!-- kind: 1 string, 2 integer, 3 number, 4 boolean; present 0 null, 1 value. -->
+      <!-- kind: 1 string, 2 integer, 3 number, 4 boolean, 5 string list (a
+           contract field with multiple: true); present 0 null, 1 value.
+           Only kind 5 uses listValues and only kind 1 uses textValue. -->
       <field name="kind" id="6" type="uint8" offset="2"/>
       <field name="present" id="7" type="uint8" offset="3"/>
       <field name="numberValue" id="8" type="double" offset="4"/>
       <field name="integerValue" id="9" type="int64" offset="12"/>
       <field name="booleanValue" id="10" type="uint8" offset="20"/>
+      <group name="listValues" id="18" dimensionType="largeGroupSizeEncoding" blockLength="0">
+        <data name="value" id="19" type="varDataEncoding"/>
+      </group>
       <data name="textValue" id="11" type="varDataEncoding"/>
     </group>
     <group name="sources" id="12" dimensionType="largeGroupSizeEncoding" blockLength="1">
