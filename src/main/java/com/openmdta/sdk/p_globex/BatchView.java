@@ -34,7 +34,7 @@ final class BatchView {
         fieldsOffset = decoder.limit();
         var values = decoder.fields();
         fieldCount = values.count();
-        if (fieldCount != next || fieldCount < 0 || values.actingBlockLength() < 25 || fieldCount > response.body().capacity() / values.actingBlockLength()) throw new IllegalArgumentException("Invalid field group");
+        if (fieldCount != next || fieldCount < 0 || values.actingBlockLength() < 23 || fieldCount > response.body().capacity() / values.actingBlockLength()) throw new IllegalArgumentException("Invalid field group");
         while (values.hasNext()) { values.next(); response.body().boundsCheck(decoder.limit() - values.actingBlockLength(), values.actingBlockLength()); }
         gapsOffset = decoder.limit();
         var gaps = decoder.gaps();
@@ -87,7 +87,7 @@ final class BatchView {
                 int offset = Math.toIntExact(values.payloadOffset()), length = Math.toIntExact(values.payloadLength());
                 payload.boundsCheck(offset, length);
                 if (values.clear() > 1 || values.clear() == 1 && length != 0 || values.clear() == 0 && length < values.blockLength()) throw new IllegalArgumentException("Invalid field payload");
-                field.value = values; field.body.wrap(payload, offset, length);
+                field.value = values; field.fields = response.fields; field.body.wrap(payload, offset, length);
                 consumer.accept(field);
             }
         }
@@ -106,16 +106,21 @@ final class BatchView {
 
     public static final class Field {
         private MarketDataMessageBatchDecoder.FieldsDecoder value;
+        private AnnouncedFields fields;
         private final UnsafeBuffer body = new UnsafeBuffer(0, 0);
-        public int schemaId() { return value.schemaId(); }
-        public int templateId() { return value.templateId(); }
+        /** Dataset field ID; its semantic field and layout were announced once for the request. */
+        public int fieldId() { return value.fieldId(); }
+        /** Semantic field, such as {@code openmdta::BidAsk}. */
+        public String semantic() { return fields.semantic(value.fieldId()); }
+        /** SBE message name of the payload layout; a {@link Block} decodes exactly one layout. */
+        public String layout() { return fields.layout(value.fieldId()); }
         public int version() { return value.version(); }
         public int blockLength() { return value.blockLength(); }
         public long eventTimeMicros() { return value.eventTimeMicros(); }
         public boolean clear() { return value.clear() == 1; }
         public DirectBuffer payload() { return body; }
         public <D extends MessageDecoderFlyweight> D decode(Block<D> block, D target) {
-            if (clear() || block.format().schemaId() != schemaId() || block.format().templateId() != templateId()) throw new IllegalArgumentException("Clear field or mismatched decoder");
+            if (clear() || !block.semantic().equals(semantic()) || !block.layout().equals(layout())) throw new IllegalArgumentException("Clear field or mismatched decoder");
             target.wrap(body, 0, blockLength(), version());
             return target;
         }

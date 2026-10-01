@@ -1,8 +1,8 @@
 {
   "id": 8,
-  "version": 2,
+  "version": 3,
   "package": "openmdta.data.auth",
-  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"openmdta.data.auth\" id=\"8\" version=\"2\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <enum name=\"Quality\" encodingType=\"uint8\">\n      <validValue name=\"ANY\">0</validValue>\n      <validValue name=\"RT\">1</validValue>\n      <validValue name=\"DL\">2</validValue>\n      <validValue name=\"EOD\">3</validValue>\n    </enum>\n  </types>\n  <message name=\"MDToken\" id=\"1\" blockLength=\"0\">\n    <data name=\"clientId\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"claimsZlib\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"mac\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"MDTokenClaims\" id=\"2\" blockLength=\"16\">\n    <field name=\"issuedAt\" id=\"1\" type=\"int64\"/>\n    <field name=\"expiresAt\" id=\"2\" type=\"int64\"/>\n    <group name=\"grants\" id=\"3\" dimensionType=\"groupSizeEncoding\" blockLength=\"1\">\n      <field name=\"quality\" id=\"4\" type=\"Quality\"/>\n      <data name=\"package\" id=\"5\" type=\"varDataEncoding\"/>\n    </group>\n    <group name=\"allowedOrigins\" id=\"7\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\" sinceVersion=\"1\">\n      <data name=\"origin\" id=\"8\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"audience\" id=\"6\" type=\"varDataEncoding\"/>\n    <!-- v2 appends a UTF-8 bucket ID, then two uint64 microtoken values.\n         The manual codec retains the v0/v1 fixed block and envelope. -->\n    <data name=\"rateLimit\" id=\"9\" type=\"varDataEncoding\" sinceVersion=\"2\"/>\n  </message>\n</messageSchema>\n",
+  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- MDToken v2. The codec is hand-written; header versions are exact, not ranges:\n     the MDToken envelope header is (0, 1, 8, 1) and the claims header is (16, 2, 8, 3).\n     The signature is Ed25519 over ASCII \"OpenMDTA-MDToken-v2\", one zero byte, then every\n     envelope byte before the signature bytes, including the signature's uint32 length. -->\n<messageSchema package=\"openmdta.data.auth\" id=\"8\" version=\"3\" byteOrder=\"littleEndian\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <!-- UNTIMED with package \"*\" is the only wildcard; with NAMESPACE:LICENSE it is an untimed package. -->\n    <enum name=\"Quality\" encodingType=\"uint8\">\n      <validValue name=\"UNTIMED\">0</validValue>\n      <validValue name=\"RT\">1</validValue>\n      <validValue name=\"DL\">2</validValue>\n      <validValue name=\"EOD\">3</validValue>\n    </enum>\n  </types>\n  <message name=\"MDToken\" id=\"1\" blockLength=\"0\">\n    <data name=\"clientId\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"claimsZlib\" id=\"2\" type=\"varDataEncoding\"/>\n    <!-- Exactly 64 bytes. -->\n    <data name=\"signature\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"MDTokenClaims\" id=\"2\" blockLength=\"16\">\n    <field name=\"issuedAt\" id=\"1\" type=\"int64\"/>\n    <field name=\"expiresAt\" id=\"2\" type=\"int64\"/>\n    <group name=\"grants\" id=\"3\" dimensionType=\"groupSizeEncoding\" blockLength=\"1\">\n      <field name=\"quality\" id=\"4\" type=\"Quality\"/>\n      <data name=\"package\" id=\"5\" type=\"varDataEncoding\"/>\n    </group>\n    <!-- Always present; an empty group allows only requests without an Origin header. -->\n    <group name=\"allowedOrigins\" id=\"7\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\">\n      <data name=\"origin\" id=\"8\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"audience\" id=\"6\" type=\"varDataEncoding\"/>\n    <!-- Empty when absent. Otherwise a length-prefixed UTF-8 bucket ID, then uint64\n         capacity and uint64 refill per second, both in millionths of a token. -->\n    <data name=\"rateLimit\" id=\"9\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
   "messages": [
     {
       "name": "MDToken",
@@ -34,7 +34,7 @@
           "kind": "data",
           "attributes": {
             "id": "3",
-            "name": "mac",
+            "name": "signature",
             "type": "varDataEncoding"
           },
           "value": null,
@@ -106,8 +106,7 @@
             "blockLength": "0",
             "dimensionType": "groupSizeEncoding",
             "id": "7",
-            "name": "allowedOrigins",
-            "sinceVersion": "1"
+            "name": "allowedOrigins"
           },
           "value": null,
           "children": [
@@ -138,7 +137,6 @@
           "attributes": {
             "id": "9",
             "name": "rateLimit",
-            "sinceVersion": "2",
             "type": "varDataEncoding"
           },
           "value": null,
@@ -259,7 +257,7 @@
         {
           "kind": "validValue",
           "attributes": {
-            "name": "ANY"
+            "name": "UNTIMED"
           },
           "value": "0",
           "children": []
@@ -303,7 +301,7 @@
       "sinceVersion": 0
     },
     {
-      "name": "ANY",
+      "name": "UNTIMED",
       "id": null,
       "signal": "Encoding",
       "offset": null,
@@ -743,7 +741,7 @@
       "sinceVersion": 0
     },
     {
-      "name": "mac",
+      "name": "signature",
       "id": 3,
       "signal": "BeginVarData",
       "offset": null,
@@ -813,7 +811,7 @@
       "sinceVersion": 0
     },
     {
-      "name": "mac",
+      "name": "signature",
       "id": null,
       "signal": "EndVarData",
       "offset": null,
@@ -973,7 +971,7 @@
       "sinceVersion": 0
     },
     {
-      "name": "ANY",
+      "name": "UNTIMED",
       "id": null,
       "signal": "Encoding",
       "offset": null,
@@ -1130,7 +1128,7 @@
       "primitive": null,
       "length": null,
       "presence": "Required",
-      "sinceVersion": 1
+      "sinceVersion": 0
     },
     {
       "name": "groupSizeEncoding",
@@ -1370,7 +1368,7 @@
       "primitive": null,
       "length": null,
       "presence": "Required",
-      "sinceVersion": 2
+      "sinceVersion": 0
     },
     {
       "name": "varDataEncoding",

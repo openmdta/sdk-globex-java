@@ -15,6 +15,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.collections.Long2ObjectHashMap;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.sbe.MessageEncoderFlyweight;
+import com.openmdta.sdk.p_globex.sbe.gateway_protocol.DatasetFieldsDecoder;
 import com.openmdta.sdk.p_globex.sbe.sbe_websocket.*;
 
 /** One authenticated connection. Callbacks borrow transport bytes and run serially. */
@@ -262,7 +263,12 @@ public final class Client implements AutoCloseable {
         boolean allowed = false;
         for (Format expected : target.responses) if (expected.schemaId() == schema && expected.templateId() == template) { allowed = true; break; }
         if (!allowed) throw new IOException("Response format does not belong to request");
+        if (schema == DatasetFieldsDecoder.SCHEMA_ID && template == DatasetFieldsDecoder.TEMPLATE_ID) {
+            target.fields.absorb(version, fixed, bytes);
+            return;
+        }
         response.wrap(schema, template, version, fixed, bytes);
+        response.fields = target.fields;
         target.listener.onResponse(response);
     }
     /** Allocating HTTP/JSON convenience API. Token supplier is consulted for every call. */

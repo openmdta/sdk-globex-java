@@ -6,7 +6,7 @@ ListingLatestRequest is typed SBE: a group of 1..64 uint16 field IDs, then UTF-8
 
 ## Request: ListingLatestRequest
 
-Format: `schemaId=102, templateId=12, version=21, blockLength=0`. The enclosing XML supports version 32; this message emits version 21.
+Format: `schemaId=102, templateId=12, version=21, blockLength=0`. The enclosing XML supports version 33; this message emits version 21.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Format: `schemaId=102, templateId=12, version=21, blockLength=0`. The enclosing 
 
 ## Response: ListingLatestEvent
 
-Format: `schemaId=102, templateId=107, version=22, blockLength=2`. The enclosing XML supports version 32; this message emits version 22.
+Format: `schemaId=102, templateId=107, version=22, blockLength=2`. The enclosing XML supports version 33; this message emits version 22.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

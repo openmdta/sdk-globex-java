@@ -1,6 +1,6 @@
 # globex — Java 17 client
 
-This package targets applied revision `d5b6fc18e4b54e34dcee9519841af074f89e79bbef3fcfd7623455b0e29ba6b8`. Its endpoints, datasets,
+This package targets applied revision `dabcaf4aa60952aedbbcae4899ac7517b1b0dae78bfe50c82a9f768b02f111e7`. Its endpoints, datasets,
 field bindings and service fingerprints describe this one environment. Start
 with [the environment](manual/environment.md), [operations](manual/operations/index.md)
 and [codec index](codecs.md). Credentials are intentionally absent.
@@ -325,7 +325,7 @@ connections when a slow durable sink should not delay unrelated subscriptions.
 errors. Closing a request cancels it. Closing a client fails its active requests.
 Authentication happens once per connection; refresh tokens by reconnecting.
 `MdToken.issue` signs delegated tokens on a trusted server using the exact SBE
-schemas. Never ship the main signing secret in a client application.
+schemas. Never ship the DataClient private key in a client application.
 
 Reserve **Feed** for storage workflows:
 

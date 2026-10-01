@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="32" byteOrder="littleEndian">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.gateway_protocol" id="102" version="33" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -141,22 +141,23 @@
   <message name="CatalogKeyfiguresResult" id="103" blockLength="0" sinceVersion="32">
     <data name="resultSbe" id="1" type="varDataEncoding"/>
   </message>
-  <message name="MarketDataMessageBatch" id="108" blockLength="1" sinceVersion="11">
+  <!-- Fields are named by the dataset's field ID; a DatasetFields message on the same request
+       announces each ID's semantic field and payload layout before its first use. -->
+  <message name="MarketDataMessageBatch" id="108" blockLength="1" sinceVersion="33">
     <field name="phase" id="1" type="Phase" offset="0"/>
     <group name="messages" id="2" dimensionType="largeGroupSizeEncoding" blockLength="14">
       <field name="messageId" id="3" type="uint64" offset="0"/>
       <field name="firstField" id="4" type="uint32" offset="8"/>
       <field name="fieldCount" id="5" type="uint16" offset="12"/>
     </group>
-    <group name="fields" id="6" dimensionType="largeGroupSizeEncoding" blockLength="25">
-      <field name="schemaId" id="7" type="uint16" offset="0"/>
-      <field name="templateId" id="8" type="uint16" offset="2"/>
-      <field name="version" id="9" type="uint16" offset="4"/>
-      <field name="blockLength" id="10" type="uint16" offset="6"/>
-      <field name="eventTimeMicros" id="11" type="uint64" offset="8"/>
-      <field name="clear" id="12" type="uint8" offset="16"/>
-      <field name="payloadOffset" id="13" type="uint32" offset="17"/>
-      <field name="payloadLength" id="14" type="uint32" offset="21"/>
+    <group name="fields" id="6" dimensionType="largeGroupSizeEncoding" blockLength="23">
+      <field name="fieldId" id="7" type="uint16" offset="0"/>
+      <field name="version" id="9" type="uint16" offset="2"/>
+      <field name="blockLength" id="10" type="uint16" offset="4"/>
+      <field name="eventTimeMicros" id="11" type="uint64" offset="6"/>
+      <field name="clear" id="12" type="uint8" offset="14"/>
+      <field name="payloadOffset" id="13" type="uint32" offset="15"/>
+      <field name="payloadLength" id="14" type="uint32" offset="19"/>
     </group>
     <group name="gaps" id="15" dimensionType="largeGroupSizeEncoding" blockLength="16">
       <field name="fromEventTimeMicros" id="16" type="uint64" offset="0" presence="optional" nullValue="18446744073709551615"/>
@@ -165,6 +166,18 @@
     <data name="datasetRecordKey" id="18" type="varDataEncoding"/>
     <data name="dataset" id="19" type="varDataEncoding"/>
     <data name="payload" id="20" type="varDataEncoding"/>
+  </message>
+  <!-- Sent once per request and dataset before the first batch that uses these field IDs. -->
+  <message name="DatasetFields" id="114" blockLength="0" sinceVersion="33">
+    <group name="fields" id="1" dimensionType="largeGroupSizeEncoding" blockLength="2">
+      <field name="fieldId" id="2" type="uint16" offset="0"/>
+      <!-- Clients select their decoder by name: the semantic field and the SBE message name of
+           the payload layout (the owner model's or the producer's export). Each row of a batch
+           carries the payload's version and block length. -->
+      <data name="semantic" id="3" type="varDataEncoding"/>
+      <data name="layout" id="4" type="varDataEncoding"/>
+    </group>
+    <data name="dataset" id="8" type="varDataEncoding"/>
   </message>
   <message name="CatalogRecord" id="102" blockLength="30" sinceVersion="2">
     <field name="phase" id="1" type="Phase" offset="0"/>

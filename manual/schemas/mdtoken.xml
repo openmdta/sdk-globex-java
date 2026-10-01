@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="openmdta.data.auth" id="8" version="2" byteOrder="littleEndian">
+<!-- MDToken v2. The codec is hand-written; header versions are exact, not ranges:
+     the MDToken envelope header is (0, 1, 8, 1) and the claims header is (16, 2, 8, 3).
+     The signature is Ed25519 over ASCII "OpenMDTA-MDToken-v2", one zero byte, then every
+     envelope byte before the signature bytes, including the signature's uint32 length. -->
+<messageSchema package="openmdta.data.auth" id="8" version="3" byteOrder="littleEndian">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -15,8 +19,9 @@
       <type name="length" primitiveType="uint32"/>
       <type name="varData" primitiveType="uint8" length="0"/>
     </composite>
+    <!-- UNTIMED with package "*" is the only wildcard; with NAMESPACE:LICENSE it is an untimed package. -->
     <enum name="Quality" encodingType="uint8">
-      <validValue name="ANY">0</validValue>
+      <validValue name="UNTIMED">0</validValue>
       <validValue name="RT">1</validValue>
       <validValue name="DL">2</validValue>
       <validValue name="EOD">3</validValue>
@@ -25,7 +30,8 @@
   <message name="MDToken" id="1" blockLength="0">
     <data name="clientId" id="1" type="varDataEncoding"/>
     <data name="claimsZlib" id="2" type="varDataEncoding"/>
-    <data name="mac" id="3" type="varDataEncoding"/>
+    <!-- Exactly 64 bytes. -->
+    <data name="signature" id="3" type="varDataEncoding"/>
   </message>
   <message name="MDTokenClaims" id="2" blockLength="16">
     <field name="issuedAt" id="1" type="int64"/>
@@ -34,12 +40,13 @@
       <field name="quality" id="4" type="Quality"/>
       <data name="package" id="5" type="varDataEncoding"/>
     </group>
-    <group name="allowedOrigins" id="7" dimensionType="groupSizeEncoding" blockLength="0" sinceVersion="1">
+    <!-- Always present; an empty group allows only requests without an Origin header. -->
+    <group name="allowedOrigins" id="7" dimensionType="groupSizeEncoding" blockLength="0">
       <data name="origin" id="8" type="varDataEncoding"/>
     </group>
     <data name="audience" id="6" type="varDataEncoding"/>
-    <!-- v2 appends a UTF-8 bucket ID, then two uint64 microtoken values.
-         The manual codec retains the v0/v1 fixed block and envelope. -->
-    <data name="rateLimit" id="9" type="varDataEncoding" sinceVersion="2"/>
+    <!-- Empty when absent. Otherwise a length-prefixed UTF-8 bucket ID, then uint64
+         capacity and uint64 refill per second, both in millionths of a token. -->
+    <data name="rateLimit" id="9" type="varDataEncoding"/>
   </message>
 </messageSchema>

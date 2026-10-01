@@ -1,18 +1,19 @@
 {
-  "id": 65001,
+  "id": 41874,
   "version": 0,
-  "package": "lus.default",
-  "xml": "<messageSchema package=\"lus.default\" id=\"65001\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite><composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite></types><message name=\"LusDomainObject\" id=\"65011\" blockLength=\"0\">\n    <data name=\"name\" id=\"1\" type=\"varDataEncoding\"/>\n  </message><message name=\"LusNameHash\" id=\"65012\" blockLength=\"0\">\n    <data name=\"value\" id=\"1\" type=\"varDataEncoding\"/>\n  </message></messageSchema>",
+  "package": "lus",
+  "xml": "<messageSchema package=\"lus\" id=\"41874\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"templateId\" primitiveType=\"uint16\"/><type name=\"schemaId\" primitiveType=\"uint16\"/><type name=\"version\" primitiveType=\"uint16\"/></composite><composite name=\"groupSizeEncoding\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"numInGroup\" primitiveType=\"uint16\"/></composite><composite name=\"varDataEncoding\"><type name=\"length\" primitiveType=\"uint32\"/><type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/></composite><composite name=\"DecimalEncoding\" semanticType=\"Decimal\"><type name=\"mantissa\" primitiveType=\"int64\"/><type name=\"exponent\" primitiveType=\"int8\"/></composite><type name=\"BooleanEncoding\" primitiveType=\"uint8\" semanticType=\"Boolean\"/></types><message name=\"LusDomainObject\" id=\"39779\" semanticType=\"LusDomainObject\" description=\"\" blockLength=\"0\"><data name=\"name\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"LusNameHash\" id=\"10029\" semanticType=\"LusNameHash\" description=\"\" blockLength=\"0\"><data name=\"value\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message></messageSchema>",
   "messages": [
     {
       "name": "LusDomainObject",
-      "id": 65011,
+      "id": 39779,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "1",
             "name": "name",
             "type": "varDataEncoding"
@@ -24,13 +25,14 @@
     },
     {
       "name": "LusNameHash",
-      "id": 65012,
+      "id": 10029,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "value",
             "type": "varDataEncoding"
@@ -90,6 +92,33 @@
     {
       "kind": "composite",
       "attributes": {
+        "name": "groupSizeEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "numInGroup",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
         "name": "varDataEncoding"
       },
       "value": null,
@@ -114,6 +143,44 @@
           "children": []
         }
       ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "DecimalEncoding",
+        "semanticType": "Decimal"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "mantissa",
+            "primitiveType": "int64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "exponent",
+            "primitiveType": "int8"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "type",
+      "attributes": {
+        "name": "BooleanEncoding",
+        "primitiveType": "uint8",
+        "semanticType": "Boolean"
+      },
+      "value": null,
+      "children": []
     }
   ],
   "layout": [
@@ -218,6 +285,66 @@
       "sinceVersion": 0
     },
     {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
       "name": "varDataEncoding",
       "id": null,
       "signal": "BeginComposite",
@@ -278,8 +405,68 @@
       "sinceVersion": 0
     },
     {
+      "name": "DecimalEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 9,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mantissa",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "Int64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mantissa",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "exponent",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "Int8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "exponent",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "DecimalEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
       "name": "LusDomainObject",
-      "id": 65011,
+      "id": 39779,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -379,7 +566,7 @@
     },
     {
       "name": "LusNameHash",
-      "id": 65012,
+      "id": 10029,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,

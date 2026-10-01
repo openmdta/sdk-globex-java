@@ -1,12 +1,12 @@
 {
-  "id": 100,
-  "version": 4,
-  "package": "market.internal",
-  "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<messageSchema package=\"market.internal\" id=\"100\" byteOrder=\"littleEndian\" version=\"4\">\n  <types>\n    <composite name=\"messageHeader\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"templateId\" primitiveType=\"uint16\"/>\n      <type name=\"schemaId\" primitiveType=\"uint16\"/>\n      <type name=\"version\" primitiveType=\"uint16\"/>\n    </composite>\n    <composite name=\"varDataEncoding\">\n      <type name=\"length\" primitiveType=\"uint32\"/>\n      <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/>\n    </composite>\n    <composite name=\"DecimalEncoding\" semanticType=\"Decimal\">\n      <type name=\"mantissa\" primitiveType=\"int64\"/>\n      <type name=\"exponent\" primitiveType=\"int8\"/>\n    </composite>\n    <!-- An optional quote composite is absent when its first Decimal has the\n         standard SBE null image. Remaining bytes are deterministic zeroes. -->\n    <composite name=\"QuoteLevel\">\n      <ref name=\"price\" type=\"DecimalEncoding\"/>\n      <type name=\"size\" primitiveType=\"uint32\"/>\n    </composite>\n    <composite name=\"QuoteSideCandle\">\n      <ref name=\"open\" type=\"DecimalEncoding\"/>\n      <ref name=\"high\" type=\"DecimalEncoding\"/>\n      <ref name=\"low\" type=\"DecimalEncoding\"/>\n      <ref name=\"close\" type=\"DecimalEncoding\"/>\n      <type name=\"closingSize\" primitiveType=\"uint32\"/>\n    </composite>\n    <enum name=\"ListingActivity\" encodingType=\"uint8\">\n      <validValue name=\"Active\">0</validValue>\n      <validValue name=\"Inactive\">1</validValue>\n    </enum>\n    <enum name=\"CorporateActionKind\" encodingType=\"uint8\">\n      <validValue name=\"Unknown\">0</validValue>\n      <validValue name=\"ShareSplit\">1</validValue>\n      <validValue name=\"StockDividend\">2</validValue>\n      <validValue name=\"RightsIssue\">3</validValue>\n      <validValue name=\"SpinOff\">4</validValue>\n      <validValue name=\"Merger\">5</validValue>\n      <validValue name=\"Other\">254</validValue>\n    </enum>\n    <enum name=\"CorporateEventStatus\" encodingType=\"uint8\">\n      <validValue name=\"Unknown\">0</validValue>\n      <validValue name=\"Announced\">1</validValue>\n      <validValue name=\"Confirmed\">2</validValue>\n      <validValue name=\"Cancelled\">3</validValue>\n    </enum>\n    <enum name=\"DistributionKind\" encodingType=\"uint8\">\n      <validValue name=\"Unknown\">0</validValue>\n      <validValue name=\"Dividend\">1</validValue>\n      <validValue name=\"Interest\">2</validValue>\n      <validValue name=\"ReturnOfCapital\">3</validValue>\n      <validValue name=\"CapitalGain\">4</validValue>\n      <validValue name=\"Other\">254</validValue>\n    </enum>\n    <composite name=\"groupSizeEncoding\">\n      <type name=\"blockLength\" primitiveType=\"uint16\"/>\n      <type name=\"numInGroup\" primitiveType=\"uint16\"/>\n    </composite>\n  </types>\n\n  <message name=\"BidAsk\" id=\"10\" blockLength=\"27\">\n    <field name=\"bid\" id=\"1\" type=\"QuoteLevel\" offset=\"0\" presence=\"optional\"/>\n    <field name=\"ask\" id=\"2\" type=\"QuoteLevel\" offset=\"13\" presence=\"optional\"/>\n    <field name=\"quoteCondition\" id=\"3\" type=\"uint8\" offset=\"26\" presence=\"optional\" nullValue=\"255\"/>\n  </message>\n\n  <message name=\"Trade\" id=\"11\" blockLength=\"18\">\n    <field name=\"price\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"volume\" id=\"2\" type=\"uint64\" offset=\"9\"/>\n    <field name=\"saleConditionFlags\" id=\"3\" type=\"uint8\" offset=\"17\" presence=\"optional\" nullValue=\"255\"/>\n  </message>\n\n  <!-- Candles are end-labelled: the represented interval is\n       [bucketEnd - cadence, bucketEnd). Cadence belongs to the field/model,\n       not every persisted value. -->\n  <message name=\"BidAskCandle\" id=\"12\" blockLength=\"89\">\n    <field name=\"bid\" id=\"1\" type=\"QuoteSideCandle\" offset=\"0\" presence=\"optional\"/>\n    <field name=\"ask\" id=\"2\" type=\"QuoteSideCandle\" offset=\"40\" presence=\"optional\"/>\n    <field name=\"quoteCount\" id=\"3\" type=\"uint64\" offset=\"80\"/>\n    <field name=\"closingQuoteCondition\" id=\"4\" type=\"uint8\" offset=\"88\" presence=\"optional\" nullValue=\"255\"/>\n  </message>\n\n  <message name=\"TradeCandle\" id=\"13\" blockLength=\"52\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"close\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"totalVolume\" id=\"5\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"tradeCount\" id=\"6\" type=\"uint64\" offset=\"44\"/>\n  </message>\n\n  <message name=\"TradeOhlcvvCandle\" id=\"21\" blockLength=\"61\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"close\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"totalVolume\" id=\"5\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"tradeCount\" id=\"6\" type=\"uint64\" offset=\"44\"/>\n    <field name=\"totalTradedValue\" id=\"7\" type=\"DecimalEncoding\" offset=\"52\"/>\n  </message>\n\n  <!-- Daily values are New York calendar days. The block is 53 fixed bytes\n       (61 bytes including its SBE header) and remains separate per side/kind. -->\n  <message name=\"BidDailyOhlc\" id=\"14\" blockLength=\"53\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"closeLast\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"closePrevious\" id=\"5\" type=\"DecimalEncoding\" offset=\"36\"/>\n    <field name=\"day\" id=\"6\" type=\"uint32\" offset=\"45\"/>\n    <field name=\"flags\" id=\"7\" type=\"uint32\" offset=\"49\"/>\n  </message>\n\n  <message name=\"AskDailyOhlc\" id=\"15\" blockLength=\"53\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"closeLast\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"closePrevious\" id=\"5\" type=\"DecimalEncoding\" offset=\"36\"/>\n    <field name=\"day\" id=\"6\" type=\"uint32\" offset=\"45\"/>\n    <field name=\"flags\" id=\"7\" type=\"uint32\" offset=\"49\"/>\n  </message>\n\n  <message name=\"TradeDailyOhlc\" id=\"16\" blockLength=\"53\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"closeLast\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"closePrevious\" id=\"5\" type=\"DecimalEncoding\" offset=\"36\"/>\n    <field name=\"day\" id=\"6\" type=\"uint32\" offset=\"45\"/>\n    <field name=\"flags\" id=\"7\" type=\"uint32\" offset=\"49\"/>\n  </message>\n\n  <message name=\"BidOhlc\" id=\"17\" blockLength=\"52\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"close\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"closingSize\" id=\"5\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"day\" id=\"6\" type=\"uint32\" offset=\"44\"/>\n    <field name=\"flags\" id=\"7\" type=\"uint32\" offset=\"48\"/>\n  </message>\n\n  <message name=\"AskOhlc\" id=\"18\" blockLength=\"52\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"close\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"closingSize\" id=\"5\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"day\" id=\"6\" type=\"uint32\" offset=\"44\"/>\n    <field name=\"flags\" id=\"7\" type=\"uint32\" offset=\"48\"/>\n  </message>\n\n  <message name=\"TradeOhlcvv\" id=\"19\" blockLength=\"61\">\n    <field name=\"open\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n    <field name=\"high\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    <field name=\"low\" id=\"3\" type=\"DecimalEncoding\" offset=\"18\"/>\n    <field name=\"close\" id=\"4\" type=\"DecimalEncoding\" offset=\"27\"/>\n    <field name=\"totalQuantity\" id=\"5\" type=\"uint64\" offset=\"36\"/>\n    <field name=\"totalTradedValue\" id=\"6\" type=\"DecimalEncoding\" offset=\"44\"/>\n    <field name=\"day\" id=\"7\" type=\"uint32\" offset=\"53\"/>\n    <field name=\"flags\" id=\"8\" type=\"uint32\" offset=\"57\"/>\n  </message>\n\n  <message name=\"InstrumentDefinition\" id=\"20\" blockLength=\"1\">\n    <field name=\"activity\" id=\"1\" type=\"ListingActivity\" offset=\"0\"/>\n    <data name=\"instrument\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"isin\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"venue\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"currency\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"name\" id=\"6\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"Listing\" id=\"30\" blockLength=\"0\">\n    <data name=\"source\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"venue\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"instrument\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"currency\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"isin\" id=\"5\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"CompanyProfile\" id=\"31\" blockLength=\"1\">\n    <field name=\"hasLei\" id=\"1\" type=\"uint8\" offset=\"0\"/>\n    <data name=\"canonicalName\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"lei\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"CompanyAddress\" id=\"32\" blockLength=\"0\">\n    <data name=\"language\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"firstAddressLine\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"additionalAddressLine1\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"additionalAddressLine2\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"additionalAddressLine3\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"addressNumber\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"addressNumberWithinBuilding\" id=\"7\" type=\"varDataEncoding\"/>\n    <data name=\"mailRouting\" id=\"8\" type=\"varDataEncoding\"/>\n    <data name=\"city\" id=\"9\" type=\"varDataEncoding\"/>\n    <data name=\"region\" id=\"10\" type=\"varDataEncoding\"/>\n    <data name=\"country\" id=\"11\" type=\"varDataEncoding\"/>\n    <data name=\"postalCode\" id=\"12\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"InstrumentIssuer\" id=\"33\" blockLength=\"0\">\n    <data name=\"lei\" id=\"1\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"BasicMasterdata\" id=\"34\" blockLength=\"0\">\n    <data name=\"name\" id=\"1\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"InstrumentNames\" id=\"35\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT\">\n    <group name=\"localized\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\">\n      <data name=\"language\" id=\"1\" type=\"varDataEncoding\"/>\n      <data name=\"long\" id=\"2\" type=\"varDataEncoding\"/>\n      <data name=\"short\" id=\"3\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"long\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"short\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"LegalEntityNames\" id=\"36\" blockLength=\"0\" description=\"openmdta:entity:LEGAL_ENTITY\">\n    <group name=\"localized\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\">\n      <data name=\"language\" id=\"1\" type=\"varDataEncoding\"/>\n      <data name=\"long\" id=\"2\" type=\"varDataEncoding\"/>\n      <data name=\"short\" id=\"3\" type=\"varDataEncoding\"/>\n    </group>\n    <data name=\"long\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"short\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"Classification\" id=\"37\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\">\n    <data name=\"code\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"label\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingClassification\" id=\"38\" blockLength=\"0\" description=\"openmdta:entity:LISTING openmdta:multiple\">\n    <data name=\"code\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"label\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingQuotation\" id=\"39\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"currency\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"unit\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"decimalDigits\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"symbol\" id=\"4\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingVenue\" id=\"40\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"mic\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"primaryMic\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"reportingMarket\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"offBookReportingMarket\" id=\"4\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingTradingDates\" id=\"41\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"firstTradingDate\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"lastTradingDate\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingTradingRules\" id=\"42\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"tradingModel\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"closedBook\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"marketImbalance\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"auctionType\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"quotingPeriodStart\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"quotingPeriodEnd\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"singleSidedQuotes\" id=\"7\" type=\"varDataEncoding\"/>\n    <data name=\"crossMatchDefault\" id=\"8\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingQuoteParameters\" id=\"43\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"priceRange\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"priceRangePercent\" id=\"2\" type=\"varDataEncoding\"/>\n    <data name=\"minimumSize\" id=\"3\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingOrderSize\" id=\"44\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <data name=\"minimumTradableUnit\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"minimumOrderQuantity\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n\n  <message name=\"ListingTickSchedule\" id=\"45\" blockLength=\"0\" description=\"openmdta:entity:LISTING\">\n    <group name=\"tiers\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"18\">\n      <field name=\"upperBound\" id=\"1\" type=\"DecimalEncoding\" offset=\"0\"/>\n      <field name=\"increment\" id=\"2\" type=\"DecimalEncoding\" offset=\"9\"/>\n    </group>\n    <data name=\"band\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"InstrumentPrimaryListing\" id=\"46\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT\">\n    <data name=\"catalog\" id=\"1\" type=\"varDataEncoding\"/>\n    <data name=\"recordKey\" id=\"2\" type=\"varDataEncoding\"/>\n  </message>\n  <message name=\"InstrumentListingRecordCount\" id=\"47\" blockLength=\"8\" description=\"openmdta:entity:INSTRUMENT\">\n    <field name=\"count\" id=\"1\" type=\"uint64\" offset=\"0\"/>\n  </message>\n\n  <!-- Each Catalog subfield is the ISO effective date (YYYY-MM-DD). A bundle\n       allows several independently sourced economic events on the same day. -->\n  <message name=\"CorporateActions\" id=\"48\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\">\n    <group name=\"events\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"26\">\n      <field name=\"kind\" id=\"1\" type=\"CorporateActionKind\" offset=\"0\"/>\n      <field name=\"status\" id=\"2\" type=\"CorporateEventStatus\" offset=\"1\"/>\n      <!-- For a split, newShares / oldShares is the share-count ratio. Both\n           are absent for action kinds that have no meaningful ratio. -->\n      <field name=\"newShares\" id=\"3\" type=\"uint64\" offset=\"2\" presence=\"optional\" nullValue=\"18446744073709551615\"/>\n      <field name=\"oldShares\" id=\"4\" type=\"uint64\" offset=\"10\" presence=\"optional\" nullValue=\"18446744073709551615\"/>\n      <field name=\"announcementDay\" id=\"5\" type=\"uint32\" offset=\"18\" presence=\"optional\" nullValue=\"4294967295\"/>\n      <field name=\"recordDay\" id=\"6\" type=\"uint32\" offset=\"22\" presence=\"optional\" nullValue=\"4294967295\"/>\n      <data name=\"eventId\" id=\"7\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n\n  <!-- Each Catalog subfield is the ISO ex-date (YYYY-MM-DD). Monetary values\n       are deliberately mandatory: an amount-less notice is not a distribution\n       suitable for adjustment or consolidation. -->\n  <message name=\"Distributions\" id=\"49\" blockLength=\"0\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\">\n    <group name=\"events\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"19\">\n      <field name=\"kind\" id=\"1\" type=\"DistributionKind\" offset=\"0\"/>\n      <field name=\"status\" id=\"2\" type=\"CorporateEventStatus\" offset=\"1\"/>\n      <field name=\"amount\" id=\"3\" type=\"DecimalEncoding\" offset=\"2\"/>\n      <field name=\"recordDay\" id=\"4\" type=\"uint32\" offset=\"11\" presence=\"optional\" nullValue=\"4294967295\"/>\n      <field name=\"paymentDay\" id=\"5\" type=\"uint32\" offset=\"15\" presence=\"optional\" nullValue=\"4294967295\"/>\n      <data name=\"currency\" id=\"6\" type=\"varDataEncoding\"/>\n      <data name=\"eventId\" id=\"7\" type=\"varDataEncoding\"/>\n    </group>\n  </message>\n  <!-- Membership and its effective date form one atomic, licensed field.\n       Index variants are separate instruments, never aliases of the list. -->\n  <message name=\"ListDefinition\" id=\"50\" blockLength=\"0\" description=\"openmdta:entity:LIST\">\n    <group name=\"members\" id=\"1\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\">\n      <data name=\"identifier\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:reference:INSTRUMENT\"/>\n    </group>\n    <group name=\"variants\" id=\"2\" dimensionType=\"groupSizeEncoding\" blockLength=\"0\">\n      <data name=\"returnType\" id=\"1\" type=\"varDataEncoding\"/>\n      <data name=\"currency\" id=\"2\" type=\"varDataEncoding\"/>\n      <data name=\"identifier\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:reference:INSTRUMENT\"/>\n    </group>\n    <data name=\"code\" id=\"3\" type=\"varDataEncoding\"/>\n    <data name=\"name\" id=\"4\" type=\"varDataEncoding\"/>\n    <data name=\"description\" id=\"5\" type=\"varDataEncoding\"/>\n    <data name=\"kind\" id=\"6\" type=\"varDataEncoding\"/>\n    <data name=\"memberDimension\" id=\"7\" type=\"varDataEncoding\"/>\n    <data name=\"validAt\" id=\"8\" type=\"varDataEncoding\"/>\n  </message>\n</messageSchema>\n",
+  "id": 41957,
+  "version": 0,
+  "package": "openmdta",
+  "xml": "<messageSchema package=\"openmdta\" id=\"41957\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"templateId\" primitiveType=\"uint16\"/><type name=\"schemaId\" primitiveType=\"uint16\"/><type name=\"version\" primitiveType=\"uint16\"/></composite><composite name=\"groupSizeEncoding\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"numInGroup\" primitiveType=\"uint16\"/></composite><composite name=\"varDataEncoding\"><type name=\"length\" primitiveType=\"uint32\"/><type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/></composite><composite name=\"DecimalEncoding\" semanticType=\"Decimal\"><type name=\"mantissa\" primitiveType=\"int64\"/><type name=\"exponent\" primitiveType=\"int8\"/></composite><type name=\"BooleanEncoding\" primitiveType=\"uint8\" semanticType=\"Boolean\"/><composite name=\"QuoteLevel\"><ref name=\"price\" type=\"DecimalEncoding\"/><type name=\"size\" primitiveType=\"uint32\"/></composite><composite name=\"QuoteSideCandle\"><ref name=\"open\" type=\"DecimalEncoding\"/><ref name=\"high\" type=\"DecimalEncoding\"/><ref name=\"low\" type=\"DecimalEncoding\"/><ref name=\"close\" type=\"DecimalEncoding\"/><type name=\"closingSize\" primitiveType=\"uint32\"/></composite><enum name=\"ListingActivity\" encodingType=\"uint8\"><validValue name=\"Active\">0</validValue><validValue name=\"Inactive\">1</validValue></enum><enum name=\"CorporateActionKind\" encodingType=\"uint8\"><validValue name=\"Unknown\">0</validValue><validValue name=\"ShareSplit\">1</validValue><validValue name=\"StockDividend\">2</validValue><validValue name=\"RightsIssue\">3</validValue><validValue name=\"SpinOff\">4</validValue><validValue name=\"Merger\">5</validValue><validValue name=\"Other\">254</validValue></enum><enum name=\"CorporateEventStatus\" encodingType=\"uint8\"><validValue name=\"Unknown\">0</validValue><validValue name=\"Announced\">1</validValue><validValue name=\"Confirmed\">2</validValue><validValue name=\"Cancelled\">3</validValue></enum><enum name=\"DistributionKind\" encodingType=\"uint8\"><validValue name=\"Unknown\">0</validValue><validValue name=\"Dividend\">1</validValue><validValue name=\"Interest\">2</validValue><validValue name=\"ReturnOfCapital\">3</validValue><validValue name=\"CapitalGain\">4</validValue><validValue name=\"Other\">254</validValue></enum></types><message name=\"BidAsk\" id=\"7387\" semanticType=\"BidAsk\" description=\"\" blockLength=\"27\"><field name=\"bid\" id=\"1\" presence=\"optional\" offset=\"0\" type=\"QuoteLevel\"/><field name=\"ask\" id=\"2\" presence=\"optional\" offset=\"13\" type=\"QuoteLevel\"/><field name=\"quoteCondition\" id=\"3\" presence=\"optional\" offset=\"26\" type=\"uint8\" nullValue=\"255\"/></message><message name=\"Trade\" id=\"3822\" semanticType=\"Trade\" description=\"\" blockLength=\"18\"><field name=\"price\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"volume\" id=\"2\" offset=\"9\" type=\"uint64\"/><field name=\"saleConditionFlags\" id=\"3\" presence=\"optional\" offset=\"17\" type=\"uint8\" nullValue=\"255\"/></message><message name=\"BidAskCandle\" id=\"3324\" semanticType=\"BidAskCandle\" description=\"\" blockLength=\"89\"><field name=\"bid\" id=\"1\" presence=\"optional\" offset=\"0\" type=\"QuoteSideCandle\"/><field name=\"ask\" id=\"2\" presence=\"optional\" offset=\"40\" type=\"QuoteSideCandle\"/><field name=\"quoteCount\" id=\"3\" offset=\"80\" type=\"uint64\"/><field name=\"closingQuoteCondition\" id=\"4\" presence=\"optional\" offset=\"88\" type=\"uint8\" nullValue=\"255\"/></message><message name=\"TradeCandle\" id=\"8561\" semanticType=\"TradeCandle\" description=\"\" blockLength=\"52\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"close\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"totalVolume\" id=\"5\" offset=\"36\" type=\"uint64\"/><field name=\"tradeCount\" id=\"6\" offset=\"44\" type=\"uint64\"/></message><message name=\"TradeOhlcvvCandle\" id=\"49382\" semanticType=\"TradeOhlcvvCandle\" description=\"\" blockLength=\"61\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"close\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"totalVolume\" id=\"5\" offset=\"36\" type=\"uint64\"/><field name=\"tradeCount\" id=\"6\" offset=\"44\" type=\"uint64\"/><field name=\"totalTradedValue\" id=\"7\" offset=\"52\" type=\"DecimalEncoding\"/></message><message name=\"BidDailyOhlc\" id=\"58701\" semanticType=\"BidDailyOhlc\" description=\"\" blockLength=\"53\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"closeLast\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"closePrevious\" id=\"5\" offset=\"36\" type=\"DecimalEncoding\"/><field name=\"day\" id=\"6\" offset=\"45\" type=\"uint32\"/><field name=\"flags\" id=\"7\" offset=\"49\" type=\"uint32\"/></message><message name=\"AskDailyOhlc\" id=\"23154\" semanticType=\"AskDailyOhlc\" description=\"\" blockLength=\"53\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"closeLast\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"closePrevious\" id=\"5\" offset=\"36\" type=\"DecimalEncoding\"/><field name=\"day\" id=\"6\" offset=\"45\" type=\"uint32\"/><field name=\"flags\" id=\"7\" offset=\"49\" type=\"uint32\"/></message><message name=\"TradeDailyOhlc\" id=\"57177\" semanticType=\"TradeDailyOhlc\" description=\"\" blockLength=\"53\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"closeLast\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"closePrevious\" id=\"5\" offset=\"36\" type=\"DecimalEncoding\"/><field name=\"day\" id=\"6\" offset=\"45\" type=\"uint32\"/><field name=\"flags\" id=\"7\" offset=\"49\" type=\"uint32\"/></message><message name=\"BidOhlc\" id=\"9015\" semanticType=\"BidOhlc\" description=\"\" blockLength=\"52\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"close\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"closingSize\" id=\"5\" offset=\"36\" type=\"uint64\"/><field name=\"day\" id=\"6\" offset=\"44\" type=\"uint32\"/><field name=\"flags\" id=\"7\" offset=\"48\" type=\"uint32\"/></message><message name=\"AskOhlc\" id=\"18427\" semanticType=\"AskOhlc\" description=\"\" blockLength=\"52\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"close\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"closingSize\" id=\"5\" offset=\"36\" type=\"uint64\"/><field name=\"day\" id=\"6\" offset=\"44\" type=\"uint32\"/><field name=\"flags\" id=\"7\" offset=\"48\" type=\"uint32\"/></message><message name=\"TradeOhlcvv\" id=\"51484\" semanticType=\"TradeOhlcvv\" description=\"\" blockLength=\"61\"><field name=\"open\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"high\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/><field name=\"low\" id=\"3\" offset=\"18\" type=\"DecimalEncoding\"/><field name=\"close\" id=\"4\" offset=\"27\" type=\"DecimalEncoding\"/><field name=\"totalQuantity\" id=\"5\" offset=\"36\" type=\"uint64\"/><field name=\"totalTradedValue\" id=\"6\" offset=\"44\" type=\"DecimalEncoding\"/><field name=\"day\" id=\"7\" offset=\"53\" type=\"uint32\"/><field name=\"flags\" id=\"8\" offset=\"57\" type=\"uint32\"/></message><message name=\"InstrumentDefinition\" id=\"47450\" semanticType=\"InstrumentDefinition\" description=\"\" blockLength=\"1\"><field name=\"activity\" id=\"1\" offset=\"0\" type=\"ListingActivity\"/><data name=\"instrument\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"isin\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"venue\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"currency\" id=\"5\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"name\" id=\"6\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"Listing\" id=\"8288\" semanticType=\"Listing\" description=\"\" blockLength=\"0\"><data name=\"source\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"venue\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"instrument\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"currency\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"isin\" id=\"5\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"CompanyProfile\" id=\"27769\" semanticType=\"CompanyProfile\" description=\"\" blockLength=\"1\"><field name=\"hasLei\" id=\"1\" offset=\"0\" type=\"uint8\"/><data name=\"canonicalName\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"lei\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"CompanyAddress\" id=\"45792\" semanticType=\"CompanyAddress\" description=\"\" blockLength=\"0\"><data name=\"language\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"firstAddressLine\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"additionalAddressLine1\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"additionalAddressLine2\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"additionalAddressLine3\" id=\"5\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"addressNumber\" id=\"6\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"addressNumberWithinBuilding\" id=\"7\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"mailRouting\" id=\"8\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"city\" id=\"9\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"region\" id=\"10\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"country\" id=\"11\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"postalCode\" id=\"12\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"InstrumentIssuer\" id=\"30803\" semanticType=\"InstrumentIssuer\" description=\"\" blockLength=\"0\"><data name=\"lei\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"BasicMasterdata\" id=\"21632\" semanticType=\"BasicMasterdata\" description=\"\" blockLength=\"0\"><data name=\"name\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"InstrumentNames\" id=\"61998\" semanticType=\"InstrumentNames\" description=\"openmdta:entity:INSTRUMENT \" blockLength=\"0\"><group name=\"localized\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"0\"><data name=\"language\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"long\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"short\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></group><data name=\"long\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"short\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"LegalEntityNames\" id=\"17715\" semanticType=\"LegalEntityNames\" description=\"openmdta:entity:LEGAL_ENTITY \" blockLength=\"0\"><group name=\"localized\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"0\"><data name=\"language\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"long\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"short\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></group><data name=\"long\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"short\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"Classification\" id=\"53557\" semanticType=\"Classification\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\" blockLength=\"0\"><data name=\"code\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"label\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"ListingClassification\" id=\"39307\" semanticType=\"ListingClassification\" description=\"openmdta:entity:LISTING openmdta:multiple\" blockLength=\"0\"><data name=\"code\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"label\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"ListingQuotation\" id=\"57471\" semanticType=\"ListingQuotation\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"currency\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"unit\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"decimalDigits\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"symbol\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingVenue\" id=\"30232\" semanticType=\"ListingVenue\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"mic\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"primaryMic\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"reportingMarket\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"offBookReportingMarket\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingTradingDates\" id=\"37622\" semanticType=\"ListingTradingDates\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"firstTradingDate\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"lastTradingDate\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingTradingRules\" id=\"34570\" semanticType=\"ListingTradingRules\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"tradingModel\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"closedBook\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"marketImbalance\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"auctionType\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"quotingPeriodStart\" id=\"5\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"quotingPeriodEnd\" id=\"6\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"singleSidedQuotes\" id=\"7\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"crossMatchDefault\" id=\"8\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingQuoteParameters\" id=\"3567\" semanticType=\"ListingQuoteParameters\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"priceRange\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"priceRangePercent\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"minimumSize\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingOrderSize\" id=\"23952\" semanticType=\"ListingOrderSize\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><data name=\"minimumTradableUnit\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"minimumOrderQuantity\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"ListingTickSchedule\" id=\"17315\" semanticType=\"ListingTickSchedule\" description=\"openmdta:entity:LISTING \" blockLength=\"0\"><group name=\"tiers\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"18\"><field name=\"upperBound\" id=\"1\" offset=\"0\" type=\"DecimalEncoding\"/><field name=\"increment\" id=\"2\" offset=\"9\" type=\"DecimalEncoding\"/></group><data name=\"band\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message><message name=\"InstrumentPrimaryListing\" id=\"47760\" semanticType=\"InstrumentPrimaryListing\" description=\"openmdta:entity:INSTRUMENT \" blockLength=\"0\"><data name=\"catalog\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"recordKey\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></message><message name=\"InstrumentListingRecordCount\" id=\"3670\" semanticType=\"InstrumentListingRecordCount\" description=\"openmdta:entity:INSTRUMENT \" blockLength=\"8\"><field name=\"count\" id=\"1\" offset=\"0\" type=\"uint64\"/></message><message name=\"CorporateActions\" id=\"51924\" semanticType=\"CorporateActions\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\" blockLength=\"0\"><group name=\"events\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"26\"><field name=\"kind\" id=\"1\" offset=\"0\" type=\"CorporateActionKind\"/><field name=\"status\" id=\"2\" offset=\"1\" type=\"CorporateEventStatus\"/><field name=\"newShares\" id=\"3\" presence=\"optional\" offset=\"2\" type=\"uint64\" nullValue=\"18446744073709551615\"/><field name=\"oldShares\" id=\"4\" presence=\"optional\" offset=\"10\" type=\"uint64\" nullValue=\"18446744073709551615\"/><field name=\"announcementDay\" id=\"5\" presence=\"optional\" offset=\"18\" type=\"uint32\" nullValue=\"4294967295\"/><field name=\"recordDay\" id=\"6\" presence=\"optional\" offset=\"22\" type=\"uint32\" nullValue=\"4294967295\"/><data name=\"eventId\" id=\"7\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></group></message><message name=\"Distributions\" id=\"49232\" semanticType=\"Distributions\" description=\"openmdta:entity:INSTRUMENT openmdta:multiple\" blockLength=\"0\"><group name=\"events\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"19\"><field name=\"kind\" id=\"1\" offset=\"0\" type=\"DistributionKind\"/><field name=\"status\" id=\"2\" offset=\"1\" type=\"CorporateEventStatus\"/><field name=\"amount\" id=\"3\" offset=\"2\" type=\"DecimalEncoding\"/><field name=\"recordDay\" id=\"4\" presence=\"optional\" offset=\"11\" type=\"uint32\" nullValue=\"4294967295\"/><field name=\"paymentDay\" id=\"5\" presence=\"optional\" offset=\"15\" type=\"uint32\" nullValue=\"4294967295\"/><data name=\"currency\" id=\"6\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"eventId\" id=\"7\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/></group></message><message name=\"ListDefinition\" id=\"8730\" semanticType=\"ListDefinition\" description=\"openmdta:entity:LIST \" blockLength=\"0\"><group name=\"members\" id=\"1\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"0\"><data name=\"identifier\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:reference:INSTRUMENT openmdta:max-bytes:4096\"/></group><group name=\"variants\" id=\"2\" dimensionType=\"groupSizeEncoding\" description=\"openmdta:max-items:10000\" blockLength=\"0\"><data name=\"returnType\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"currency\" id=\"2\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"identifier\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:reference:INSTRUMENT openmdta:max-bytes:4096\"/></group><data name=\"code\" id=\"3\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"name\" id=\"4\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:4096\"/><data name=\"description\" id=\"5\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:65536\"/><data name=\"kind\" id=\"6\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"memberDimension\" id=\"7\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/><data name=\"validAt\" id=\"8\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message></messageSchema>",
   "messages": [
     {
       "name": "BidAsk",
-      "id": 10,
+      "id": 7387,
       "blockLength": 27,
       "sinceVersion": 0,
       "fields": [
@@ -51,7 +51,7 @@
     },
     {
       "name": "Trade",
-      "id": 11,
+      "id": 3822,
       "blockLength": 18,
       "sinceVersion": 0,
       "fields": [
@@ -94,7 +94,7 @@
     },
     {
       "name": "BidAskCandle",
-      "id": 12,
+      "id": 3324,
       "blockLength": 89,
       "sinceVersion": 0,
       "fields": [
@@ -150,7 +150,7 @@
     },
     {
       "name": "TradeCandle",
-      "id": 13,
+      "id": 8561,
       "blockLength": 52,
       "sinceVersion": 0,
       "fields": [
@@ -224,7 +224,7 @@
     },
     {
       "name": "TradeOhlcvvCandle",
-      "id": 21,
+      "id": 49382,
       "blockLength": 61,
       "sinceVersion": 0,
       "fields": [
@@ -309,7 +309,7 @@
     },
     {
       "name": "BidDailyOhlc",
-      "id": 14,
+      "id": 58701,
       "blockLength": 53,
       "sinceVersion": 0,
       "fields": [
@@ -394,7 +394,7 @@
     },
     {
       "name": "AskDailyOhlc",
-      "id": 15,
+      "id": 23154,
       "blockLength": 53,
       "sinceVersion": 0,
       "fields": [
@@ -479,7 +479,7 @@
     },
     {
       "name": "TradeDailyOhlc",
-      "id": 16,
+      "id": 57177,
       "blockLength": 53,
       "sinceVersion": 0,
       "fields": [
@@ -564,7 +564,7 @@
     },
     {
       "name": "BidOhlc",
-      "id": 17,
+      "id": 9015,
       "blockLength": 52,
       "sinceVersion": 0,
       "fields": [
@@ -649,7 +649,7 @@
     },
     {
       "name": "AskOhlc",
-      "id": 18,
+      "id": 18427,
       "blockLength": 52,
       "sinceVersion": 0,
       "fields": [
@@ -734,7 +734,7 @@
     },
     {
       "name": "TradeOhlcvv",
-      "id": 19,
+      "id": 51484,
       "blockLength": 61,
       "sinceVersion": 0,
       "fields": [
@@ -830,7 +830,7 @@
     },
     {
       "name": "InstrumentDefinition",
-      "id": 20,
+      "id": 47450,
       "blockLength": 1,
       "sinceVersion": 0,
       "fields": [
@@ -848,6 +848,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "instrument",
             "type": "varDataEncoding"
@@ -858,6 +859,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "isin",
             "type": "varDataEncoding"
@@ -868,6 +870,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "4",
             "name": "venue",
             "type": "varDataEncoding"
@@ -878,6 +881,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "5",
             "name": "currency",
             "type": "varDataEncoding"
@@ -888,6 +892,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "6",
             "name": "name",
             "type": "varDataEncoding"
@@ -899,13 +904,14 @@
     },
     {
       "name": "Listing",
-      "id": 30,
+      "id": 8288,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "source",
             "type": "varDataEncoding"
@@ -916,6 +922,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "venue",
             "type": "varDataEncoding"
@@ -926,6 +933,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "3",
             "name": "instrument",
             "type": "varDataEncoding"
@@ -936,6 +944,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "4",
             "name": "currency",
             "type": "varDataEncoding"
@@ -946,6 +955,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "5",
             "name": "isin",
             "type": "varDataEncoding"
@@ -957,7 +967,7 @@
     },
     {
       "name": "CompanyProfile",
-      "id": 31,
+      "id": 27769,
       "blockLength": 1,
       "sinceVersion": 0,
       "fields": [
@@ -975,6 +985,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "canonicalName",
             "type": "varDataEncoding"
@@ -985,6 +996,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "lei",
             "type": "varDataEncoding"
@@ -996,13 +1008,14 @@
     },
     {
       "name": "CompanyAddress",
-      "id": 32,
+      "id": 45792,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "language",
             "type": "varDataEncoding"
@@ -1013,6 +1026,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "firstAddressLine",
             "type": "varDataEncoding"
@@ -1023,6 +1037,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "3",
             "name": "additionalAddressLine1",
             "type": "varDataEncoding"
@@ -1033,6 +1048,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "4",
             "name": "additionalAddressLine2",
             "type": "varDataEncoding"
@@ -1043,6 +1059,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "5",
             "name": "additionalAddressLine3",
             "type": "varDataEncoding"
@@ -1053,6 +1070,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "6",
             "name": "addressNumber",
             "type": "varDataEncoding"
@@ -1063,6 +1081,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "7",
             "name": "addressNumberWithinBuilding",
             "type": "varDataEncoding"
@@ -1073,6 +1092,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "8",
             "name": "mailRouting",
             "type": "varDataEncoding"
@@ -1083,6 +1103,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "9",
             "name": "city",
             "type": "varDataEncoding"
@@ -1093,6 +1114,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "10",
             "name": "region",
             "type": "varDataEncoding"
@@ -1103,6 +1125,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "11",
             "name": "country",
             "type": "varDataEncoding"
@@ -1113,6 +1136,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "12",
             "name": "postalCode",
             "type": "varDataEncoding"
@@ -1124,13 +1148,14 @@
     },
     {
       "name": "InstrumentIssuer",
-      "id": 33,
+      "id": 30803,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "lei",
             "type": "varDataEncoding"
@@ -1142,13 +1167,14 @@
     },
     {
       "name": "BasicMasterdata",
-      "id": 34,
+      "id": 21632,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "1",
             "name": "name",
             "type": "varDataEncoding"
@@ -1160,7 +1186,7 @@
     },
     {
       "name": "InstrumentNames",
-      "id": 35,
+      "id": 61998,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1168,6 +1194,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "0",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "localized"
@@ -1177,6 +1204,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:256",
                 "id": "1",
                 "name": "language",
                 "type": "varDataEncoding"
@@ -1187,6 +1215,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "2",
                 "name": "long",
                 "type": "varDataEncoding"
@@ -1197,6 +1226,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "3",
                 "name": "short",
                 "type": "varDataEncoding"
@@ -1209,6 +1239,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "long",
             "type": "varDataEncoding"
@@ -1219,6 +1250,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "3",
             "name": "short",
             "type": "varDataEncoding"
@@ -1230,7 +1262,7 @@
     },
     {
       "name": "LegalEntityNames",
-      "id": 36,
+      "id": 17715,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1238,6 +1270,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "0",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "localized"
@@ -1247,6 +1280,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:256",
                 "id": "1",
                 "name": "language",
                 "type": "varDataEncoding"
@@ -1257,6 +1291,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "2",
                 "name": "long",
                 "type": "varDataEncoding"
@@ -1267,6 +1302,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "3",
                 "name": "short",
                 "type": "varDataEncoding"
@@ -1279,6 +1315,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "long",
             "type": "varDataEncoding"
@@ -1289,6 +1326,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "3",
             "name": "short",
             "type": "varDataEncoding"
@@ -1300,13 +1338,14 @@
     },
     {
       "name": "Classification",
-      "id": 37,
+      "id": 53557,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "code",
             "type": "varDataEncoding"
@@ -1317,6 +1356,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "label",
             "type": "varDataEncoding"
@@ -1328,13 +1368,14 @@
     },
     {
       "name": "ListingClassification",
-      "id": 38,
+      "id": 39307,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "code",
             "type": "varDataEncoding"
@@ -1345,6 +1386,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "label",
             "type": "varDataEncoding"
@@ -1356,13 +1398,14 @@
     },
     {
       "name": "ListingQuotation",
-      "id": 39,
+      "id": 57471,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "currency",
             "type": "varDataEncoding"
@@ -1373,6 +1416,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "unit",
             "type": "varDataEncoding"
@@ -1383,6 +1427,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "decimalDigits",
             "type": "varDataEncoding"
@@ -1393,6 +1438,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "4",
             "name": "symbol",
             "type": "varDataEncoding"
@@ -1404,13 +1450,14 @@
     },
     {
       "name": "ListingVenue",
-      "id": 40,
+      "id": 30232,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "mic",
             "type": "varDataEncoding"
@@ -1421,6 +1468,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "primaryMic",
             "type": "varDataEncoding"
@@ -1431,6 +1479,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "reportingMarket",
             "type": "varDataEncoding"
@@ -1441,6 +1490,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "4",
             "name": "offBookReportingMarket",
             "type": "varDataEncoding"
@@ -1452,13 +1502,14 @@
     },
     {
       "name": "ListingTradingDates",
-      "id": 41,
+      "id": 37622,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "firstTradingDate",
             "type": "varDataEncoding"
@@ -1469,6 +1520,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "lastTradingDate",
             "type": "varDataEncoding"
@@ -1480,13 +1532,14 @@
     },
     {
       "name": "ListingTradingRules",
-      "id": 42,
+      "id": 34570,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "tradingModel",
             "type": "varDataEncoding"
@@ -1497,6 +1550,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "closedBook",
             "type": "varDataEncoding"
@@ -1507,6 +1561,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "marketImbalance",
             "type": "varDataEncoding"
@@ -1517,6 +1572,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "4",
             "name": "auctionType",
             "type": "varDataEncoding"
@@ -1527,6 +1583,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "5",
             "name": "quotingPeriodStart",
             "type": "varDataEncoding"
@@ -1537,6 +1594,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "6",
             "name": "quotingPeriodEnd",
             "type": "varDataEncoding"
@@ -1547,6 +1605,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "7",
             "name": "singleSidedQuotes",
             "type": "varDataEncoding"
@@ -1557,6 +1616,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "8",
             "name": "crossMatchDefault",
             "type": "varDataEncoding"
@@ -1568,13 +1628,14 @@
     },
     {
       "name": "ListingQuoteParameters",
-      "id": 43,
+      "id": 3567,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "priceRange",
             "type": "varDataEncoding"
@@ -1585,6 +1646,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "priceRangePercent",
             "type": "varDataEncoding"
@@ -1595,6 +1657,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "minimumSize",
             "type": "varDataEncoding"
@@ -1606,13 +1669,14 @@
     },
     {
       "name": "ListingOrderSize",
-      "id": 44,
+      "id": 23952,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "1",
             "name": "minimumTradableUnit",
             "type": "varDataEncoding"
@@ -1623,6 +1687,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "minimumOrderQuantity",
             "type": "varDataEncoding"
@@ -1634,7 +1699,7 @@
     },
     {
       "name": "ListingTickSchedule",
-      "id": 45,
+      "id": 17315,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1642,6 +1707,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "18",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "tiers"
@@ -1675,6 +1741,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "2",
             "name": "band",
             "type": "varDataEncoding"
@@ -1686,13 +1753,14 @@
     },
     {
       "name": "InstrumentPrimaryListing",
-      "id": 46,
+      "id": 47760,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "1",
             "name": "catalog",
             "type": "varDataEncoding"
@@ -1703,6 +1771,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "2",
             "name": "recordKey",
             "type": "varDataEncoding"
@@ -1714,7 +1783,7 @@
     },
     {
       "name": "InstrumentListingRecordCount",
-      "id": 47,
+      "id": 3670,
       "blockLength": 8,
       "sinceVersion": 0,
       "fields": [
@@ -1733,7 +1802,7 @@
     },
     {
       "name": "CorporateActions",
-      "id": 48,
+      "id": 51924,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1741,6 +1810,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "26",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "events"
@@ -1824,6 +1894,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "7",
                 "name": "eventId",
                 "type": "varDataEncoding"
@@ -1837,7 +1908,7 @@
     },
     {
       "name": "Distributions",
-      "id": 49,
+      "id": 49232,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1845,6 +1916,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "19",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "events"
@@ -1913,6 +1985,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:256",
                 "id": "6",
                 "name": "currency",
                 "type": "varDataEncoding"
@@ -1923,6 +1996,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:4096",
                 "id": "7",
                 "name": "eventId",
                 "type": "varDataEncoding"
@@ -1936,7 +2010,7 @@
     },
     {
       "name": "ListDefinition",
-      "id": 50,
+      "id": 8730,
       "blockLength": 0,
       "sinceVersion": 0,
       "fields": [
@@ -1944,6 +2018,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "0",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "1",
             "name": "members"
@@ -1953,7 +2028,7 @@
             {
               "kind": "data",
               "attributes": {
-                "description": "openmdta:reference:INSTRUMENT",
+                "description": "openmdta:reference:INSTRUMENT openmdta:max-bytes:4096",
                 "id": "1",
                 "name": "identifier",
                 "type": "varDataEncoding"
@@ -1967,6 +2042,7 @@
           "kind": "group",
           "attributes": {
             "blockLength": "0",
+            "description": "openmdta:max-items:10000",
             "dimensionType": "groupSizeEncoding",
             "id": "2",
             "name": "variants"
@@ -1976,6 +2052,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:256",
                 "id": "1",
                 "name": "returnType",
                 "type": "varDataEncoding"
@@ -1986,6 +2063,7 @@
             {
               "kind": "data",
               "attributes": {
+                "description": "openmdta:max-bytes:256",
                 "id": "2",
                 "name": "currency",
                 "type": "varDataEncoding"
@@ -1996,7 +2074,7 @@
             {
               "kind": "data",
               "attributes": {
-                "description": "openmdta:reference:INSTRUMENT",
+                "description": "openmdta:reference:INSTRUMENT openmdta:max-bytes:4096",
                 "id": "3",
                 "name": "identifier",
                 "type": "varDataEncoding"
@@ -2009,6 +2087,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "3",
             "name": "code",
             "type": "varDataEncoding"
@@ -2019,6 +2098,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:4096",
             "id": "4",
             "name": "name",
             "type": "varDataEncoding"
@@ -2029,6 +2109,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:65536",
             "id": "5",
             "name": "description",
             "type": "varDataEncoding"
@@ -2039,6 +2120,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "6",
             "name": "kind",
             "type": "varDataEncoding"
@@ -2049,6 +2131,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "7",
             "name": "memberDimension",
             "type": "varDataEncoding"
@@ -2059,6 +2142,7 @@
         {
           "kind": "data",
           "attributes": {
+            "description": "openmdta:max-bytes:256",
             "id": "8",
             "name": "validAt",
             "type": "varDataEncoding"
@@ -2108,6 +2192,33 @@
           "kind": "type",
           "attributes": {
             "name": "version",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "groupSizeEncoding"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "blockLength",
+            "primitiveType": "uint16"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "numInGroup",
             "primitiveType": "uint16"
           },
           "value": null,
@@ -2170,6 +2281,16 @@
           "children": []
         }
       ]
+    },
+    {
+      "kind": "type",
+      "attributes": {
+        "name": "BooleanEncoding",
+        "primitiveType": "uint8",
+        "semanticType": "Boolean"
+      },
+      "value": null,
+      "children": []
     },
     {
       "kind": "composite",
@@ -2440,33 +2561,6 @@
             "name": "Other"
           },
           "value": "254",
-          "children": []
-        }
-      ]
-    },
-    {
-      "kind": "composite",
-      "attributes": {
-        "name": "groupSizeEncoding"
-      },
-      "value": null,
-      "children": [
-        {
-          "kind": "type",
-          "attributes": {
-            "name": "blockLength",
-            "primitiveType": "uint16"
-          },
-          "value": null,
-          "children": []
-        },
-        {
-          "kind": "type",
-          "attributes": {
-            "name": "numInGroup",
-            "primitiveType": "uint16"
-          },
-          "value": null,
           "children": []
         }
       ]
@@ -2835,6 +2929,66 @@
     },
     {
       "name": "messageHeader",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 4,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "blockLength",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 2,
+      "primitive": "UInt16",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "numInGroup",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "groupSizeEncoding",
       "id": null,
       "signal": "EndComposite",
       "offset": null,
@@ -3444,68 +3598,8 @@
       "sinceVersion": 0
     },
     {
-      "name": "groupSizeEncoding",
-      "id": null,
-      "signal": "BeginComposite",
-      "offset": 4,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "blockLength",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 0,
-      "primitive": "UInt16",
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "blockLength",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "numInGroup",
-      "id": null,
-      "signal": "BeginField",
-      "offset": 2,
-      "primitive": "UInt16",
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "numInGroup",
-      "id": null,
-      "signal": "EndField",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
-      "name": "groupSizeEncoding",
-      "id": null,
-      "signal": "EndComposite",
-      "offset": null,
-      "primitive": null,
-      "length": null,
-      "presence": "Required",
-      "sinceVersion": 0
-    },
-    {
       "name": "BidAsk",
-      "id": 10,
+      "id": 7387,
       "signal": "BeginMessage",
       "offset": 27,
       "primitive": null,
@@ -3825,7 +3919,7 @@
     },
     {
       "name": "Trade",
-      "id": 11,
+      "id": 3822,
       "signal": "BeginMessage",
       "offset": 18,
       "primitive": null,
@@ -3965,7 +4059,7 @@
     },
     {
       "name": "BidAskCandle",
-      "id": 12,
+      "id": 3324,
       "signal": "BeginMessage",
       "offset": 89,
       "primitive": null,
@@ -4785,7 +4879,7 @@
     },
     {
       "name": "TradeCandle",
-      "id": 13,
+      "id": 8561,
       "signal": "BeginMessage",
       "offset": 52,
       "primitive": null,
@@ -5165,7 +5259,7 @@
     },
     {
       "name": "TradeOhlcvvCandle",
-      "id": 21,
+      "id": 49382,
       "signal": "BeginMessage",
       "offset": 61,
       "primitive": null,
@@ -5625,7 +5719,7 @@
     },
     {
       "name": "BidDailyOhlc",
-      "id": 14,
+      "id": 58701,
       "signal": "BeginMessage",
       "offset": 53,
       "primitive": null,
@@ -6085,7 +6179,7 @@
     },
     {
       "name": "AskDailyOhlc",
-      "id": 15,
+      "id": 23154,
       "signal": "BeginMessage",
       "offset": 53,
       "primitive": null,
@@ -6545,7 +6639,7 @@
     },
     {
       "name": "TradeDailyOhlc",
-      "id": 16,
+      "id": 57177,
       "signal": "BeginMessage",
       "offset": 53,
       "primitive": null,
@@ -7005,7 +7099,7 @@
     },
     {
       "name": "BidOhlc",
-      "id": 17,
+      "id": 9015,
       "signal": "BeginMessage",
       "offset": 52,
       "primitive": null,
@@ -7405,7 +7499,7 @@
     },
     {
       "name": "AskOhlc",
-      "id": 18,
+      "id": 18427,
       "signal": "BeginMessage",
       "offset": 52,
       "primitive": null,
@@ -7805,7 +7899,7 @@
     },
     {
       "name": "TradeOhlcvv",
-      "id": 19,
+      "id": 51484,
       "signal": "BeginMessage",
       "offset": 61,
       "primitive": null,
@@ -8285,7 +8379,7 @@
     },
     {
       "name": "InstrumentDefinition",
-      "id": 20,
+      "id": 47450,
       "signal": "BeginMessage",
       "offset": 1,
       "primitive": null,
@@ -8765,7 +8859,7 @@
     },
     {
       "name": "Listing",
-      "id": 30,
+      "id": 8288,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -9185,7 +9279,7 @@
     },
     {
       "name": "CompanyProfile",
-      "id": 31,
+      "id": 27769,
       "signal": "BeginMessage",
       "offset": 1,
       "primitive": null,
@@ -9385,7 +9479,7 @@
     },
     {
       "name": "CompanyAddress",
-      "id": 32,
+      "id": 45792,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -10365,7 +10459,7 @@
     },
     {
       "name": "InstrumentIssuer",
-      "id": 33,
+      "id": 30803,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -10465,7 +10559,7 @@
     },
     {
       "name": "BasicMasterdata",
-      "id": 34,
+      "id": 21632,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -10565,7 +10659,7 @@
     },
     {
       "name": "InstrumentNames",
-      "id": 35,
+      "id": 61998,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -11065,7 +11159,7 @@
     },
     {
       "name": "LegalEntityNames",
-      "id": 36,
+      "id": 17715,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -11565,7 +11659,7 @@
     },
     {
       "name": "Classification",
-      "id": 37,
+      "id": 53557,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -11745,7 +11839,7 @@
     },
     {
       "name": "ListingClassification",
-      "id": 38,
+      "id": 39307,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -11925,7 +12019,7 @@
     },
     {
       "name": "ListingQuotation",
-      "id": 39,
+      "id": 57471,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -12265,7 +12359,7 @@
     },
     {
       "name": "ListingVenue",
-      "id": 40,
+      "id": 30232,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -12605,7 +12699,7 @@
     },
     {
       "name": "ListingTradingDates",
-      "id": 41,
+      "id": 37622,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -12785,7 +12879,7 @@
     },
     {
       "name": "ListingTradingRules",
-      "id": 42,
+      "id": 34570,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -13445,7 +13539,7 @@
     },
     {
       "name": "ListingQuoteParameters",
-      "id": 43,
+      "id": 3567,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -13705,7 +13799,7 @@
     },
     {
       "name": "ListingOrderSize",
-      "id": 44,
+      "id": 23952,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -13885,7 +13979,7 @@
     },
     {
       "name": "ListingTickSchedule",
-      "id": 45,
+      "id": 17315,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -14225,7 +14319,7 @@
     },
     {
       "name": "InstrumentPrimaryListing",
-      "id": 46,
+      "id": 47760,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -14405,7 +14499,7 @@
     },
     {
       "name": "InstrumentListingRecordCount",
-      "id": 47,
+      "id": 3670,
       "signal": "BeginMessage",
       "offset": 8,
       "primitive": null,
@@ -14445,7 +14539,7 @@
     },
     {
       "name": "CorporateActions",
-      "id": 48,
+      "id": 51924,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -14895,7 +14989,7 @@
     },
     {
       "name": "Distributions",
-      "id": 49,
+      "id": 49232,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,
@@ -15455,7 +15549,7 @@
     },
     {
       "name": "ListDefinition",
-      "id": 50,
+      "id": 8730,
       "signal": "BeginMessage",
       "offset": 0,
       "primitive": null,

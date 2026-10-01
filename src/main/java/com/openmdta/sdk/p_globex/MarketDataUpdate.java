@@ -18,33 +18,38 @@ public final class MarketDataUpdate {
     private final BatchView.MessageConsumer messageConsumer;
     private MarketDataListener listener;
     private boolean snapshot;
-    private final Block<?>[] blocks = new Block<?>[64];
-    private final MessageDecoderFlyweight[] values = new MessageDecoderFlyweight[64];
-    private final Optional<?>[] present = new Optional<?>[64];
-    private final UnsafeBuffer[] payloads = new UnsafeBuffer[64];
-    private final long[] eventTimes = new long[64];
-    private final int[] lengths = new int[64], versions = new int[64];
+    // Slots follow the selection order (at most 64); responses name blocks by owner schema and template ID.
+    private final Block<?>[] blocks;
+    private final MessageDecoderFlyweight[] values;
+    private final Optional<?>[] present;
+    private final UnsafeBuffer[] payloads;
+    private final long[] eventTimes;
+    private final int[] lengths, versions;
     private long changed, cleared, messageId;
+    private static final int UNRESOLVED = -2;
+    private int[] slotByField = new int[0];
 
     MarketDataUpdate(List<? extends Block<?>> selection) {
         this.selection = List.copyOf(selection);
-        for (Block<?> block : selection) {
-            int id = block.format().templateId();
-            if (id >= 64 || blocks[id] != null) throw new IllegalArgumentException("Invalid or duplicate block selection");
-            blocks[id] = block; values[id] = block.decoder().get(); payloads[id] = new UnsafeBuffer(0, 0);
-            present[id] = Optional.of(values[id]);
+        int count = this.selection.size();
+        if (count > 64) throw new IllegalArgumentException("At most 64 blocks can be selected");
+        blocks = new Block<?>[count]; values = new MessageDecoderFlyweight[count]; present = new Optional<?>[count];
+        payloads = new UnsafeBuffer[count]; eventTimes = new long[count]; lengths = new int[count]; versions = new int[count];
+        for (int slot = 0; slot < count; slot++) {
+            Block<?> block = this.selection.get(slot);
+            if (slot(block.semantic(), block.layout()) >= 0) throw new IllegalArgumentException("Duplicate block selection");
+            blocks[slot] = block; values[slot] = block.decoder().get(); payloads[slot] = new UnsafeBuffer(0, 0);
+            present[slot] = Optional.of(values[slot]);
         }
         fieldConsumer = field -> {
-            int template = field.templateId();
-            if (template >= 64 || blocks[template] == null || blocks[template].format().schemaId() != field.schemaId()) {
-                throw new IllegalArgumentException("Unexpected block in market-data response");
-            }
-            long bit = 1L << template;
+            int slot = slotOf(field);
+            if (slot < 0) throw new IllegalArgumentException("Unexpected block in market-data response");
+            long bit = 1L << slot;
             if ((changed & bit) != 0) throw new IllegalArgumentException("Duplicate block in source message");
-            changed |= bit; eventTimes[template] = field.eventTimeMicros();
+            changed |= bit; eventTimes[slot] = field.eventTimeMicros();
             if (field.clear()) { cleared |= bit; return; }
-            payloads[template].wrap(field.payload());
-            lengths[template] = field.blockLength(); versions[template] = field.version();
+            payloads[slot].wrap(field.payload());
+            lengths[slot] = field.blockLength(); versions[slot] = field.version();
         };
         messageConsumer = message -> {
             if (request != null && (request.closed || request.client.closed)) return;
@@ -88,8 +93,7 @@ public final class MarketDataUpdate {
         key.getBytes(0, keyBytes); dataset.getBytes(0, datasetBytes);
         copy.key.wrap(keyBytes); copy.dataset.wrap(datasetBytes);
         copy.snapshot = snapshot; copy.messageId = messageId; copy.changed = changed; copy.cleared = cleared;
-        for (Block<?> block : selection) {
-            int id = block.format().templateId();
+        for (int id = 0; id < blocks.length; id++) {
             copy.eventTimes[id] = eventTimes[id]; copy.lengths[id] = lengths[id]; copy.versions[id] = versions[id];
             if ((changed & ~cleared & (1L << id)) == 0) continue;
             byte[] bytes = new byte[payloads[id].capacity()];
@@ -108,7 +112,7 @@ public final class MarketDataUpdate {
     @SuppressWarnings("unchecked")
     private <D extends MessageDecoderFlyweight> Optional<D> optionalValue(Block<D> block) {
         D decoder = value(block); // Validate selection and rewind the borrowed decoder.
-        return (Optional<D>) (decoder == null ? EMPTY : present[block.format().templateId()]);
+        return (Optional<D>) (decoder == null ? EMPTY : present[selected(block)]);
     }
     /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
     public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.AskOhlcDecoder> getAskOhlc() { return optionalValue(Blocks.ASK_OHLC); }
@@ -135,11 +139,11 @@ public final class MarketDataUpdate {
     public boolean isBidAskCleared() { return cleared(Blocks.BID_ASK); }
 
     /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_1.BidAskCandleDecoder> getBidAskCandle() { return optionalValue(Blocks.BID_ASK_CANDLE); }
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandleDecoder> getBidAskCandle() { return optionalValue(Blocks.BID_ASK_CANDLE); }
     /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_1.BidAskCandle> bidAskCandle() {
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.BidAskCandle> bidAskCandle() {
         var decoder = value(Blocks.BID_ASK_CANDLE);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_1.BidAskCandle.decode(decoder));
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.BidAskCandle.decode(decoder));
     }
     /** True for a value or an explicit clear in this source message. Selection is required. */
     public boolean isBidAskCandleChanged() { return changed(Blocks.BID_ASK_CANDLE); }
@@ -165,9 +169,27 @@ public final class MarketDataUpdate {
         return eventTimes[id];
     }
     private int selected(Block<?> block) {
-        int id = block.format().templateId();
-        if (id >= 64 || blocks[id] != block) throw new IllegalArgumentException("Block was not selected by this request");
-        return id;
+        int slot = slot(block.semantic(), block.layout());
+        if (slot < 0 || blocks[slot] != block) throw new IllegalArgumentException("Block was not selected by this request");
+        return slot;
+    }
+    private int slot(String semantic, String layout) {
+        for (int slot = 0; slot < blocks.length; slot++) {
+            Block<?> block = blocks[slot];
+            if (block != null && block.semantic().equals(semantic) && block.layout().equals(layout)) return slot;
+        }
+        return -1;
+    }
+    /** Slot of an announced field ID, resolved by name once per ID and cached; no allocation after that. */
+    private int slotOf(BatchView.Field field) {
+        int id = field.fieldId();
+        if (id >= slotByField.length) {
+            int[] grown = java.util.Arrays.copyOf(slotByField, Math.max(id + 1, slotByField.length * 2));
+            java.util.Arrays.fill(grown, slotByField.length, grown.length, UNRESOLVED);
+            slotByField = grown;
+        }
+        if (slotByField[id] == UNRESOLVED) slotByField[id] = slot(field.semantic(), field.layout());
+        return slotByField[id];
     }
     public long messageId() { return messageId; }
     public boolean snapshot() { return snapshot; }

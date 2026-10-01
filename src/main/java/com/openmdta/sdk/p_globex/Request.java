@@ -14,6 +14,7 @@ public final class Request implements AutoCloseable {
     final Listener listener;
     final Format[] responses;
     final CompletableFuture<Void> completion = new CompletableFuture<>();
+    final AnnouncedFields fields = new AnnouncedFields();
     int consumed;
     boolean windowed;
     volatile boolean closed;

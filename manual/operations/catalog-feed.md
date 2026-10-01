@@ -6,7 +6,7 @@ Subscribe to the complete selected Catalog using up to 64 field labels, exact ca
 
 ## Request: CatalogFeedRequest
 
-Format: `schemaId=102, templateId=18, version=19, blockLength=0`. The enclosing XML supports version 32; this message emits version 19.
+Format: `schemaId=102, templateId=18, version=19, blockLength=0`. The enclosing XML supports version 33; this message emits version 19.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -17,7 +17,7 @@ Format: `schemaId=102, templateId=18, version=19, blockLength=0`. The enclosing 
 
 ## Response: CatalogFeedControl
 
-Format: `schemaId=102, templateId=113, version=19, blockLength=1`. The enclosing XML supports version 32; this message emits version 19.
+Format: `schemaId=102, templateId=113, version=19, blockLength=1`. The enclosing XML supports version 33; this message emits version 19.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |
@@ -26,7 +26,7 @@ Format: `schemaId=102, templateId=113, version=19, blockLength=1`. The enclosing
 
 ## Response: CatalogRecord
 
-Format: `schemaId=102, templateId=102, version=5, blockLength=30`. The enclosing XML supports version 32; this message emits version 5.
+Format: `schemaId=102, templateId=102, version=5, blockLength=30`. The enclosing XML supports version 33; this message emits version 5.
 
 | Member | Kind | Type / dimensions | Fixed offset | Since version | Null / constant |
 | --- | --- | --- | --- | --- | --- |

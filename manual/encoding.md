@@ -71,9 +71,14 @@ This response carries three groups: message descriptors, field descriptors and
 event-time gaps, then record key, dataset and payload bytes. Each message's
 `firstField` and `fieldCount` select a contiguous slice of the field group.
 Each field's offset/length selects bytes in the final payload blob. Bounds-check
-both slices. Dispatch owner payloads by `(schemaId, templateId)` and use their
-acting version/block length. Preserve the enclosing message ID and each field's
-event timestamp.
+both slices. A field row names the dataset field ID, not the codec: before the
+first batch that uses an ID, the same request receives a `DatasetFields`
+response (template 114) listing each ID's semantic field and payload layout,
+the SBE message name of the owner model's or the producer's export message.
+Keep that table per request and select your decoder by these two names;
+numeric schema and template IDs are not announced and carry no meaning across
+schemas. Use each row's acting version/block length. Preserve the enclosing message ID and each field's event
+timestamp.
 
 The transport's `eventTimeMicros` is separate from the owner payload. The
 TypeScript convenience codec may prepend this timestamp internally; that extra

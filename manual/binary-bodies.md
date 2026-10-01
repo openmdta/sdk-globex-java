@@ -179,13 +179,23 @@ contract fingerprint, age mode, expression, and a complete
 KeyfiguresSearchQuery owner SBE frame (schema 10, template 3, version 1 or 2).
 The owner frame is required for search and empty for other actions. Expression
 is resolved by the gateway into search keys and cannot accompany explicit keys.
-CatalogKeyfiguresResult (schema 102, template 103, version 32) contains a
-complete Keyfigures owner frame in `resultSbe`. The public actions are schema,
-instrument, and search. Their owner templates are 2, 4, and 5 respectively in
-schema 10, version 2. Instrument and search rows contain complete template 6
-frames. Each row carries ordered customer field IDs and scalar kinds, exact
+CatalogKeyfiguresResult (schema 102, template 103, version 32) contains one
+complete Keyfigures owner frame in `resultSbe`; no owner frame exceeds 1 MiB.
+The public actions are schema, instrument, and search. Schema and instrument
+answer with one result: owner template 2 or 4 in schema 10, version 2. A search
+answers with zero or more KeyfiguresRowChunk results (template 10) and then
+its KeyfiguresSearchResult summary (template 5), followed by session DONE.
+Each chunk's `firstRow` is the index of its first row, so chunks must arrive
+contiguously from 0; the summary's `rowCount` is the total and must equal the
+rows received. Reject a missing, repeated or reordered chunk, a chunk before a
+non-search result, and any result after the final frame. Rows are complete
+template 6 frames carrying exactly the contract's declared fields in column-ID
+order: kind 1 string, 2 integer, 3 number, 4 boolean, or 5 string list (a
+`multiple: true` field, values in `listValues`). Rows also carry exact
 observation IDs, template 7 provenance frames and a template 8 license frame.
 The SDK checks every field against the bundled customer contract fingerprint
-before exposing the generated business types. HTTPS returns the decoded JSON
-projection. Template 9 is an internal-only diagnostic result for retained
-owner actions; the Gateway does not forward it to public clients.
+before exposing the generated business types. HTTPS returns the reassembled
+JSON projection: epoch, observation, provenance and search cutoff times are
+decimal strings, and every JSON number is exact in JavaScript. Template 9 is an
+internal-only diagnostic result for retained owner actions; the Gateway does
+not forward it to public clients.

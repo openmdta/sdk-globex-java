@@ -38,7 +38,7 @@ start with `/api/v1`.
 | Catalog records | GET `/datasets/{alias}/records` | one selector, optional comma-separated fields; omit fields for all |
 | Catalog lookup/search | POST `/datasets/{alias}/{lookup,search}` | the corresponding JSON parameters from [binary bodies](binary-bodies.md) |
 | Stream metadata | GET `/streams/{dataset}/{quality}/metadata` | exact dataset and configured quality in the path |
-| Key figures | GET `/keyfigures/{catalog}/{schema,instrument}`, POST `/keyfigures/{catalog}/search` | instrument selector/query as specified in OpenAPI |
+| Key figures | GET `/keyfigures/{catalog}/{schema,instrument}`, POST `/keyfigures/{catalog}/search` | instrument selector/query as specified in OpenAPI. Any authenticated client may search; no dataset grant is required for now. |
 | Application service read | POST `/services/{alias}/{command}` | the command's declared input object; mutations use the binary service-call operation |
 
 `selector` uses the same typed identifier expressions as binary reads. `blocks`
@@ -96,7 +96,7 @@ reads. Use the binary session for feed subscriptions and recovery.
 | --- | --- | --- |
 | `/api/v1/snapshot` | A configured Latest source | `selector` required; optional `quality`, `adjustment` (raw/split, default raw), `source_field`. |
 | `/api/v1/timeseries` | A configured Timeseries source | `selector`, `from`, `through` required; optional `quality`, `resolution` (microseconds, default 0 for raw), `max_rows` (default 10000), `adjustment`. All numeric query values are decimal. |
-| `/api/v1/catalog/search` | A configured search catalog | `dataset` required, optional `text`, `expression`, `limit`, `cursor`, and `action` (search/autocomplete/search-describe). `filters`, `ranges`, `facets` are JSON text in query parameters. Requires the dataset's SEARCH grant. |
+| `/api/v1/catalog/search` | A configured search catalog | `dataset` required, optional `text`, `expression`, `limit`, `cursor`, and `action` (search/autocomplete/search-describe). `filters`, `ranges`, `facets` are JSON text in query parameters. Any authenticated client may search; no dataset grant is required for now. |
 
 The Explorer inventory endpoint `/api/v1/markets` requires an administrator
 session; use this bundle's environment inventory for a standalone data client.

@@ -8,6 +8,8 @@ import org.agrona.sbe.MessageDecoderFlyweight;
 final class Response {
     private int schemaId, templateId, version, blockLength;
     private final UnsafeBuffer body = new UnsafeBuffer(0, 0);
+    /** Field IDs announced for the owning request; market-data batches resolve through it. */
+    AnnouncedFields fields;
 
     void wrap(int schema, int template, int actingVersion, int fixedLength, DirectBuffer buffer) {
         buffer.boundsCheck(0, fixedLength);
@@ -30,14 +32,15 @@ final class Response {
     public Owned copy() {
         byte[] bytes = new byte[body.capacity()];
         body.getBytes(0, bytes);
-        return new Owned(new Format(schemaId, templateId, version, blockLength), bytes);
+        return new Owned(new Format(schemaId, templateId, version, blockLength), bytes, fields);
     }
 
     /** The byte array belongs to the caller and may be persisted or sent to another thread. */
-    public record Owned(Format format, byte[] bytes) {
+    public record Owned(Format format, byte[] bytes, AnnouncedFields fields) {
         public Response view() {
             Response result = new Response();
             result.wrap(format.schemaId(), format.templateId(), format.version(), format.blockLength(), new UnsafeBuffer(bytes));
+            result.fields = fields;
             return result;
         }
     }
