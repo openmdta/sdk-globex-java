@@ -43,8 +43,7 @@ HTTP SSE enabled: **false**. The current HTTP [OpenAPI document](https://globex.
 | --- | --- | --- |
 | [globex](datasets/0.md) | globex/globex | catalog, search |
 | [lus](datasets/1.md) | globex/lus | catalog, latest, timeseries |
-| [sim](datasets/2.md) | globex/sim | catalog, latest, timeseries |
-| [xetra](datasets/3.md) | globex/xetra | catalog |
+| [xetra](datasets/2.md) | globex/xetra | catalog |
 
 ## Application services
 

@@ -636,48 +636,33 @@ public final class CatalogRecord {
     }
 
     /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_3.SimDomainObjectDecoder> getSimDomainObject() { return optionalValue(Fields.SIM__SIM_DOMAIN_OBJECT); }
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListingDecoder> getXetraListing() { return optionalValue(Fields.XETRA__XETRA_LISTING); }
     /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_3.SimDomainObject> simDomainObject() {
-        var decoder = value(Fields.SIM__SIM_DOMAIN_OBJECT);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_3.SimDomainObject.decode(decoder));
-    }
-    /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
-    public void forEachSimDomainObject(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_3.SimDomainObjectDecoder> consumer) { forEachValue(Fields.SIM__SIM_DOMAIN_OBJECT, consumer); }
-    /** Visits owned values with borrowed subfield keys. */
-    public void forEachSimDomainObjectValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_3.SimDomainObject> consumer) {
-        java.util.Objects.requireNonNull(consumer);
-        forEachValue(Fields.SIM__SIM_DOMAIN_OBJECT, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_3.SimDomainObject.decode(decoder)));
-    }
-
-    /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_4.XetraListingDecoder> getXetraListing() { return optionalValue(Fields.XETRA__XETRA_LISTING); }
-    /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_4.XetraListing> xetraListing() {
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_3.XetraListing> xetraListing() {
         var decoder = value(Fields.XETRA__XETRA_LISTING);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_4.XetraListing.decode(decoder));
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_3.XetraListing.decode(decoder));
     }
     /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
-    public void forEachXetraListing(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_4.XetraListingDecoder> consumer) { forEachValue(Fields.XETRA__XETRA_LISTING, consumer); }
+    public void forEachXetraListing(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListingDecoder> consumer) { forEachValue(Fields.XETRA__XETRA_LISTING, consumer); }
     /** Visits owned values with borrowed subfield keys. */
-    public void forEachXetraListingValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_4.XetraListing> consumer) {
+    public void forEachXetraListingValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_3.XetraListing> consumer) {
         java.util.Objects.requireNonNull(consumer);
-        forEachValue(Fields.XETRA__XETRA_LISTING, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_4.XetraListing.decode(decoder)));
+        forEachValue(Fields.XETRA__XETRA_LISTING, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_3.XetraListing.decode(decoder)));
     }
 
     /** Borrowed decoder, empty if absent/deleted. Requires selection; rejects repeated/subfield values. No allocation. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_4.XetraMarketDetailsDecoder> getXetraMarketDetails() { return optionalValue(Fields.XETRA__XETRA_MARKET_DETAILS); }
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraMarketDetailsDecoder> getXetraMarketDetails() { return optionalValue(Fields.XETRA__XETRA_MARKET_DETAILS); }
     /** Allocates an immutable owned value; empty if absent/deleted. Requires single-value selection. */
-    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_4.XetraMarketDetails> xetraMarketDetails() {
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.catalog_3.XetraMarketDetails> xetraMarketDetails() {
         var decoder = value(Fields.XETRA__XETRA_MARKET_DETAILS);
-        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_4.XetraMarketDetails.decode(decoder));
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.catalog_3.XetraMarketDetails.decode(decoder));
     }
     /** Visits borrowed subfield keys and decoders. Requires selection; no allocation. */
-    public void forEachXetraMarketDetails(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_4.XetraMarketDetailsDecoder> consumer) { forEachValue(Fields.XETRA__XETRA_MARKET_DETAILS, consumer); }
+    public void forEachXetraMarketDetails(ValueConsumer<com.openmdta.sdk.p_globex.sbe.catalog_3.XetraMarketDetailsDecoder> consumer) { forEachValue(Fields.XETRA__XETRA_MARKET_DETAILS, consumer); }
     /** Visits owned values with borrowed subfield keys. */
-    public void forEachXetraMarketDetailsValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_4.XetraMarketDetails> consumer) {
+    public void forEachXetraMarketDetailsValue(ValueConsumer<com.openmdta.sdk.p_globex.model.catalog_3.XetraMarketDetails> consumer) {
         java.util.Objects.requireNonNull(consumer);
-        forEachValue(Fields.XETRA__XETRA_MARKET_DETAILS, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_4.XetraMarketDetails.decode(decoder)));
+        forEachValue(Fields.XETRA__XETRA_MARKET_DETAILS, (key, decoder) -> consumer.accept(key, com.openmdta.sdk.p_globex.model.catalog_3.XetraMarketDetails.decode(decoder)));
     }
     /** Handles repeated/subfield values without allocating a map or a decoder for each entry. */
     public <D extends MessageDecoderFlyweight> void forEachValue(CatalogField<D> field, ValueConsumer<D> consumer) {
