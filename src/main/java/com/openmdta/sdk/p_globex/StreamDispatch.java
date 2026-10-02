@@ -28,6 +28,7 @@ final class StreamDispatch implements Request.Listener {
         updates = listener::onUpdate;
     }
     @Override public void onRegistered(Request request) { this.request = request; update.request = request; }
+    @Override public void onReplay() throws Exception { started = false; listener.onReplay(); }
     @Override public void onResponse(Response response) throws Exception {
         if (response.templateId() == MarketDataMessageBatchDecoder.TEMPLATE_ID) {
             if (mode != Mode.RECOVER && !started) throw new IllegalArgumentException("Data before Stream boundary");

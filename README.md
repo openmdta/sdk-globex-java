@@ -1,6 +1,6 @@
 # globex — Java 17 client
 
-This package targets applied revision `48736521ff302eee8ada958a5f0de7eccf5171aade05af1cd417577a1c225ae7`. Its endpoints, datasets,
+This package targets applied revision `a164c6fd7aaba59cf653be38139159cbd42c9087f4ca947476bf474705fd3309`. Its endpoints, datasets,
 field bindings and service fingerprints describe this one environment. Start
 with [the environment](manual/environment.md), [operations](manual/operations/index.md)
 and [codec index](codecs.md). Credentials are intentionally absent.
@@ -229,7 +229,34 @@ the decode path free of per-update objects. Java's `Flow.Publisher` is useful
 when an application needs reactive composition and demand control, but downstream
 buffering/asynchronous operators require owned values: copy selected primitives
 into a bounded application queue first. Do not publish these mutable borrowed
-views as retainable events. There is no automatic reconnect or retry.
+views as retainable events.
+
+## Connection state and reconnection
+
+`Client.connect` completes after the first authentication and fails if that first
+attempt fails. From then on the client reconnects by itself whenever the session
+is lost, including after a missed heartbeat: it waits with a doubling ceiling
+from 250 ms up to 30 s, with jitter in the upper half of each ceiling so a retry
+never waits less than the one before, asks the token supplier for a fresh token,
+authenticates, and replays every open subscription and pending read. A replayed
+request starts over from a fresh server snapshot; the listener's `onReplay()`
+default method runs first so state derived from the previous session can be
+discarded, for example a `StreamListener` sees a new fence afterwards. Recovery,
+snapshot and Catalog feed requests belong to one session: they fail with
+"feed request connection lost" and a sink workflow restarts from its durable
+state, which is why `Feeds.Stream` fails on replay instead of guessing coverage.
+Requests issued while reconnecting are sent once the next session is
+authenticated. The client gives up only on `close()` or when re-authentication is
+refused, for example after a revoked token.
+
+```java
+client.status();                      // ConnectionStatus(state, attempt, retryAt, error)
+try (var watching = client.onStatus(status -> indicator.show(status.state()))) { ... }
+```
+
+`ConnectionState` is `CONNECTING`, `READY`, `RECONNECTING` or `CLOSED`. Status
+listeners run on the client's own timer thread, never while the client's lock is
+held, so they may call back into the client but should not block.
 
 ## Typed source-wide Stream access
 
@@ -323,7 +350,8 @@ connections when a slow durable sink should not delay unrelated subscriptions.
 
 `Request.completion()` completes on DONE and fails on server/transport/callback
 errors. Closing a request cancels it. Closing a client fails its active requests.
-Authentication happens once per connection; refresh tokens by reconnecting.
+Each session authenticates once; the token supplier is consulted for every
+automatic reconnect.
 `MdToken.issue` signs delegated tokens on a trusted server using the exact SBE
 schemas. Never ship the DataClient private key in a client application.
 
@@ -349,8 +377,9 @@ abandon partial staging and resume from the last committed opaque cursor.
 Catalog and Stream use separate commands and sinks. They have **no shared
 ordering guarantee**.
 
-A failed feed stops and exposes the failure through `completion()`. Reconnect
-with backoff and start it again using the same durable sink. There is no hidden
+A failed feed stops and exposes the failure through `completion()`, including
+when its session was lost; the client reconnects by itself, so start the feed
+again using the same durable sink once `client.status()` is `READY`. There is no hidden
 retry of an ambiguous mutation or an unbounded transport queue. The optional
 `streamFeedMemory` and `catalogFeedMemory` helpers explicitly copy retained data,
 allocate, and have no capacity limit or restart durability. Inspect their state

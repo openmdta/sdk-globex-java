@@ -36,6 +36,7 @@ public final class CatalogRecord {
         var cursorBytes = new UnsafeBuffer(0, 0);
         return new Request.Listener() {
             private boolean staging;
+            @Override public void onReplay() throws Exception { staging = false; listener.onReplay(); }
             @Override public void onResponse(Response response) throws Exception {
                 if (response.templateId() == CatalogRecordDecoder.TEMPLATE_ID) {
                     view.wrap(response);

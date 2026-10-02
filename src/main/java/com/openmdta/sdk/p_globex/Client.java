@@ -9,7 +9,9 @@ import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.agrona.DirectBuffer;
 import org.agrona.collections.Long2ObjectHashMap;
@@ -18,7 +20,10 @@ import org.agrona.sbe.MessageEncoderFlyweight;
 import com.openmdta.sdk.p_globex.sbe.gateway_protocol.DatasetFieldsDecoder;
 import com.openmdta.sdk.p_globex.sbe.sbe_websocket.*;
 
-/** One authenticated connection. Callbacks borrow transport bytes and run serially. */
+/**
+ * One logical connection. Callbacks borrow transport bytes and run serially. A lost session is
+ * re-established automatically with increasing delays; open subscriptions and pending reads are replayed.
+ */
 public final class Client implements AutoCloseable {
     private static final CompletionStage<Void> CONSUMED = CompletableFuture.completedFuture(null);
     private static final int MAX_FRAME = Contract.ROOT.path("runtime").path("limits").path("websocketMessageBytes").asInt();
@@ -31,14 +36,18 @@ public final class Client implements AutoCloseable {
     private final HttpClient http;
     private final Supplier<? extends CompletionStage<byte[]>> tokens;
     private final Long2ObjectHashMap<Request> pending = new Long2ObjectHashMap<>();
-    private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> { Thread t = new Thread(r, "openmdta-heartbeat"); t.setDaemon(true); return t; });
+    private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> { Thread t = new Thread(r, "openmdta-connection"); t.setDaemon(true); return t; });
     private final CompletableFuture<Client> ready = new CompletableFuture<>();
     private final UnsafeBuffer incoming = new UnsafeBuffer(0, 0), body = new UnsafeBuffer(0, 0), errorText = new UnsafeBuffer(0, 0);
     private final MessageHeaderDecoder header = new MessageHeaderDecoder();
     private final ResponseDecoder envelope = new ResponseDecoder();
     private final Response response = new Response();
+    private final CopyOnWriteArrayList<Consumer<ConnectionStatus>> statusListeners = new CopyOnWriteArrayList<>();
+    private volatile ConnectionStatus status = new ConnectionStatus(ConnectionState.CONNECTING, 0, null, null);
     private ByteBuffer fragments;
     private WebSocket socket;
+    private boolean authenticated;
+    private int attempt, generation;
     boolean closed;
     private long sequence = 2, lastHeartbeat = System.nanoTime();
     private CompletableFuture<Void> sending = CompletableFuture.completedFuture(null);
@@ -46,14 +55,12 @@ public final class Client implements AutoCloseable {
 
     private final WebSocket.Listener transport = new WebSocket.Listener() {
         @Override public void onOpen(WebSocket webSocket) {
-            synchronized (Client.this) {
-                socket = webSocket;
-                if (closed) socket.abort(); else socket.request(1);
-            }
+            // Demand is requested once the attempt adopts this socket; the JDK reports onOpen before buildAsync completes.
+            synchronized (Client.this) { if (closed) webSocket.abort(); }
         }
         @Override public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
             synchronized (Client.this) {
-                if (closed) return CONSUMED;
+                if (closed || webSocket != socket) return CONSUMED;
                 try {
                     int accumulated = fragments == null ? 0 : fragments.position();
                     int length = Math.addExact(accumulated, data.remaining());
@@ -72,20 +79,21 @@ public final class Client implements AutoCloseable {
                     }
                     dispatch(incoming);
                     if (fragments != null) fragments.clear();
-                } catch (Throwable error) { fail(error); }
-                if (!closed) webSocket.request(1);
+                } catch (AuthenticationException error) { fail(error);
+                } catch (Throwable error) { lost(webSocket, error); }
+                if (!closed && webSocket == socket) webSocket.request(1);
                 return CONSUMED;
             }
         }
-        @Override public CompletionStage<?> onText(WebSocket socket, CharSequence text, boolean last) {
-            fail(new IOException("Unexpected WebSocket text message"));
+        @Override public CompletionStage<?> onText(WebSocket webSocket, CharSequence text, boolean last) {
+            lost(webSocket, new IOException("Unexpected WebSocket text message"));
             return CONSUMED;
         }
-        @Override public CompletionStage<?> onClose(WebSocket socket, int code, String reason) {
-            fail(new IOException("Gateway disconnected (" + code + "): " + reason));
+        @Override public CompletionStage<?> onClose(WebSocket webSocket, int code, String reason) {
+            lost(webSocket, new IOException("Gateway disconnected (" + code + "): " + reason));
             return CONSUMED;
         }
-        @Override public void onError(WebSocket socket, Throwable error) { fail(error); }
+        @Override public void onError(WebSocket webSocket, Throwable error) { lost(webSocket, error); }
     };
 
     private Client(HttpClient http, Supplier<? extends CompletionStage<byte[]>> tokens) {
@@ -96,30 +104,120 @@ public final class Client implements AutoCloseable {
         byte[] copy = token.clone();
         return connect(HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build(), () -> CompletableFuture.completedFuture(copy));
     }
+    /** Resolves after the first authentication and rejects if that first attempt fails; later sessions reconnect by themselves. */
     public static CompletableFuture<Client> connect(HttpClient http, Supplier<? extends CompletionStage<byte[]>> tokens) {
         Client client = new Client(http, tokens);
+        synchronized (client) {
+            client.open();
+            client.timer.scheduleAtFixedRate(() -> {
+                synchronized (client) {
+                    long timeout = Contract.ROOT.path("runtime").path("limits").path("heartbeatTimeoutMillis").asLong(60_000);
+                    if (!client.closed && client.authenticated && TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - client.lastHeartbeat) > timeout) {
+                        client.lost(client.socket, new IOException("Gateway heartbeat timed out"));
+                    }
+                }
+            }, 1, 1, TimeUnit.SECONDS);
+        }
+        return client.ready;
+    }
+    /** The current lifecycle observation; cheap to poll. */
+    public ConnectionStatus status() { return status; }
+    /**
+     * Receives every status change on the client's own timer thread, never while holding the client's
+     * lock. Closing the returned handle stops delivery.
+     */
+    public AutoCloseable onStatus(Consumer<ConnectionStatus> listener) {
+        statusListeners.add(java.util.Objects.requireNonNull(listener));
+        return () -> statusListeners.remove(listener);
+    }
+    private void setStatus(ConnectionState state, int attempt, Instant retryAt, Throwable error) {
+        ConnectionStatus next = new ConnectionStatus(state, attempt, retryAt, error);
+        status = next;
+        if (timer.isShutdown()) { for (Consumer<ConnectionStatus> listener : statusListeners) listener.accept(next); return; }
+        timer.execute(() -> { for (Consumer<ConnectionStatus> listener : statusListeners) listener.accept(next); });
+    }
+    /** Starts one connection attempt; caller holds the lock. Failures are routed through lost(). */
+    private void open() {
+        int opened = ++generation;
+        authenticated = false;
         try {
             tokens.get().thenCompose(bytes -> {
                 if (bytes == null || bytes.length == 0 || bytes.length > 64 * 1024) throw new IllegalArgumentException("Invalid token length");
-                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL).buildAsync(Environment.WEBSOCKET, client.transport).thenAccept(socket -> {
-                    if (!WINDOW_PROTOCOL.equals(socket.getSubprotocol())) throw new IllegalStateException("Gateway did not negotiate the SBE session protocol");
-                    UnsafeBuffer buffer = new UnsafeBuffer(new byte[20 + bytes.length]);
-                    AuthRequestEncoder auth = new AuthRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
-                    auth.requestId(1).putToken(bytes, 0, bytes.length);
-                    client.send(buffer.byteArray());
+                return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).subprotocols(WINDOW_PROTOCOL).buildAsync(Environment.WEBSOCKET, transport).thenAccept(webSocket -> {
+                    synchronized (Client.this) {
+                        if (closed || opened != generation) { webSocket.abort(); return; }
+                        if (!WINDOW_PROTOCOL.equals(webSocket.getSubprotocol())) { webSocket.abort(); throw new IllegalStateException("Gateway did not negotiate the SBE session protocol"); }
+                        socket = webSocket;
+                        sending = CompletableFuture.completedFuture(null);
+                        queuedSendBytes = 0;
+                        webSocket.request(1);
+                        UnsafeBuffer buffer = new UnsafeBuffer(new byte[20 + bytes.length]);
+                        AuthRequestEncoder auth = new AuthRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
+                        auth.requestId(1).putToken(bytes, 0, bytes.length);
+                        send(buffer.byteArray());
+                    }
                 });
-            }).whenComplete((ignored, error) -> { if (error != null) client.fail(error); });
-        } catch (Throwable error) { client.fail(error); }
-        client.ready.orTimeout(15, TimeUnit.SECONDS).whenComplete((ignored, error) -> { if (error != null) client.fail(error); });
-        synchronized (client) {
-        if (!client.closed) client.timer.scheduleAtFixedRate(() -> {
-            synchronized (client) {
-                long timeout = Contract.ROOT.path("runtime").path("limits").path("heartbeatTimeoutMillis").asLong(60_000);
-                if (!client.closed && TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - client.lastHeartbeat) > timeout) client.fail(new IOException("Gateway heartbeat timed out"));
+            }).whenComplete((ignored, error) -> {
+                if (error == null) return;
+                synchronized (Client.this) { if (opened == generation) lost(socket, error instanceof CompletionException && error.getCause() != null ? error.getCause() : error); }
+            });
+        } catch (Throwable error) { lost(socket, error); }
+        timer.schedule(() -> {
+            synchronized (Client.this) {
+                if (!closed && opened == generation && !authenticated) lost(socket, new IOException("Authentication timed out"));
             }
-        }, 1, 1, TimeUnit.SECONDS);
+        }, 15, TimeUnit.SECONDS);
+    }
+    /** A session ended or an attempt failed. The first attempt fails for good; later losses schedule the next attempt. */
+    private synchronized void lost(WebSocket which, Throwable error) {
+        if (closed || (which != null && which != socket)) return;
+        if (!ready.isDone()) { fail(error); return; }
+        if (socket != null) { WebSocket stale = socket; socket = null; stale.abort(); }
+        if (authenticated) attempt = 0;
+        authenticated = false;
+        fragments = null;
+        Request[] active = pending.values().toArray(Request[]::new);
+        for (Request request : active) {
+            if (!request.replayable) {
+                pending.remove(request.id);
+                if (request.windowed) reservedWindowBytes -= WINDOW_BYTES;
+                request.closed = true;
+                request.completion.completeExceptionally(new IOException("feed request connection lost", error));
+            }
         }
-        return client.ready;
+        // Doubling ceiling with jitter in its upper half, so every retry waits at least as long as the previous one.
+        long ceiling = Math.min(30_000L, 250L << Math.min(attempt, 16));
+        long delay = ceiling / 2 + ThreadLocalRandom.current().nextLong(ceiling / 2 + 1);
+        attempt++;
+        setStatus(ConnectionState.RECONNECTING, attempt, Instant.now().plusMillis(delay), error);
+        int scheduled = generation;
+        timer.schedule(() -> {
+            synchronized (Client.this) { if (!closed && scheduled == generation) open(); }
+        }, delay, TimeUnit.MILLISECONDS);
+    }
+    /** The gateway accepted the token: replay what the previous session carried. */
+    private void established() {
+        authenticated = true;
+        attempt = 0;
+        lastHeartbeat = System.nanoTime();
+        boolean replay = ready.isDone();
+        setStatus(ConnectionState.READY, 0, null, null);
+        if (!replay) { ready.complete(this); return; }
+        for (Request request : pending.values().toArray(Request[]::new)) {
+            try {
+                request.fields.clear();
+                request.consumed = 0;
+                request.listener.onReplay();
+            } catch (Throwable failure) {
+                pending.remove(request.id);
+                if (request.windowed) reservedWindowBytes -= WINDOW_BYTES;
+                request.closed = true;
+                request.completion.completeExceptionally(failure);
+                continue;
+            }
+            send(request.open);
+            if (request.windowed) send(window(request.id)); else credit(request.id, CREDITS);
+        }
     }
     public Dataset datasetGlobex() {
         return dataset("globex");
@@ -151,21 +249,29 @@ public final class Client implements AutoCloseable {
         OpenRequestEncoder open = new OpenRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder()).requestId(id);
         open.format().schemaId(format.schemaId()).templateId(format.templateId()).version(format.version()).blockLength(format.blockLength());
         open.putBody(encoder.buffer(), encoder.offset(), encoder.encodedLength());
+        request.open = buffer.byteArray();
         request.windowed = operation.startsWith("feed-") || operation.equals("catalog-feed");
+        // Recovery, snapshot and Catalog feed requests belong to one session; sink workflows restart them from durable state.
+        request.replayable = !(operation.equals("feed-recovery") || operation.equals("feed-snapshot") || operation.equals("catalog-feed"));
         if (request.windowed) {
             if ((long) reservedWindowBytes + WINDOW_BYTES > 64 * 1024 * 1024) throw new IllegalStateException("Connection feed buffer capacity reached");
             reservedWindowBytes += WINDOW_BYTES;
         }
         listener.onRegistered(request);
         pending.put(id, request);
-        send(buffer.byteArray());
-        if (request.windowed) {
-            UnsafeBuffer window = new UnsafeBuffer(new byte[28]);
-            new ResponseWindowEncoder().wrapAndApplyHeader(window, 0, new MessageHeaderEncoder())
-                .targetId(id).responses(16).bytes(WINDOW_BYTES).maxBodyBytes(Math.min(MAX_BODY, MAX_FRAME - 128));
-            send(window.byteArray());
-        } else credit(id, CREDITS);
+        if (!authenticated) {
+            if (!request.replayable) { pending.remove(id); reservedWindowBytes -= WINDOW_BYTES; throw new IllegalStateException("Client is reconnecting"); }
+            return request; // sent once the next session is authenticated
+        }
+        send(request.open);
+        if (request.windowed) send(window(id)); else credit(id, CREDITS);
         return request;
+    }
+    private static byte[] window(long id) {
+        UnsafeBuffer window = new UnsafeBuffer(new byte[28]);
+        new ResponseWindowEncoder().wrapAndApplyHeader(window, 0, new MessageHeaderEncoder())
+            .targetId(id).responses(16).bytes(WINDOW_BYTES).maxBodyBytes(Math.min(MAX_BODY, MAX_FRAME - 128));
+        return window.byteArray();
     }
     private synchronized void credit(long id, int count) {
         if (closed || !pending.containsKey(id)) return;
@@ -176,23 +282,28 @@ public final class Client implements AutoCloseable {
     synchronized void cancel(Request request) {
         Request removed = pending.remove(request.id);
         if (removed != null && removed.windowed) reservedWindowBytes -= WINDOW_BYTES;
-        if (removed != null && !closed) {
+        if (removed != null && !closed && authenticated) {
             UnsafeBuffer buffer = new UnsafeBuffer(new byte[24]);
             new CancelRequestEncoder().wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder()).requestId(sequence++).targetId(request.id);
             send(buffer.byteArray());
         }
         request.completion.cancel(false);
     }
+    /** Queues a frame on the current socket only; a frame for a lost session is dropped and replay re-sends what matters. */
     private synchronized void send(byte[] bytes) {
-        if (closed) return;
+        WebSocket target = socket;
+        if (closed || target == null) return;
         // These unchanged templates retain their v0 acting version even when
         // generated from the extended session schema, including v1 fallback.
         if (bytes.length >= 8 && bytes[2] >= 1 && bytes[2] <= 4 && bytes[3] == 0) { bytes[6] = 0; bytes[7] = 0; }
-        if ((long) queuedSendBytes + bytes.length > 16 * 1024 * 1024) { fail(new IOException("Outgoing queue limit exceeded")); return; }
+        if ((long) queuedSendBytes + bytes.length > 16 * 1024 * 1024) { lost(target, new IOException("Outgoing queue limit exceeded")); return; }
         queuedSendBytes += bytes.length;
-        sending = sending.thenCompose(ignored -> socket.sendBinary(ByteBuffer.wrap(bytes), true)).thenAccept(ignored -> {});
+        sending = sending.thenCompose(ignored -> target.sendBinary(ByteBuffer.wrap(bytes), true)).thenAccept(ignored -> {});
         sending.whenComplete((ignored, error) -> {
-            synchronized (this) { queuedSendBytes -= bytes.length; if (error != null) fail(error); }
+            synchronized (this) {
+                if (target == socket) queuedSendBytes -= bytes.length;
+                if (error != null) lost(target, error);
+            }
         });
     }
     private void dispatch(DirectBuffer frame) throws Exception {
@@ -210,9 +321,10 @@ public final class Client implements AutoCloseable {
         envelope.wrapBody(body); envelope.wrapError(errorText);
         if (envelope.limit() != frame.capacity() || body.capacity() > MAX_BODY) throw new IOException("Malformed response length");
         if (id == 1) {
-            if (status != Status.CONTINUE || body.capacity() != 0) throw new IOException("Authentication failed: " + errorText.getStringWithoutLengthUtf8(0, errorText.capacity()));
-            lastHeartbeat = System.nanoTime(); ready.complete(this); return;
+            if (status != Status.CONTINUE || body.capacity() != 0) throw new AuthenticationException("Authentication failed: " + errorText.getStringWithoutLengthUtf8(0, errorText.capacity()));
+            established(); return;
         }
+        lastHeartbeat = System.nanoTime();
         Request target = pending.get(id);
         if (target == null || target.closed) return;
         try {
@@ -285,18 +397,27 @@ public final class Client implements AutoCloseable {
                 } catch (IOException error) { throw new CompletionException(error); }
             }).toCompletableFuture();
     }
+    /** Ends the client for good: the first attempt failed, re-authentication was refused, or the caller closed it. */
     private synchronized void fail(Throwable error) {
         if (closed) return;
-        closed = true; ready.completeExceptionally(error);
+        closed = true; generation++; authenticated = false;
+        ready.completeExceptionally(error);
         Request[] failed = pending.values().toArray(Request[]::new);
         pending.clear();
         reservedWindowBytes = 0;
         for (Request request : failed) { request.closed = true; request.completion.completeExceptionally(error); }
-        if (socket != null) socket.abort();
-        timer.shutdownNow();
+        if (socket != null) { socket.abort(); socket = null; }
+        setStatus(ConnectionState.CLOSED, attempt, null, error instanceof ClientClosed ? null : error);
+        timer.shutdown();
     }
-    @Override public void close() { fail(new IOException("Client closed")); }
+    @Override public void close() { fail(new ClientClosed()); }
     public static final class RequestException extends RuntimeException {
         public RequestException(String message) { super(message); }
+    }
+    private static final class AuthenticationException extends IOException {
+        AuthenticationException(String message) { super(message); }
+    }
+    private static final class ClientClosed extends IOException {
+        ClientClosed() { super("Client closed"); }
     }
 }

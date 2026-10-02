@@ -66,6 +66,7 @@ public final class MarketDataUpdate {
         return new Request.Listener() {
             @Override public void onRegistered(Request request) { update.request = request; }
             @Override public void onResponse(Response response) throws Exception { update.wrap(response).deliver(listener); }
+            @Override public void onReplay() throws Exception { listener.onReplay(); }
         };
     }
     MarketDataUpdate wrap(Response response) {

@@ -8,6 +8,8 @@ public final class Request implements AutoCloseable {
         void onResponse(Response response) throws Exception;
         default void onRegistered(Request request) {}
         default void onComplete() throws Exception {}
+        /** The request is about to be re-sent on a new session; discard state derived from the previous one. */
+        default void onReplay() throws Exception {}
     }
     final Client client;
     final long id;
@@ -16,7 +18,9 @@ public final class Request implements AutoCloseable {
     final CompletableFuture<Void> completion = new CompletableFuture<>();
     final AnnouncedFields fields = new AnnouncedFields();
     int consumed;
-    boolean windowed;
+    boolean windowed, replayable;
+    /** The encoded open frame, re-sent after a reconnect. */
+    byte[] open;
     volatile boolean closed;
     Request(Client client, long id, Listener listener, Format[] responses) {
         this.client = client; this.id = id; this.listener = listener; this.responses = responses;

@@ -17,4 +17,10 @@ public interface StreamListener {
     default void onSnapshotGap(long afterMessageId, long throughMessageId) throws Exception {}
     /** All snapshot records have been delivered; runs before request completion. */
     default void onSnapshotComplete() throws Exception {}
+    /**
+     * The connection was re-established and this subscription restarts on the new session: a new
+     * fence follows and coverage derived from the previous fence must be discarded. Only live
+     * subscriptions are replayed; recovery and snapshot requests fail when their session is lost.
+     */
+    default void onReplay() throws Exception {}
 }

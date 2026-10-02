@@ -62,6 +62,10 @@ public final class Feeds {
                             if (Long.compareUnsigned(through, head) > 0) { head = through; sink.checkpoint(new Resume(head, gaps, initialized)); }
                             advance();
                         }
+                        @Override public void onReplay() {
+                            // Coverage after a new fence must be re-derived from the sink's checkpoint; the caller restarts the feed.
+                            fail(new IllegalStateException("Stream subscription was replayed after a reconnect; restart the feed from its sink"));
+                        }
                     });
                     active.add(live);
                     live.completion().whenComplete((ignored, error) -> { if (!stopped) fail(error == null ? new IllegalStateException("Stream subscription ended") : error); });

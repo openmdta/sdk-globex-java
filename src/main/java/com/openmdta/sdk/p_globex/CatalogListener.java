@@ -7,4 +7,6 @@ public interface CatalogListener {
     default void onSnapshotBegin() throws Exception {}
     default void onSnapshotComplete(String cursor) throws Exception {}
     default void onCursor(String cursor) throws Exception {}
+    /** The connection was re-established and a Catalog read restarts; Catalog subscriptions instead fail and are resumed from their cursor. */
+    default void onReplay() throws Exception {}
 }

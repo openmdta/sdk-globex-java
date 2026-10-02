@@ -16,6 +16,9 @@ final class AnnouncedFields {
     private final DatasetFieldsDecoder decoder = new DatasetFieldsDecoder();
     private final UnsafeBuffer text = new UnsafeBuffer(0, 0);
 
+    /** A replayed request announces its fields again. */
+    void clear() { count = 0; }
+
     void absorb(int version, int blockLength, DirectBuffer body) {
         decoder.wrap(body, 0, blockLength, version);
         var fields = decoder.fields();
