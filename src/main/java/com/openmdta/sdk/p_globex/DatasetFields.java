@@ -6,6 +6,8 @@ public final class DatasetFields {
     public static final java.util.List<CatalogField<?>> GLOBEX_ALL = java.util.List.of(GLOBEX_GLOBEX_DISPLAY_NAME);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder> LUS_INSTRUMENT_NAMES = new CatalogField<>("instrument_names", "openmdta::InstrumentNames", new Format(41957, 61998, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder::new);
     public static final java.util.List<CatalogField<?>> LUS_ALL = java.util.List.of(LUS_INSTRUMENT_NAMES);
+    public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder> SIM_INSTRUMENT_NAMES = new CatalogField<>("instrument_names", "openmdta::InstrumentNames", new Format(41957, 61998, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder::new);
+    public static final java.util.List<CatalogField<?>> SIM_ALL = java.util.List.of(SIM_INSTRUMENT_NAMES);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.ClassificationDecoder> XETRA_CLASSIFICATION = new CatalogField<>("classification", "openmdta::Classification", new Format(41957, 53557, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.ClassificationDecoder::new);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder> XETRA_INSTRUMENT_NAMES = new CatalogField<>("instrument_names", "openmdta::InstrumentNames", new Format(41957, 61998, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNamesDecoder::new);
     public static final CatalogField<com.openmdta.sdk.p_globex.sbe.catalog_2.ListingClassificationDecoder> XETRA_LISTING_CLASSIFICATION = new CatalogField<>("listing_classification", "openmdta::ListingClassification", new Format(41957, 39307, 0, 0), com.openmdta.sdk.p_globex.sbe.catalog_2.ListingClassificationDecoder::new);
@@ -21,6 +23,7 @@ public final class DatasetFields {
         return switch (dataset) {
             case "globex/globex" -> GLOBEX_ALL;
             case "globex/lus" -> LUS_ALL;
+            case "globex/sim" -> SIM_ALL;
             case "globex/xetra" -> XETRA_ALL;
             default -> java.util.List.of();
         };
