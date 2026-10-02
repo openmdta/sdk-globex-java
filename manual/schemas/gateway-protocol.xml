@@ -297,7 +297,6 @@
     <data name="quality" id="16" type="varDataEncoding"/>
     <data name="key" id="17" type="varDataEncoding"/>
     <data name="incarnation" id="18" type="varDataEncoding"/>
-    <data name="aggregationQuality" id="19" type="varDataEncoding" sinceVersion="22"/>
   </message>
   <message name="ServiceCallRequest" id="13" blockLength="8" sinceVersion="31">
     <field name="deadlineUnixMillis" id="1" type="uint64" offset="0"/>
