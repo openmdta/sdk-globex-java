@@ -162,6 +162,42 @@ public final class MarketDataUpdate {
     public boolean isBidOhlcChanged() { return changed(Blocks.BID_OHLC); }
     /** True only for an explicit clear in this source message. Selection is required. */
     public boolean isBidOhlcCleared() { return cleared(Blocks.BID_OHLC); }
+
+    /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.TradeDecoder> getTrade() { return optionalValue(Blocks.TRADE); }
+    /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.Trade> trade() {
+        var decoder = value(Blocks.TRADE);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.Trade.decode(decoder));
+    }
+    /** True for a value or an explicit clear in this source message. Selection is required. */
+    public boolean isTradeChanged() { return changed(Blocks.TRADE); }
+    /** True only for an explicit clear in this source message. Selection is required. */
+    public boolean isTradeCleared() { return cleared(Blocks.TRADE); }
+
+    /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvDecoder> getTradeOhlcvv() { return optionalValue(Blocks.TRADE_OHLCVV); }
+    /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.TradeOhlcvv> tradeOhlcvv() {
+        var decoder = value(Blocks.TRADE_OHLCVV);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.TradeOhlcvv.decode(decoder));
+    }
+    /** True for a value or an explicit clear in this source message. Selection is required. */
+    public boolean isTradeOhlcvvChanged() { return changed(Blocks.TRADE_OHLCVV); }
+    /** True only for an explicit clear in this source message. Selection is required. */
+    public boolean isTradeOhlcvvCleared() { return cleared(Blocks.TRADE_OHLCVV); }
+
+    /** Borrowed decoder, empty if unchanged or cleared. Selection is required; no allocation. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleDecoder> getTradeOhlcvvCandle() { return optionalValue(Blocks.TRADE_OHLCVV_CANDLE); }
+    /** Allocates an immutable owned value with nested Optionals and exact BigDecimal prices. */
+    public java.util.Optional<com.openmdta.sdk.p_globex.model.stream_0.TradeOhlcvvCandle> tradeOhlcvvCandle() {
+        var decoder = value(Blocks.TRADE_OHLCVV_CANDLE);
+        return decoder == null ? java.util.Optional.empty() : java.util.Optional.of(com.openmdta.sdk.p_globex.model.stream_0.TradeOhlcvvCandle.decode(decoder));
+    }
+    /** True for a value or an explicit clear in this source message. Selection is required. */
+    public boolean isTradeOhlcvvCandleChanged() { return changed(Blocks.TRADE_OHLCVV_CANDLE); }
+    /** True only for an explicit clear in this source message. Selection is required. */
+    public boolean isTradeOhlcvvCandleCleared() { return cleared(Blocks.TRADE_OHLCVV_CANDLE); }
     public boolean changed(Block<?> block) { return (changed & (1L << selected(block))) != 0; }
     public boolean cleared(Block<?> block) { return (cleared & (1L << selected(block))) != 0; }
     public long eventTimeMicros(Block<?> block) {
