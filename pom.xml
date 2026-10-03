@@ -36,7 +36,6 @@
 <argument>${project.basedir}/src/main/sbe/catalog_1.xml</argument>
 <argument>${project.basedir}/src/main/sbe/catalog_2.xml</argument>
 <argument>${project.basedir}/src/main/sbe/catalog_3.xml</argument>
-<argument>${project.basedir}/src/main/sbe/catalog_4.xml</argument>
 <argument>${project.basedir}/src/main/sbe/catalog_protocol.xml</argument>
 <argument>${project.basedir}/src/main/sbe/gateway_protocol.xml</argument>
 <argument>${project.basedir}/src/main/sbe/keyfigures_protocol.xml</argument>

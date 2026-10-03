@@ -1,8 +1,8 @@
-package com.openmdta.sdk.p_globex.model.catalog_4;
+package com.openmdta.sdk.p_globex.model.catalog_3;
 
 /** Immutable owned value; decoding allocates. */
 public record XetraListing(String productId, String productStatus, String instrumentStatus, String inSubscription, String disableOnBookTrading, String midpointTrading, String midpointExecutionVenueId, String ccpEligibleCode, String clearingLocation, String settlementPeriod, String settlementCurrency, String multiCcpEligible, String depositType, String maximumOrderQuantity, String maximumOrderValue, String minimumIcebergTotalVolume, String minimumIcebergDisplayVolume) {
-    public static XetraListing decode(com.openmdta.sdk.p_globex.sbe.catalog_4.XetraListingDecoder decoder) {
+    public static XetraListing decode(com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListingDecoder decoder) {
         int actingVersion = decoder.actingVersion();
         String result0 = decoder.productId();
         String result1 = decoder.productStatus();
