@@ -10,9 +10,6 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 | `openmdta::BidAsk` | `Blocks.BID_ASK` | `MarketDataUpdate.getBidAsk()` | `MarketDataUpdate.bidAsk()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidAsk` |
 | `openmdta::BidAskCandle` | `Blocks.BID_ASK_CANDLE` | `MarketDataUpdate.getBidAskCandle()` | `MarketDataUpdate.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandle` |
 | `openmdta::BidOhlc` | `Blocks.BID_OHLC` | `MarketDataUpdate.getBidOhlc()` | `MarketDataUpdate.bidOhlc()` | `com.openmdta.sdk.p_globex.sbe.stream_0.BidOhlc` |
-| `openmdta::Trade` | `Blocks.TRADE` | `MarketDataUpdate.getTrade()` | `MarketDataUpdate.trade()` | `com.openmdta.sdk.p_globex.sbe.stream_0.Trade` |
-| `openmdta::TradeOhlcvv` | `Blocks.TRADE_OHLCVV` | `MarketDataUpdate.getTradeOhlcvv()` | `MarketDataUpdate.tradeOhlcvv()` | `com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvv` |
-| `openmdta::TradeOhlcvvCandle` | `Blocks.TRADE_OHLCVV_CANDLE` | `MarketDataUpdate.getTradeOhlcvvCandle()` | `MarketDataUpdate.tradeOhlcvvCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandle` |
 | `globex::DisplayName` | `Fields.GLOBEX__DISPLAY_NAME` | `CatalogRecord.getDisplayName()` | `CatalogRecord.displayName()` | `com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayName` |
 | `lus::LusDomainObject` | `Fields.LUS__LUS_DOMAIN_OBJECT` | `CatalogRecord.getLusDomainObject()` | `CatalogRecord.lusDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObject` |
 | `lus::LusNameHash` | `Fields.LUS__LUS_NAME_HASH` | `CatalogRecord.getLusNameHash()` | `CatalogRecord.lusNameHash()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusNameHash` |
@@ -49,9 +46,8 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 | `openmdta::CorporateActions` | `Fields.OPENMDTA__CORPORATE_ACTIONS` | `CatalogRecord.getCorporateActions()` | `CatalogRecord.corporateActions()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.CorporateActions` |
 | `openmdta::Distributions` | `Fields.OPENMDTA__DISTRIBUTIONS` | `CatalogRecord.getDistributions()` | `CatalogRecord.distributions()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Distributions` |
 | `openmdta::ListDefinition` | `Fields.OPENMDTA__LIST_DEFINITION` | `CatalogRecord.getListDefinition()` | `CatalogRecord.listDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListDefinition` |
-| `sim::SimDomainObject` | `Fields.SIM__SIM_DOMAIN_OBJECT` | `CatalogRecord.getSimDomainObject()` | `CatalogRecord.simDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.SimDomainObject` |
-| `xetra::XetraListing` | `Fields.XETRA__XETRA_LISTING` | `CatalogRecord.getXetraListing()` | `CatalogRecord.xetraListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_4.XetraListing` |
-| `xetra::XetraMarketDetails` | `Fields.XETRA__XETRA_MARKET_DETAILS` | `CatalogRecord.getXetraMarketDetails()` | `CatalogRecord.xetraMarketDetails()` | `com.openmdta.sdk.p_globex.sbe.catalog_4.XetraMarketDetails` |
+| `xetra::XetraListing` | `Fields.XETRA__XETRA_LISTING` | `CatalogRecord.getXetraListing()` | `CatalogRecord.xetraListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.XetraListing` |
+| `xetra::XetraMarketDetails` | `Fields.XETRA__XETRA_MARKET_DETAILS` | `CatalogRecord.getXetraMarketDetails()` | `CatalogRecord.xetraMarketDetails()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.XetraMarketDetails` |
 
 ## Dataset accessors
 
@@ -59,5 +55,4 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 | --- | --- |
 | `globex` | `client.datasetGlobex()` |
 | `lus` | `client.datasetLus()` |
-| `sim` | `client.datasetSim()` |
 | `xetra` | `client.datasetXetra()` |
