@@ -8,6 +8,7 @@ All XML files are complete and include-free. Use XML for wire types and their le
 | [catalog-lus.xml](catalog-lus.xml) | 41874 | 0 | [JSON](catalog-lus.layout.json) |
 | [catalog-openmdta.xml](catalog-openmdta.xml) | 41957 | 0 | [JSON](catalog-openmdta.layout.json) |
 | [catalog-protocol.xml](catalog-protocol.xml) | 7 | 9 | [JSON](catalog-protocol.layout.json) |
+| [catalog-sim.xml](catalog-sim.xml) | 31312 | 0 | [JSON](catalog-sim.layout.json) |
 | [catalog-xetra.xml](catalog-xetra.xml) | 3154 | 0 | [JSON](catalog-xetra.layout.json) |
 | [gateway-protocol.xml](gateway-protocol.xml) | 102 | 33 | [JSON](gateway-protocol.layout.json) |
 | [keyfigures-protocol.xml](keyfigures-protocol.xml) | 10 | 2 | [JSON](keyfigures-protocol.layout.json) |
@@ -18,6 +19,9 @@ All XML files are complete and include-free. Use XML for wire types and their le
 | [stream-1.xml](stream-1.xml) | 41957 | 0 | [JSON](stream-1.layout.json) |
 | [stream-2.xml](stream-2.xml) | 41957 | 0 | [JSON](stream-2.layout.json) |
 | [stream-3.xml](stream-3.xml) | 41957 | 0 | [JSON](stream-3.layout.json) |
+| [stream-4.xml](stream-4.xml) | 41957 | 0 | [JSON](stream-4.layout.json) |
+| [stream-5.xml](stream-5.xml) | 41957 | 0 | [JSON](stream-5.layout.json) |
+| [stream-6.xml](stream-6.xml) | 41957 | 0 | [JSON](stream-6.layout.json) |
 | [stream-protocol.xml](stream-protocol.xml) | 1 | 18 | [JSON](stream-protocol.layout.json) |
 | [timeseries-protocol.xml](timeseries-protocol.xml) | 6 | 5 | [JSON](timeseries-protocol.layout.json) |
 
