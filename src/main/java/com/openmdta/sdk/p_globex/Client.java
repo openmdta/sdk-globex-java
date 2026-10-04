@@ -225,9 +225,6 @@ public final class Client implements AutoCloseable {
     public Dataset datasetLus() {
         return dataset("lus").quality("DL");
     }
-    public Dataset datasetSim() {
-        return dataset("sim");
-    }
     public Dataset datasetXetra() {
         return dataset("xetra");
     }

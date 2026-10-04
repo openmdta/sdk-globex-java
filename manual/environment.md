@@ -4,7 +4,7 @@
 | --- | --- |
 | Environment | globex |
 | Gateway | gateway |
-| Applied revision | 5070cd467aef572323a46897dcb7fb263b7ff9694984a47f2c520fcfd93fdc1f |
+| Applied revision | cf53e802e5adf8e1ea0d64c0e0711f09f3cb324609a53ac64cdc15bdf3c64c81 |
 | Public base URL | https://globex.openmdta.com/explorer |
 | WebSocket URL | wss://globex.openmdta.com/api/v1/ws |
 | Subprotocol | openmdta.sbe-session.v2 |
@@ -43,8 +43,7 @@ HTTP SSE enabled: **false**. The current HTTP [OpenAPI document](https://globex.
 | --- | --- | --- |
 | [globex](datasets/0.md) | globex/globex | catalog, search |
 | [lus](datasets/1.md) | globex/lus | catalog, latest, timeseries |
-| [sim](datasets/2.md) | globex/sim | catalog, latest, timeseries |
-| [xetra](datasets/3.md) | globex/xetra | catalog |
+| [xetra](datasets/2.md) | globex/xetra | catalog |
 
 ## Application services
 
