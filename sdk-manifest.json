@@ -6,12 +6,12 @@
     "xetra=catalog"
   ],
   "datasetsSha256": "8a6f9b3760667ad93aaeb7e5ea41139a31e8e36269704a37c253cae4208ce6a4",
-  "environmentConfigurationDigest": "9f5260e755e754230ee465cc7ae5b1dadb39031fdf944af9da06c29c32bf5ee7",
+  "environmentConfigurationDigest": "a671ec3d1875acdcd57523b7f909ce2c41c48ccafa85a5a1ecd2fa9f0fd42574",
   "languages": {
-    "java": "cf84b3a12d0637fe47589a5a8e18b46ab40e1ab874dc1092bf460218fffc9725"
+    "java": "1cadc64e4ca0a1219d427cb3589d9919700518e720da51f5fd799312651b3cec"
   },
   "projectId": "globex",
-  "requestId": "sdk-78a125d8e6d1572c6c5d9bbc",
+  "requestId": "sdk-42e30da84dd026f626565b70",
   "rulesetSha256": "e7d2eb575f650461e9c4a68d0e2bd378060d0df7527bc9a3496d69430035ae6a",
   "sdkConfigSha256": "4f9a408401117ec29fadaa9270bf6669914c6b0a9a4ee0a310bcb176dd645b94",
   "sdkInputsSha256": "e7d2eb575f650461e9c4a68d0e2bd378060d0df7527bc9a3496d69430035ae6a",
