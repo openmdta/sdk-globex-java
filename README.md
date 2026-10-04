@@ -1,6 +1,6 @@
 # globex — Java 17 client
 
-This package targets applied revision `fbdb80e4389912e2430e31b938701947d743601d2c39599aa1d515359f019968`. Its endpoints, datasets,
+This package targets applied revision `2f67c09007bc5ef69ac96e81d20b63be67a6390e991f486c17238324d7fbed99`. Its endpoints, datasets,
 field bindings and service fingerprints describe this one environment. Start
 with [the environment](manual/environment.md), [operations](manual/operations/index.md)
 and [codec index](codecs.md). Credentials are intentionally absent.
