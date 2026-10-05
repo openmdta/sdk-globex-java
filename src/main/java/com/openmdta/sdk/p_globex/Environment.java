@@ -2,7 +2,7 @@ package com.openmdta.sdk.p_globex;
 public final class Environment {
     private Environment() {}
     public static final String NAME = "globex";
-    public static final String REVISION = "df0fb3ae53fcdb4622fe35c9540bd28b512ca3b19c546b44abb8d61fc17a904b";
+    public static final String REVISION = "1d34a43cf84d674340379dbae096e025414906eb591f889e4c9158fb0976c2a3";
     public static final String AUDIENCE = "openmdta-data:globex";
     public static final java.net.URI WEBSOCKET = java.net.URI.create("wss://globex.openmdta.com/api/v1/ws");
     public static final java.net.URI HTTP = java.net.URI.create("https://globex.openmdta.com/explorer");
