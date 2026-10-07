@@ -22,6 +22,8 @@ All XML files are complete and include-free. Use XML for wire types and their le
 | [stream-4.xml](stream-4.xml) | 41957 | 0 | [JSON](stream-4.layout.json) |
 | [stream-5.xml](stream-5.xml) | 41957 | 0 | [JSON](stream-5.layout.json) |
 | [stream-6.xml](stream-6.xml) | 41957 | 0 | [JSON](stream-6.layout.json) |
+| [stream-7.xml](stream-7.xml) | 41957 | 0 | [JSON](stream-7.layout.json) |
+| [stream-8.xml](stream-8.xml) | 41957 | 0 | [JSON](stream-8.layout.json) |
 | [stream-protocol.xml](stream-protocol.xml) | 1 | 18 | [JSON](stream-protocol.layout.json) |
 | [timeseries-protocol.xml](timeseries-protocol.xml) | 6 | 5 | [JSON](timeseries-protocol.layout.json) |
 

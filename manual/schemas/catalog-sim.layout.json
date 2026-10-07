@@ -2,7 +2,7 @@
   "id": 31312,
   "version": 0,
   "package": "sim",
-  "xml": "<messageSchema package=\"sim\" id=\"31312\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"templateId\" primitiveType=\"uint16\"/><type name=\"schemaId\" primitiveType=\"uint16\"/><type name=\"version\" primitiveType=\"uint16\"/></composite><composite name=\"groupSizeEncoding\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"numInGroup\" primitiveType=\"uint16\"/></composite><composite name=\"varDataEncoding\"><type name=\"length\" primitiveType=\"uint32\"/><type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/></composite><composite name=\"DecimalEncoding\" semanticType=\"Decimal\"><type name=\"mantissa\" primitiveType=\"int64\"/><type name=\"exponent\" primitiveType=\"int8\"/></composite><type name=\"BooleanEncoding\" primitiveType=\"uint8\" semanticType=\"Boolean\"/></types><message name=\"SimDomainObject\" id=\"48442\" semanticType=\"SimDomainObject\" description=\"\" blockLength=\"0\"><data name=\"name\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message></messageSchema>",
+  "xml": "<messageSchema package=\"sim\" id=\"31312\" version=\"0\" byteOrder=\"littleEndian\"><types><composite name=\"messageHeader\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"templateId\" primitiveType=\"uint16\"/><type name=\"schemaId\" primitiveType=\"uint16\"/><type name=\"version\" primitiveType=\"uint16\"/></composite><composite name=\"groupSizeEncoding\"><type name=\"blockLength\" primitiveType=\"uint16\"/><type name=\"numInGroup\" primitiveType=\"uint16\"/></composite><composite name=\"varDataEncoding\"><type name=\"length\" primitiveType=\"uint32\"/><type name=\"varData\" primitiveType=\"uint8\" length=\"0\"/></composite><composite name=\"DecimalEncoding\" semanticType=\"Decimal\"><type name=\"mantissa\" primitiveType=\"int64\"/><type name=\"exponent\" primitiveType=\"int8\"/></composite><composite name=\"OptionalDecimalEncoding\" semanticType=\"Decimal\"><type name=\"mantissa\" primitiveType=\"int64\"/><type name=\"exponent\" primitiveType=\"int8\"/></composite><type name=\"BooleanEncoding\" primitiveType=\"uint8\" semanticType=\"Boolean\"/></types><message name=\"SimDomainObject\" id=\"48442\" semanticType=\"SimDomainObject\" description=\"\" blockLength=\"0\"><data name=\"name\" id=\"1\" type=\"varDataEncoding\" description=\"openmdta:max-bytes:256\"/></message></messageSchema>",
   "messages": [
     {
       "name": "SimDomainObject",
@@ -129,6 +129,34 @@
       "kind": "composite",
       "attributes": {
         "name": "DecimalEncoding",
+        "semanticType": "Decimal"
+      },
+      "value": null,
+      "children": [
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "mantissa",
+            "primitiveType": "int64"
+          },
+          "value": null,
+          "children": []
+        },
+        {
+          "kind": "type",
+          "attributes": {
+            "name": "exponent",
+            "primitiveType": "int8"
+          },
+          "value": null,
+          "children": []
+        }
+      ]
+    },
+    {
+      "kind": "composite",
+      "attributes": {
+        "name": "OptionalDecimalEncoding",
         "semanticType": "Decimal"
       },
       "value": null,
@@ -437,6 +465,66 @@
     },
     {
       "name": "DecimalEncoding",
+      "id": null,
+      "signal": "EndComposite",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "OptionalDecimalEncoding",
+      "id": null,
+      "signal": "BeginComposite",
+      "offset": 9,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mantissa",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 0,
+      "primitive": "Int64",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "mantissa",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "exponent",
+      "id": null,
+      "signal": "BeginField",
+      "offset": 8,
+      "primitive": "Int8",
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "exponent",
+      "id": null,
+      "signal": "EndField",
+      "offset": null,
+      "primitive": null,
+      "length": null,
+      "presence": "Required",
+      "sinceVersion": 0
+    },
+    {
+      "name": "OptionalDecimalEncoding",
       "id": null,
       "signal": "EndComposite",
       "offset": null,

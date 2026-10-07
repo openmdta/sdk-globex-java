@@ -6,6 +6,8 @@ public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.BidAskDecoder> 
 
 public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandleDecoder> BID_ASK_CANDLE = new Block<>("openmdta::BidAskCandle", "BidAskCandle", new Format(41957, 3324, 0, 89), java.util.Set.of("TS_CANDLE", "TS_CANDLE_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandleDecoder::new);
 
+public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandleV2Decoder> BID_ASK_CANDLE_V2 = new Block<>("openmdta::BidAskCandleV2", "BidAskCandleV2", new Format(41957, 32795, 0, 89), java.util.Set.of("TS_CANDLE", "TS_CANDLE_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.BidAskCandleV2Decoder::new);
+
 public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.BidOhlcDecoder> BID_OHLC = new Block<>("openmdta::BidOhlc", "BidOhlc", new Format(41957, 9015, 0, 52), java.util.Set.of("SNAPSHOT", "STREAM", "TS_RAW", "TS_RAW_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.BidOhlcDecoder::new);
 
 public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.TradeDecoder> TRADE = new Block<>("openmdta::Trade", "Trade", new Format(41957, 3822, 0, 18), java.util.Set.of("SNAPSHOT", "STREAM", "TS_RAW", "TS_RAW_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.TradeDecoder::new);
@@ -14,4 +16,6 @@ public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvDeco
 
 public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleDecoder> TRADE_OHLCVV_CANDLE = new Block<>("openmdta::TradeOhlcvvCandle", "TradeOhlcvvCandle", new Format(41957, 49382, 0, 61), java.util.Set.of("TS_CANDLE", "TS_CANDLE_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleDecoder::new);
 
-public static final java.util.List<Block<?>> ALL = java.util.List.of(ASK_OHLC, BID_ASK, BID_ASK_CANDLE, BID_OHLC, TRADE, TRADE_OHLCVV, TRADE_OHLCVV_CANDLE);}
+public static final Block<com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleV2Decoder> TRADE_OHLCVV_CANDLE_V2 = new Block<>("openmdta::TradeOhlcvvCandleV2", "TradeOhlcvvCandleV2", new Format(41957, 310, 0, 61), java.util.Set.of("TS_CANDLE", "TS_CANDLE_STREAM"), com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleV2Decoder::new);
+
+public static final java.util.List<Block<?>> ALL = java.util.List.of(ASK_OHLC, BID_ASK, BID_ASK_CANDLE, BID_ASK_CANDLE_V2, BID_OHLC, TRADE, TRADE_OHLCVV, TRADE_OHLCVV_CANDLE, TRADE_OHLCVV_CANDLE_V2);}
