@@ -219,6 +219,9 @@ public final class Client implements AutoCloseable {
             if (request.windowed) send(window(request.id)); else credit(request.id, CREDITS);
         }
     }
+    public Dataset datasetFirds() {
+        return dataset("firds");
+    }
     public Dataset datasetGlobex() {
         return dataset("globex");
     }

@@ -15,53 +15,55 @@ Stream getters have matching `isXChanged()` and `isXCleared()` flags. Catalog ge
 | `openmdta::TradeOhlcvv` | `Blocks.TRADE_OHLCVV` | `MarketDataUpdate.getTradeOhlcvv()` | `MarketDataUpdate.tradeOhlcvv()` | `com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvv` |
 | `openmdta::TradeOhlcvvCandle` | `Blocks.TRADE_OHLCVV_CANDLE` | `MarketDataUpdate.getTradeOhlcvvCandle()` | `MarketDataUpdate.tradeOhlcvvCandle()` | `com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandle` |
 | `openmdta::TradeOhlcvvCandleV2` | `Blocks.TRADE_OHLCVV_CANDLE_V2` | `MarketDataUpdate.getTradeOhlcvvCandleV2()` | `MarketDataUpdate.tradeOhlcvvCandleV2()` | `com.openmdta.sdk.p_globex.sbe.stream_0.TradeOhlcvvCandleV2` |
-| `globex::DisplayName` | `Fields.GLOBEX__DISPLAY_NAME` | `CatalogRecord.getDisplayName()` | `CatalogRecord.displayName()` | `com.openmdta.sdk.p_globex.sbe.catalog_0.DisplayName` |
-| `lus::LusDomainObject` | `Fields.LUS__LUS_DOMAIN_OBJECT` | `CatalogRecord.getLusDomainObject()` | `CatalogRecord.lusDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusDomainObject` |
-| `lus::LusNameHash` | `Fields.LUS__LUS_NAME_HASH` | `CatalogRecord.getLusNameHash()` | `CatalogRecord.lusNameHash()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.LusNameHash` |
-| `openmdta::BidAsk` | `Fields.OPENMDTA__BID_ASK` | `CatalogRecord.getBidAsk()` | `CatalogRecord.bidAsk()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidAsk` |
-| `openmdta::Trade` | `Fields.OPENMDTA__TRADE` | `CatalogRecord.getTrade()` | `CatalogRecord.trade()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Trade` |
-| `openmdta::BidAskCandle` | `Fields.OPENMDTA__BID_ASK_CANDLE` | `CatalogRecord.getBidAskCandle()` | `CatalogRecord.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidAskCandle` |
-| `openmdta::BidAskCandleV2` | `Fields.OPENMDTA__BID_ASK_CANDLE_V2` | `CatalogRecord.getBidAskCandleV2()` | `CatalogRecord.bidAskCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidAskCandleV2` |
-| `openmdta::TradeCandle` | `Fields.OPENMDTA__TRADE_CANDLE` | `CatalogRecord.getTradeCandle()` | `CatalogRecord.tradeCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeCandle` |
-| `openmdta::TradeCandleV2` | `Fields.OPENMDTA__TRADE_CANDLE_V2` | `CatalogRecord.getTradeCandleV2()` | `CatalogRecord.tradeCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeCandleV2` |
-| `openmdta::TradeOhlcvvCandle` | `Fields.OPENMDTA__TRADE_OHLCVV_CANDLE` | `CatalogRecord.getTradeOhlcvvCandle()` | `CatalogRecord.tradeOhlcvvCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvCandle` |
-| `openmdta::TradeOhlcvvCandleV2` | `Fields.OPENMDTA__TRADE_OHLCVV_CANDLE_V2` | `CatalogRecord.getTradeOhlcvvCandleV2()` | `CatalogRecord.tradeOhlcvvCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvvCandleV2` |
-| `openmdta::BidDailyOhlc` | `Fields.OPENMDTA__BID_DAILY_OHLC` | `CatalogRecord.getBidDailyOhlc()` | `CatalogRecord.bidDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidDailyOhlc` |
-| `openmdta::AskDailyOhlc` | `Fields.OPENMDTA__ASK_DAILY_OHLC` | `CatalogRecord.getAskDailyOhlc()` | `CatalogRecord.askDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.AskDailyOhlc` |
-| `openmdta::TradeDailyOhlc` | `Fields.OPENMDTA__TRADE_DAILY_OHLC` | `CatalogRecord.getTradeDailyOhlc()` | `CatalogRecord.tradeDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeDailyOhlc` |
-| `openmdta::BidOhlc` | `Fields.OPENMDTA__BID_OHLC` | `CatalogRecord.getBidOhlc()` | `CatalogRecord.bidOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BidOhlc` |
-| `openmdta::AskOhlc` | `Fields.OPENMDTA__ASK_OHLC` | `CatalogRecord.getAskOhlc()` | `CatalogRecord.askOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.AskOhlc` |
-| `openmdta::TradeOhlcvv` | `Fields.OPENMDTA__TRADE_OHLCVV` | `CatalogRecord.getTradeOhlcvv()` | `CatalogRecord.tradeOhlcvv()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.TradeOhlcvv` |
-| `openmdta::InstrumentDefinition` | `Fields.OPENMDTA__INSTRUMENT_DEFINITION` | `CatalogRecord.getInstrumentDefinition()` | `CatalogRecord.instrumentDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentDefinition` |
-| `openmdta::Listing` | `Fields.OPENMDTA__LISTING` | `CatalogRecord.getListing()` | `CatalogRecord.listingValue()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Listing` |
-| `openmdta::CompanyProfile` | `Fields.OPENMDTA__COMPANY_PROFILE` | `CatalogRecord.getCompanyProfile()` | `CatalogRecord.companyProfile()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.CompanyProfile` |
-| `openmdta::CompanyAddress` | `Fields.OPENMDTA__COMPANY_ADDRESS` | `CatalogRecord.getCompanyAddress()` | `CatalogRecord.companyAddress()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.CompanyAddress` |
-| `openmdta::InstrumentIssuer` | `Fields.OPENMDTA__INSTRUMENT_ISSUER` | `CatalogRecord.getInstrumentIssuer()` | `CatalogRecord.instrumentIssuer()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentIssuer` |
-| `openmdta::BasicMasterdata` | `Fields.OPENMDTA__BASIC_MASTERDATA` | `CatalogRecord.getBasicMasterdata()` | `CatalogRecord.basicMasterdata()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.BasicMasterdata` |
-| `openmdta::InstrumentNames` | `Fields.OPENMDTA__INSTRUMENT_NAMES` | `CatalogRecord.getInstrumentNames()` | `CatalogRecord.instrumentNames()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentNames` |
-| `openmdta::LegalEntityNames` | `Fields.OPENMDTA__LEGAL_ENTITY_NAMES` | `CatalogRecord.getLegalEntityNames()` | `CatalogRecord.legalEntityNames()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.LegalEntityNames` |
-| `openmdta::Classification` | `Fields.OPENMDTA__CLASSIFICATION` | `CatalogRecord.getClassification()` | `CatalogRecord.classification()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Classification` |
-| `openmdta::ListingClassification` | `Fields.OPENMDTA__LISTING_CLASSIFICATION` | `CatalogRecord.getListingClassification()` | `CatalogRecord.listingClassification()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingClassification` |
-| `openmdta::ListingQuotation` | `Fields.OPENMDTA__LISTING_QUOTATION` | `CatalogRecord.getListingQuotation()` | `CatalogRecord.listingQuotation()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingQuotation` |
-| `openmdta::ListingVenue` | `Fields.OPENMDTA__LISTING_VENUE` | `CatalogRecord.getListingVenue()` | `CatalogRecord.listingVenue()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingVenue` |
-| `openmdta::ListingTradingDates` | `Fields.OPENMDTA__LISTING_TRADING_DATES` | `CatalogRecord.getListingTradingDates()` | `CatalogRecord.listingTradingDates()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingDates` |
-| `openmdta::ListingTradingRules` | `Fields.OPENMDTA__LISTING_TRADING_RULES` | `CatalogRecord.getListingTradingRules()` | `CatalogRecord.listingTradingRules()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTradingRules` |
-| `openmdta::ListingQuoteParameters` | `Fields.OPENMDTA__LISTING_QUOTE_PARAMETERS` | `CatalogRecord.getListingQuoteParameters()` | `CatalogRecord.listingQuoteParameters()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingQuoteParameters` |
-| `openmdta::ListingOrderSize` | `Fields.OPENMDTA__LISTING_ORDER_SIZE` | `CatalogRecord.getListingOrderSize()` | `CatalogRecord.listingOrderSize()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingOrderSize` |
-| `openmdta::ListingTickSchedule` | `Fields.OPENMDTA__LISTING_TICK_SCHEDULE` | `CatalogRecord.getListingTickSchedule()` | `CatalogRecord.listingTickSchedule()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListingTickSchedule` |
-| `openmdta::InstrumentPrimaryListing` | `Fields.OPENMDTA__INSTRUMENT_PRIMARY_LISTING` | `CatalogRecord.getInstrumentPrimaryListing()` | `CatalogRecord.instrumentPrimaryListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentPrimaryListing` |
-| `openmdta::InstrumentListingRecordCount` | `Fields.OPENMDTA__INSTRUMENT_LISTING_RECORD_COUNT` | `CatalogRecord.getInstrumentListingRecordCount()` | `CatalogRecord.instrumentListingRecordCount()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.InstrumentListingRecordCount` |
-| `openmdta::CorporateActions` | `Fields.OPENMDTA__CORPORATE_ACTIONS` | `CatalogRecord.getCorporateActions()` | `CatalogRecord.corporateActions()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.CorporateActions` |
-| `openmdta::Distributions` | `Fields.OPENMDTA__DISTRIBUTIONS` | `CatalogRecord.getDistributions()` | `CatalogRecord.distributions()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.Distributions` |
-| `openmdta::ListDefinition` | `Fields.OPENMDTA__LIST_DEFINITION` | `CatalogRecord.getListDefinition()` | `CatalogRecord.listDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.ListDefinition` |
-| `sim::SimDomainObject` | `Fields.SIM__SIM_DOMAIN_OBJECT` | `CatalogRecord.getSimDomainObject()` | `CatalogRecord.simDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.SimDomainObject` |
-| `xetra::XetraListing` | `Fields.XETRA__XETRA_LISTING` | `CatalogRecord.getXetraListing()` | `CatalogRecord.xetraListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_4.XetraListing` |
-| `xetra::XetraMarketDetails` | `Fields.XETRA__XETRA_MARKET_DETAILS` | `CatalogRecord.getXetraMarketDetails()` | `CatalogRecord.xetraMarketDetails()` | `com.openmdta.sdk.p_globex.sbe.catalog_4.XetraMarketDetails` |
+| `firds::FirdsRecord` | `Fields.FIRDS__FIRDS_RECORD` | `CatalogRecord.getFirdsRecord()` | `CatalogRecord.firdsRecord()` | `com.openmdta.sdk.p_globex.sbe.catalog_0.FirdsRecord` |
+| `globex::DisplayName` | `Fields.GLOBEX__DISPLAY_NAME` | `CatalogRecord.getDisplayName()` | `CatalogRecord.displayName()` | `com.openmdta.sdk.p_globex.sbe.catalog_1.DisplayName` |
+| `lus::LusDomainObject` | `Fields.LUS__LUS_DOMAIN_OBJECT` | `CatalogRecord.getLusDomainObject()` | `CatalogRecord.lusDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.LusDomainObject` |
+| `lus::LusNameHash` | `Fields.LUS__LUS_NAME_HASH` | `CatalogRecord.getLusNameHash()` | `CatalogRecord.lusNameHash()` | `com.openmdta.sdk.p_globex.sbe.catalog_2.LusNameHash` |
+| `openmdta::BidAsk` | `Fields.OPENMDTA__BID_ASK` | `CatalogRecord.getBidAsk()` | `CatalogRecord.bidAsk()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BidAsk` |
+| `openmdta::Trade` | `Fields.OPENMDTA__TRADE` | `CatalogRecord.getTrade()` | `CatalogRecord.trade()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.Trade` |
+| `openmdta::BidAskCandle` | `Fields.OPENMDTA__BID_ASK_CANDLE` | `CatalogRecord.getBidAskCandle()` | `CatalogRecord.bidAskCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BidAskCandle` |
+| `openmdta::BidAskCandleV2` | `Fields.OPENMDTA__BID_ASK_CANDLE_V2` | `CatalogRecord.getBidAskCandleV2()` | `CatalogRecord.bidAskCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BidAskCandleV2` |
+| `openmdta::TradeCandle` | `Fields.OPENMDTA__TRADE_CANDLE` | `CatalogRecord.getTradeCandle()` | `CatalogRecord.tradeCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeCandle` |
+| `openmdta::TradeCandleV2` | `Fields.OPENMDTA__TRADE_CANDLE_V2` | `CatalogRecord.getTradeCandleV2()` | `CatalogRecord.tradeCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeCandleV2` |
+| `openmdta::TradeOhlcvvCandle` | `Fields.OPENMDTA__TRADE_OHLCVV_CANDLE` | `CatalogRecord.getTradeOhlcvvCandle()` | `CatalogRecord.tradeOhlcvvCandle()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeOhlcvvCandle` |
+| `openmdta::TradeOhlcvvCandleV2` | `Fields.OPENMDTA__TRADE_OHLCVV_CANDLE_V2` | `CatalogRecord.getTradeOhlcvvCandleV2()` | `CatalogRecord.tradeOhlcvvCandleV2()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeOhlcvvCandleV2` |
+| `openmdta::BidDailyOhlc` | `Fields.OPENMDTA__BID_DAILY_OHLC` | `CatalogRecord.getBidDailyOhlc()` | `CatalogRecord.bidDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BidDailyOhlc` |
+| `openmdta::AskDailyOhlc` | `Fields.OPENMDTA__ASK_DAILY_OHLC` | `CatalogRecord.getAskDailyOhlc()` | `CatalogRecord.askDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.AskDailyOhlc` |
+| `openmdta::TradeDailyOhlc` | `Fields.OPENMDTA__TRADE_DAILY_OHLC` | `CatalogRecord.getTradeDailyOhlc()` | `CatalogRecord.tradeDailyOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeDailyOhlc` |
+| `openmdta::BidOhlc` | `Fields.OPENMDTA__BID_OHLC` | `CatalogRecord.getBidOhlc()` | `CatalogRecord.bidOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BidOhlc` |
+| `openmdta::AskOhlc` | `Fields.OPENMDTA__ASK_OHLC` | `CatalogRecord.getAskOhlc()` | `CatalogRecord.askOhlc()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.AskOhlc` |
+| `openmdta::TradeOhlcvv` | `Fields.OPENMDTA__TRADE_OHLCVV` | `CatalogRecord.getTradeOhlcvv()` | `CatalogRecord.tradeOhlcvv()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.TradeOhlcvv` |
+| `openmdta::InstrumentDefinition` | `Fields.OPENMDTA__INSTRUMENT_DEFINITION` | `CatalogRecord.getInstrumentDefinition()` | `CatalogRecord.instrumentDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.InstrumentDefinition` |
+| `openmdta::Listing` | `Fields.OPENMDTA__LISTING` | `CatalogRecord.getListing()` | `CatalogRecord.listingValue()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.Listing` |
+| `openmdta::CompanyProfile` | `Fields.OPENMDTA__COMPANY_PROFILE` | `CatalogRecord.getCompanyProfile()` | `CatalogRecord.companyProfile()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.CompanyProfile` |
+| `openmdta::CompanyAddress` | `Fields.OPENMDTA__COMPANY_ADDRESS` | `CatalogRecord.getCompanyAddress()` | `CatalogRecord.companyAddress()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.CompanyAddress` |
+| `openmdta::InstrumentIssuer` | `Fields.OPENMDTA__INSTRUMENT_ISSUER` | `CatalogRecord.getInstrumentIssuer()` | `CatalogRecord.instrumentIssuer()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.InstrumentIssuer` |
+| `openmdta::BasicMasterdata` | `Fields.OPENMDTA__BASIC_MASTERDATA` | `CatalogRecord.getBasicMasterdata()` | `CatalogRecord.basicMasterdata()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.BasicMasterdata` |
+| `openmdta::InstrumentNames` | `Fields.OPENMDTA__INSTRUMENT_NAMES` | `CatalogRecord.getInstrumentNames()` | `CatalogRecord.instrumentNames()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.InstrumentNames` |
+| `openmdta::LegalEntityNames` | `Fields.OPENMDTA__LEGAL_ENTITY_NAMES` | `CatalogRecord.getLegalEntityNames()` | `CatalogRecord.legalEntityNames()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.LegalEntityNames` |
+| `openmdta::Classification` | `Fields.OPENMDTA__CLASSIFICATION` | `CatalogRecord.getClassification()` | `CatalogRecord.classification()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.Classification` |
+| `openmdta::ListingClassification` | `Fields.OPENMDTA__LISTING_CLASSIFICATION` | `CatalogRecord.getListingClassification()` | `CatalogRecord.listingClassification()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingClassification` |
+| `openmdta::ListingQuotation` | `Fields.OPENMDTA__LISTING_QUOTATION` | `CatalogRecord.getListingQuotation()` | `CatalogRecord.listingQuotation()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingQuotation` |
+| `openmdta::ListingVenue` | `Fields.OPENMDTA__LISTING_VENUE` | `CatalogRecord.getListingVenue()` | `CatalogRecord.listingVenue()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingVenue` |
+| `openmdta::ListingTradingDates` | `Fields.OPENMDTA__LISTING_TRADING_DATES` | `CatalogRecord.getListingTradingDates()` | `CatalogRecord.listingTradingDates()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingTradingDates` |
+| `openmdta::ListingTradingRules` | `Fields.OPENMDTA__LISTING_TRADING_RULES` | `CatalogRecord.getListingTradingRules()` | `CatalogRecord.listingTradingRules()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingTradingRules` |
+| `openmdta::ListingQuoteParameters` | `Fields.OPENMDTA__LISTING_QUOTE_PARAMETERS` | `CatalogRecord.getListingQuoteParameters()` | `CatalogRecord.listingQuoteParameters()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingQuoteParameters` |
+| `openmdta::ListingOrderSize` | `Fields.OPENMDTA__LISTING_ORDER_SIZE` | `CatalogRecord.getListingOrderSize()` | `CatalogRecord.listingOrderSize()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingOrderSize` |
+| `openmdta::ListingTickSchedule` | `Fields.OPENMDTA__LISTING_TICK_SCHEDULE` | `CatalogRecord.getListingTickSchedule()` | `CatalogRecord.listingTickSchedule()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListingTickSchedule` |
+| `openmdta::InstrumentPrimaryListing` | `Fields.OPENMDTA__INSTRUMENT_PRIMARY_LISTING` | `CatalogRecord.getInstrumentPrimaryListing()` | `CatalogRecord.instrumentPrimaryListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.InstrumentPrimaryListing` |
+| `openmdta::InstrumentListingRecordCount` | `Fields.OPENMDTA__INSTRUMENT_LISTING_RECORD_COUNT` | `CatalogRecord.getInstrumentListingRecordCount()` | `CatalogRecord.instrumentListingRecordCount()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.InstrumentListingRecordCount` |
+| `openmdta::CorporateActions` | `Fields.OPENMDTA__CORPORATE_ACTIONS` | `CatalogRecord.getCorporateActions()` | `CatalogRecord.corporateActions()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.CorporateActions` |
+| `openmdta::Distributions` | `Fields.OPENMDTA__DISTRIBUTIONS` | `CatalogRecord.getDistributions()` | `CatalogRecord.distributions()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.Distributions` |
+| `openmdta::ListDefinition` | `Fields.OPENMDTA__LIST_DEFINITION` | `CatalogRecord.getListDefinition()` | `CatalogRecord.listDefinition()` | `com.openmdta.sdk.p_globex.sbe.catalog_3.ListDefinition` |
+| `sim::SimDomainObject` | `Fields.SIM__SIM_DOMAIN_OBJECT` | `CatalogRecord.getSimDomainObject()` | `CatalogRecord.simDomainObject()` | `com.openmdta.sdk.p_globex.sbe.catalog_4.SimDomainObject` |
+| `xetra::XetraListing` | `Fields.XETRA__XETRA_LISTING` | `CatalogRecord.getXetraListing()` | `CatalogRecord.xetraListing()` | `com.openmdta.sdk.p_globex.sbe.catalog_5.XetraListing` |
+| `xetra::XetraMarketDetails` | `Fields.XETRA__XETRA_MARKET_DETAILS` | `CatalogRecord.getXetraMarketDetails()` | `CatalogRecord.xetraMarketDetails()` | `com.openmdta.sdk.p_globex.sbe.catalog_5.XetraMarketDetails` |
 
 ## Dataset accessors
 
 | Alias | Method |
 | --- | --- |
+| `firds` | `client.datasetFirds()` |
 | `globex` | `client.datasetGlobex()` |
 | `lus` | `client.datasetLus()` |
 | `sim` | `client.datasetSim()` |

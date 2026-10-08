@@ -4,6 +4,7 @@ All XML files are complete and include-free. Use XML for wire types and their le
 
 | File | Schema ID | Schema version | Resolved layout |
 | --- | ---: | ---: | --- |
+| [catalog-firds.xml](catalog-firds.xml) | 40132 | 0 | [JSON](catalog-firds.layout.json) |
 | [catalog-globex.xml](catalog-globex.xml) | 49499 | 0 | [JSON](catalog-globex.layout.json) |
 | [catalog-lus.xml](catalog-lus.xml) | 41874 | 0 | [JSON](catalog-lus.layout.json) |
 | [catalog-openmdta.xml](catalog-openmdta.xml) | 41957 | 0 | [JSON](catalog-openmdta.layout.json) |
