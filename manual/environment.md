@@ -4,7 +4,7 @@
 | --- | --- |
 | Environment | globex |
 | Gateway | gateway |
-| Applied revision | 5000cc9b3cbf1c23ce673f3e089157e701b7ac69242616b7c0ef5eafb258e869 |
+| Applied revision | 6e1396f27e3dcee2303f728666fc77259832093356fe08a663f02d5c251e0c92 |
 | Public base URL | https://globex.openmdta.com/explorer |
 | WebSocket URL | wss://globex.openmdta.com/api/v1/ws |
 | Subprotocol | openmdta.sbe-session.v2 |
