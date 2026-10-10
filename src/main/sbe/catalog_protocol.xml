@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<messageSchema package="com.openmdta.sdk.p_globex.sbe.catalog_protocol" id="7" byteOrder="littleEndian" version="9">
+<messageSchema package="com.openmdta.sdk.p_globex.sbe.catalog_protocol" id="7" byteOrder="littleEndian" version="10">
   <types>
     <composite name="messageHeader">
       <type name="blockLength" primitiveType="uint16"/>
@@ -298,5 +298,43 @@
       <data name="runSbe" id="11" type="varDataEncoding"/>
     </group>
     <data name="dataset" id="12" type="varDataEncoding"/>
+  </message>
+  <!-- Uncorrected records for the Catalog overlay, read from one base-view sequence. -->
+  <message name="CatalogEditingBaseQuery" id="13" blockLength="1" sinceVersion="10">
+    <field name="withFields" id="1" type="uint8" offset="0"/>
+    <group name="keys" id="2" dimensionType="largeGroupSizeEncoding" blockLength="0">
+      <data name="key" id="3" type="varDataEncoding"/>
+    </group>
+    <data name="dataset" id="4" type="varDataEncoding"/>
+    <!-- Empty means any incarnation; otherwise a replaced Catalog fails with catalog_replaced. -->
+    <data name="expectedIncarnation" id="5" type="varDataEncoding"/>
+  </message>
+  <message name="CatalogEditingBasePage" id="14" blockLength="24" sinceVersion="10">
+    <field name="universeFingerprint" id="1" type="uint64" offset="0"/>
+    <field name="sequence" id="2" type="uint64" offset="8"/>
+    <!-- uint64 max: no editorial cursor. -->
+    <field name="editorialCursor" id="3" type="uint64" offset="16"/>
+    <group name="schema" id="4" dimensionType="largeGroupSizeEncoding" blockLength="1">
+      <!-- bit 0: allows subfields; bit 1: semantic present. -->
+      <field name="flags" id="5" type="uint8" offset="0"/>
+      <data name="label" id="6" type="varDataEncoding"/>
+      <data name="semantic" id="7" type="varDataEncoding"/>
+    </group>
+    <group name="records" id="8" dimensionType="largeGroupSizeEncoding" blockLength="1">
+      <field name="exists" id="9" type="uint8" offset="0"/>
+      <group name="fields" id="10" dimensionType="largeGroupSizeEncoding" blockLength="1">
+        <field name="subfieldPresent" id="11" type="uint8" offset="0"/>
+        <data name="label" id="12" type="varDataEncoding"/>
+        <data name="subfield" id="13" type="varDataEncoding"/>
+        <data name="requirements" id="14" type="varDataEncoding"/>
+        <data name="payload" id="15" type="varDataEncoding"/>
+      </group>
+      <data name="key" id="16" type="varDataEncoding"/>
+      <data name="sourceBaseline" id="17" type="varDataEncoding"/>
+      <!-- Lifecycle license requirements; empty when the record does not exist. -->
+      <data name="lifecycleRequirements" id="18" type="varDataEncoding"/>
+    </group>
+    <data name="dataset" id="19" type="varDataEncoding"/>
+    <data name="incarnation" id="20" type="varDataEncoding"/>
   </message>
 </messageSchema>

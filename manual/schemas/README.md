@@ -8,7 +8,7 @@ All XML files are complete and include-free. Use XML for wire types and their le
 | [catalog-globex.xml](catalog-globex.xml) | 49499 | 0 | [JSON](catalog-globex.layout.json) |
 | [catalog-lus.xml](catalog-lus.xml) | 41874 | 0 | [JSON](catalog-lus.layout.json) |
 | [catalog-openmdta.xml](catalog-openmdta.xml) | 41957 | 0 | [JSON](catalog-openmdta.layout.json) |
-| [catalog-protocol.xml](catalog-protocol.xml) | 7 | 9 | [JSON](catalog-protocol.layout.json) |
+| [catalog-protocol.xml](catalog-protocol.xml) | 7 | 10 | [JSON](catalog-protocol.layout.json) |
 | [catalog-sim.xml](catalog-sim.xml) | 31312 | 0 | [JSON](catalog-sim.layout.json) |
 | [catalog-xetra.xml](catalog-xetra.xml) | 3154 | 0 | [JSON](catalog-xetra.layout.json) |
 | [gateway-protocol.xml](gateway-protocol.xml) | 102 | 33 | [JSON](gateway-protocol.layout.json) |
