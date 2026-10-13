@@ -1,6 +1,6 @@
 # globex — Java 17 client
 
-This package targets applied revision `43e094e73aa5ddbc73ebedd2663faa440c5af791848f3f5feeeb9cf4a4e62f03`. Its endpoints, datasets,
+This package targets applied revision `b135ad469b5db39692df1b2da7b071729ddded957c28e76dacf4e5ff6bb134fc`. Its endpoints, datasets,
 field bindings and service fingerprints describe this one environment. Start
 with [the environment](manual/environment.md), [operations](manual/operations/index.md)
 and [codec index](codecs.md). Credentials are intentionally absent.
@@ -48,6 +48,23 @@ java --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED ...
 
 Agrona uses this JDK access for its buffers. Maven's `.mvn/jvm.config` supplies it
 for builds, but applications must set it in their own JVM launch configuration.
+
+## Production and staging endpoints
+
+This generated package connects to `Environment.WEBSOCKET`, embedded from its
+exact deployed environment. Existing production-generated SDKs continue to use
+production. For staging, select the staging-generated Maven artifact/commit and
+its package in your application, then call `Client.connect(stagingTokenBytes)`.
+There is no `channel` argument or endpoint override in this client. Do not edit
+the generated endpoint or contract files to repurpose a production SDK.
+
+Use credentials authorized for the staging Gateway's audience and datasets.
+Unavailable, expired or unauthorized staging must remain an explicit error;
+do not switch to the production artifact after a failed staging connection.
+Automatic reconnection uses this same generated endpoint. Switching deployments
+requires closing the previous client and constructing one from the matching SDK;
+subscriptions and decoded state belong to that deployment. Explorer deployment
+links similarly navigate to a fresh page/session at the selected host.
 
 ## Instrument selectors and typed reads
 
