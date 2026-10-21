@@ -1,6 +1,6 @@
 # globex — manual client implementation
 
-This package describes gateway **gateway**, applied revision `f72d63e5542e86a010614ef95b2df4354f805858cea1dffc32575a2a296d455c`. Implement a client using standard WebSocket, byte-buffer, JSON, zlib and Ed25519 libraries. No generated SDK is required.
+This package describes gateway **gateway**, applied revision `2bc0cbdae0e9cdfb509d0b43dc4ec9e291eaf1bedf6af43b6228dbe34c5f4dce`. Implement a client using standard WebSocket, byte-buffer, JSON, zlib and Ed25519 libraries. No generated SDK is required.
 
 Read in order:
 
